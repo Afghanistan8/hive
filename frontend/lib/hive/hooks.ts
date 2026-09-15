@@ -95,6 +95,14 @@ export function useSportsEvidence(matchId: string, enabled: boolean) {
   });
 }
 
+export function useSportsEvidenceRaw(matchId: string, enabled: boolean) {
+  return useQuery({
+    queryKey: ["sports", "evidence-raw", matchId],
+    queryFn: () => hiveReader().sportsEvidenceRaw(matchId),
+    enabled: !!HIVE_SPORTS_ADDRESS && enabled,
+  });
+}
+
 export function useSportsSourceUrls(matchId: string) {
   return useQuery({
     queryKey: ["sports", "sources", matchId],

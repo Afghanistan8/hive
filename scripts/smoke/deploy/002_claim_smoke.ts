@@ -62,8 +62,15 @@ export default async function main(client: any) {
   out.market = await read(client, address, "get_market", [market.id]);
   out.evidence = await read(client, address, "get_evidence", [market.id]);
 
+  // A claim emits a funded value-transfer message, so its fees must include the
+  // message allocation. Studio's write simulation returns exactly that.
+  const claimFees = await client.estimateTransactionFeesForWrite({ address, functionName: "claim", args: [market.id], value: 0n });
+  out.claimAllocations = JSON.parse(JSON.stringify(claimFees.messageAllocations ?? [], (_k, v) => (typeof v === "bigint" ? v.toString() : v)));
   const walletBeforeClaim = await balance(client, me);
-  out.claim = await waitOk(client, await client.writeContract({ address, functionName: "claim", args: [market.id], value: 0n, fees: await fees(client) }), "claim");
+  out.claim = await waitOk(client, await client.writeContract({
+    address, functionName: "claim", args: [market.id], value: 0n,
+    fees: { distribution: claimFees.distribution, messageAllocations: claimFees.messageAllocations, feeValue: claimFees.feeValue },
+  }), "claim");
   out.positionAfter = await read(client, address, "get_position", [market.id, me.toLowerCase()]);
   // emit_transfer defaults to on='finalized'; give the message time to apply.
   let contractAfterClaim = await balance(client, address);
@@ -83,4 +90,14 @@ export default async function main(client: any) {
   delete dep.receipt;
   console.log(JSON.stringify(out, null, 2));
   writeFileSync(OUT, JSON.stringify(out, null, 2) + "\n");
+
+  // ---- runtime assertions
+  const fail = (m: string) => { throw new Error(`CLAIM SMOKE FAILED: ${m}`); };
+  if (out.stake.execution !== "FINISHED_WITH_RETURN") fail("stake did not execute");
+  if (contractAfterStake - contractBefore !== STAKE) fail("stake value did not reach the contract");
+  if (out.resolve.execution !== "FINISHED_WITH_RETURN") fail("resolve did not execute");
+  if (out.claim.execution !== "FINISHED_WITH_RETURN") fail("claim did not execute");
+  if (!out.positionAfter.claimed || String(out.positionAfter.payout) !== STAKE.toString()) fail("position not marked claimed with full payout");
+  if (contractAfterClaim !== contractBefore) fail(`contract still holds the payout (${contractAfterClaim}); transfer not delivered`);
+  console.log("CLAIM SMOKE PASSED: 2 GEN in via take_position, 2 GEN out to the wallet via claim");
 }

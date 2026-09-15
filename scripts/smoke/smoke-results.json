@@ -1,11 +1,11 @@
 {
   "network": "GenLayer Studio Devnet",
   "chainId": 61997,
-  "ranAt": "2026-09-15T12:04:58.762Z",
+  "ranAt": "2026-09-15T12:43:08.769Z",
   "sports": {
     "contract": {
-      "address": "0x8C90C84a7cC459D672fF802042a242d5dF75f581",
-      "hash": "0xbd8b0b8f7ad068a8081b0c8d23c9717926cbe1d0e6b04906382a7e165e1c1105"
+      "address": "0xa817384F3B76315A235763fdffF3810841b24C4A",
+      "hash": "0x608310ef0f3ce5f1612068be3ab559241737b448865619dcc57d8763e70e9e00"
     },
     "add": {
       "functionName": "add_fixture",
@@ -16,7 +16,7 @@
         "Manchester City",
         1789313400
       ],
-      "hash": "0x8a7c7fb35a0aead8e80b85d25b687af16adfbe60e3a6b9962bb4ad371396b03d",
+      "hash": "0xb29f54ab4d0c808b59477d0c0edae12e6aef4c5f215475ff5194b1c04fcbef07",
       "execution": "FINISHED_WITH_RETURN",
       "status": 5,
       "leaderResult": {
@@ -31,7 +31,7 @@
       "args": [
         "pl-401879278"
       ],
-      "hash": "0xd5601c11734dcd45110b9b483ee78399b87e4515910d6ab1e53a0c0fc89ec6db",
+      "hash": "0xa825795dd97a509abdb61daa700e08a00200c3da3e3d13c90f0841218cbc5671",
       "execution": "FINISHED_WITH_RETURN",
       "status": 5,
       "leaderResult": {
@@ -44,7 +44,7 @@
     "fixture": {
       "away": "Manchester City",
       "away_goals": 1,
-      "created_at": 1789473910,
+      "created_at": 1789476199,
       "creator": "0x4184bc5e5444f250767e8d33a49817a9b4fb0df3",
       "espn_event_id": "401879278",
       "home": "Manchester United",
@@ -60,7 +60,7 @@
       "pool_home": 0,
       "positions_count": 0,
       "refund_all": true,
-      "resolved_at": 1789473918,
+      "resolved_at": 1789476208,
       "result": "AWAY",
       "status": "SETTLED",
       "total_pool": 0
@@ -81,12 +81,13 @@
       "outcome": "AWAY",
       "source_a": "espn",
       "source_b": "bbc"
-    }
+    },
+    "evidenceRaw": "{\"bbc\":{\"away_goals\":1,\"home_goals\":0,\"status\":\"FINISHED\"},\"espn\":{\"away_goals\":1,\"home_goals\":0,\"status\":\"FINISHED\"},\"match_id\":\"pl-401879278\",\"outcome\":\"AWAY\",\"source_a\":\"espn\",\"source_b\":\"bbc\"}"
   },
   "crypto": {
     "contract": {
-      "address": "0x45D1020DFE600db4c164d69AF3A370492E8beBfc",
-      "hash": "0x4cb45c31fc1d6a15ebafad5712f34e9ce60f189007cf5ff11e42d1718d2a4556"
+      "address": "0xa3d42F94A33485C6f07ccfc44D8Df76978483fBA",
+      "hash": "0x6f2e87034683b43cfb691759ac7a71dff106eb318c4d4f07df96e46342c76e89"
     },
     "markets": [
       {
@@ -98,7 +99,7 @@
             "BTC",
             "2026-09-14"
           ],
-          "hash": "0x71a2110cb3f8782e8dc61100d60ad9bae75a3d5483a4b30c2ff9a84e4f777f3a",
+          "hash": "0x18107c878fdbcd97019bdf1103ea41d4171eb1969d35990b15672ecb6d552907",
           "execution": "FINISHED_WITH_RETURN",
           "status": 5,
           "leaderResult": {
@@ -108,22 +109,25 @@
             }
           }
         },
-        "resolve": {
-          "functionName": "resolve_market",
-          "args": [
-            1
-          ],
-          "hash": "0xa43323e1f62bb730075cdb06a1899f67090e54dc5242d4ffa8fb57f2746c22d1",
-          "execution": "FINISHED_WITH_RETURN",
-          "status": 5,
-          "leaderResult": {
-            "status": "return",
-            "payload": {
-              "readable": "\"UP\""
+        "attempts": [
+          {
+            "functionName": "resolve_market",
+            "args": [
+              1
+            ],
+            "hash": "0x5631ddcc35e9dc101298feb07a3b097e6c52313b1987fbc3d59fb4bee8e2a0da",
+            "execution": "FINISHED_WITH_RETURN",
+            "status": 5,
+            "leaderResult": {
+              "status": "return",
+              "payload": {
+                "readable": "\"UP\""
+              }
             }
           }
-        },
+        ],
         "evidence": {
+          "agreed_payload": "1|BTC|bitcoin|BTC_USDT|2026-09-14|7668256817293|7875262563068|UP|7671090000000|7855310000000|UP|UP",
           "coingecko_close": 7875262563068,
           "coingecko_direction": "UP",
           "coingecko_open": 7668256817293,
@@ -134,13 +138,13 @@
           "gate_open": 7671090000000,
           "market_id": 1,
           "price_scale": 100000000,
-          "resolved_at": 1789473954,
+          "resolved_at": 1789476246,
           "terminal_refund": false
         },
         "market": {
           "asset": "BTC",
           "coingecko_id": "bitcoin",
-          "created_at": 1789473945,
+          "created_at": 1789476235,
           "creator": "0x4184bc5e5444f250767e8d33a49817a9b4fb0df3",
           "cutoff_at": 1789340400,
           "down_pool": 0,
@@ -151,7 +155,7 @@
           "phase": "SETTLED",
           "positions_count": 0,
           "refund_all": true,
-          "resolved_at": 1789473954,
+          "resolved_at": 1789476246,
           "result": "UP",
           "settles_at": 1789426800,
           "state": "UP",
@@ -170,7 +174,7 @@
             "ATOM",
             "2026-09-14"
           ],
-          "hash": "0xfee7cfa0ed9acd8a3e6630049be0eb386f17b9f30cc44473022cff2e5c7f1fc7",
+          "hash": "0xed9953bd2c76229f7eef652c8be94e932de3347bb3a254f02d36609e03e56f9c",
           "execution": "FINISHED_WITH_RETURN",
           "status": 5,
           "leaderResult": {
@@ -180,20 +184,38 @@
             }
           }
         },
-        "resolve": {
-          "functionName": "resolve_market",
-          "args": [
-            2
-          ],
-          "hash": "0x00621019cbda9a2cbebb9b63595076cf4fc1d5f8e4b7e78de378671131465632",
-          "execution": "FINISHED_WITH_ERROR",
-          "status": 5,
-          "leaderResult": {
-            "status": "rollback",
-            "payload": "TRANSIENT: sources unavailable (UNAVAILABLE|2|coingecko); retry later"
+        "attempts": [
+          {
+            "functionName": "resolve_market",
+            "args": [
+              2
+            ],
+            "hash": "0x1617f22716be4410b8a31d82a81426f664979eac59749010a98b8b1cbec8090c",
+            "execution": "FINISHED_WITH_ERROR",
+            "status": 5,
+            "leaderResult": {
+              "status": "rollback",
+              "payload": "TRANSIENT: sources unavailable (UNAVAILABLE|2|coingecko); retry later"
+            }
+          },
+          {
+            "functionName": "resolve_market",
+            "args": [
+              2
+            ],
+            "hash": "0x63cef42b157be8664b1eee020711cc641b3258440dd159665b609f5423fbcf25",
+            "execution": "FINISHED_WITH_RETURN",
+            "status": 5,
+            "leaderResult": {
+              "status": "return",
+              "payload": {
+                "readable": "\"INCONCLUSIVE\""
+              }
+            }
           }
-        },
+        ],
         "evidence": {
+          "agreed_payload": "2|ATOM|cosmos|ATOM_USDT|2026-09-14|157585286|158071059|UP|158300000|158000000|DOWN|INCONCLUSIVE",
           "coingecko_close": 158071059,
           "coingecko_direction": "UP",
           "coingecko_open": 157585286,
@@ -204,13 +226,13 @@
           "gate_open": 158300000,
           "market_id": 2,
           "price_scale": 100000000,
-          "resolved_at": 1789474061,
+          "resolved_at": 1789476369,
           "terminal_refund": false
         },
         "market": {
           "asset": "ATOM",
           "coingecko_id": "cosmos",
-          "created_at": 1789473970,
+          "created_at": 1789476262,
           "creator": "0x4184bc5e5444f250767e8d33a49817a9b4fb0df3",
           "cutoff_at": 1789340400,
           "down_pool": 0,
@@ -218,26 +240,17 @@
           "gate_pair": "ATOM_USDT",
           "id": 2,
           "paid_out": 0,
-          "phase": "READY_TO_SETTLE",
+          "phase": "INCONCLUSIVE",
           "positions_count": 0,
-          "refund_all": false,
-          "resolved_at": 0,
-          "result": "",
+          "refund_all": true,
+          "resolved_at": 1789476369,
+          "result": "INCONCLUSIVE",
           "settles_at": 1789426800,
-          "state": "PENDING",
+          "state": "INCONCLUSIVE",
           "target_day": "2026-09-14",
           "terminal_refund_at": 1789858800,
           "total_pool": 0,
           "up_pool": 0
-        },
-        "first_attempt_note": "Validators agreed 'UNAVAILABLE|2|coingecko' (CoinGecko rate limit right after the BTC fetch) -> TRANSIENT revert, market stayed retryable.",
-        "retry": {
-          "functionName": "resolve_market",
-          "args": [
-            2
-          ],
-          "hash": "0x4fff91efe56661c22320fcad37efd4b2eaf702b74c813041c608d1a0f85dc879",
-          "execution": "FINISHED_WITH_RETURN"
         }
       }
     ]

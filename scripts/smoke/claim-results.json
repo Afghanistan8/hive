@@ -1,0 +1,102 @@
+{
+  "ranAt": "2026-09-15T12:39:27.885Z",
+  "wallet": "0x4184bc5E5444F250767E8D33A49817A9B4FB0df3",
+  "asset": "ETH",
+  "day": "2026-09-14",
+  "contract": {
+    "address": "0xfaEd6840DaEa39B510B454763D3E69976F3F88C9",
+    "hash": "0x0b7bfcb36993ea2aef4eb68518c1d9ea9e35e4ac708cb0a892fe610567b1d9b3"
+  },
+  "create": {
+    "hash": "0x4fc966892f922d01b6da050fbaf7a0fe751539c9cd249cf3bf0b59bd7d609fc4",
+    "execution": "FINISHED_WITH_RETURN"
+  },
+  "stake": {
+    "hash": "0xe0b9ab8423590dde2811d6e5213315ba253f58cf587624638d93101b1c220056",
+    "execution": "FINISHED_WITH_RETURN"
+  },
+  "position": {
+    "claimable": 0,
+    "claimed": false,
+    "exists": true,
+    "market_id": 1,
+    "owner": "0x4184bc5e5444f250767e8d33a49817a9b4fb0df3",
+    "payout": 0,
+    "side": "UP",
+    "stake": "2000000000000000000"
+  },
+  "resolve": {
+    "hash": "0x57ab2b3a54627a9b213ab614ca17300c7815977d437621d9a33d25cfa02365eb",
+    "execution": "FINISHED_WITH_RETURN"
+  },
+  "market": {
+    "asset": "ETH",
+    "coingecko_id": "ethereum",
+    "created_at": 1789475977,
+    "creator": "0x4184bc5e5444f250767e8d33a49817a9b4fb0df3",
+    "cutoff_at": 1789340400,
+    "down_pool": 0,
+    "exists": true,
+    "gate_pair": "ETH_USDT",
+    "id": 1,
+    "paid_out": 0,
+    "phase": "SETTLED",
+    "positions_count": 1,
+    "refund_all": false,
+    "resolved_at": 1789475996,
+    "result": "UP",
+    "settles_at": 1789426800,
+    "state": "UP",
+    "target_day": "2026-09-14",
+    "terminal_refund_at": 1789858800,
+    "total_pool": "2000000000000000000",
+    "up_pool": "2000000000000000000"
+  },
+  "evidence": {
+    "agreed_payload": "1|ETH|ethereum|ETH_USDT|2026-09-14|247460318750|254704321496|UP|247557000000|253318000000|UP|UP",
+    "coingecko_close": 254704321496,
+    "coingecko_direction": "UP",
+    "coingecko_open": 247460318750,
+    "exists": true,
+    "final_result": "UP",
+    "gate_close": 253318000000,
+    "gate_direction": "UP",
+    "gate_open": 247557000000,
+    "market_id": 1,
+    "price_scale": 100000000,
+    "resolved_at": 1789475996,
+    "terminal_refund": false
+  },
+  "claimAllocations": [
+    {
+      "messageType": 0,
+      "onAcceptance": false,
+      "parentIndex": "115792089237316195423570985008687907853269984665640564039457584007913129639935",
+      "recipient": "0x4184bc5e5444f250767e8d33a49817a9b4fb0df3",
+      "callKey": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "budget": "150000000000000",
+      "feeParams": "0x000000000000000000000000000000000000000000000000000000000007a1200000000000000000000000000000000000000000000000000000000011e1a300"
+    }
+  ],
+  "claim": {
+    "hash": "0xefce964e12913b2d6e2b511d71f892b3233ec30384c782f680fd89ed0fdfb985",
+    "execution": "FINISHED_WITH_RETURN"
+  },
+  "positionAfter": {
+    "claimable": 0,
+    "claimed": true,
+    "exists": true,
+    "market_id": 1,
+    "owner": "0x4184bc5e5444f250767e8d33a49817a9b4fb0df3",
+    "payout": "2000000000000000000",
+    "side": "UP",
+    "stake": "2000000000000000000"
+  },
+  "balances": {
+    "contractBefore": "0",
+    "contractAfterStake": "2000000000000000000",
+    "contractAfterClaim": "0",
+    "walletBeforeClaim": "5698295441749951661",
+    "walletAfterClaim": "7997932831249979425"
+  }
+}

@@ -50,6 +50,7 @@ export interface CryptoEvidence {
   gate_direction?: string;
   final_result?: string;
   terminal_refund?: boolean;
+  agreed_payload?: string;
   price_scale?: number;
 }
 

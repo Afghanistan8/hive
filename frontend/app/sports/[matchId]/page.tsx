@@ -4,12 +4,13 @@ import { useParams } from "next/navigation";
 import { useState } from "react";
 import { BackLink, Card, ErrorBox, Loading, SourceLink, Stat } from "@/components/hive/bits";
 import { PhaseBadge } from "@/components/hive/PhaseBadge";
+import { ClaimDialog } from "@/components/hive/ClaimDialog";
 import { TxDialog } from "@/components/hive/TxDialog";
 import { Input } from "@/components/ui/input";
 import { useWallet } from "@/lib/genlayer/wallet";
 import { HIVE_SPORTS_ADDRESS, SPORTS_MIN_STAKE } from "@/lib/hive/config";
 import { formatCountdown, formatGen, formatGmt1, formatLocal, formatUtc, impliedMultiplier, parseGen, sportsPhase, toWei } from "@/lib/hive/format";
-import { useFixture, useNow, useSportsEvidence, useSportsPosition, useSportsSourceUrls } from "@/lib/hive/hooks";
+import { useFixture, useNow, useSportsEvidence, useSportsEvidenceRaw, useSportsPosition, useSportsSourceUrls } from "@/lib/hive/hooks";
 import type { SourceReading } from "@/lib/hive/types";
 import { cn } from "@/lib/utils";
 
@@ -32,6 +33,7 @@ export default function FixturePage() {
   const { data: position } = useSportsPosition(matchId, address);
   const { data: sources } = useSportsSourceUrls(matchId);
   const { data: evidence } = useSportsEvidence(matchId, !!f && f.status !== "OPEN");
+  const { data: evidenceRaw } = useSportsEvidenceRaw(matchId, !!f && f.status !== "OPEN");
   const [pick, setPick] = useState<(typeof PICKS)[number]>("HOME");
   const [amount, setAmount] = useState(String(SPORTS_MIN_STAKE));
 
@@ -125,12 +127,11 @@ export default function FixturePage() {
 
           {f.status !== "OPEN" && position?.exists && !position.claimed && (
             claimable > 0n ? (
-              <TxDialog
+              <ClaimDialog
                 address={HIVE_SPORTS_ADDRESS}
                 method={f.refund_all ? "refund" : "claim"}
                 args={[f.match_id]}
-                title={f.refund_all ? "Refund stake" : "Claim winnings"}
-                description={<>Transfers {formatGen(claimable)} GEN to your wallet.</>}
+                amount={claimable}
                 label={`${f.refund_all ? "Refund" : "Claim"} ${formatGen(claimable)} GEN`}
               />
             ) : (
@@ -184,6 +185,12 @@ export default function FixturePage() {
                 <Reading label="BBC Sport" r={evidence.bbc} />
               </div>
               <div className="text-sm">Outcome: <b>{evidence.outcome}</b></div>
+              {evidenceRaw && (
+                <details className="text-xs">
+                  <summary className="cursor-pointer text-muted-foreground">Exact payload validators agreed on</summary>
+                  <code className="mt-1 block break-all rounded bg-white/5 p-2">{evidenceRaw}</code>
+                </details>
+              )}
               {f.resolved_at > 0 && <div className="text-xs text-muted-foreground">Decided at {formatGmt1(f.resolved_at)}</div>}
             </div>
           )}

@@ -106,6 +106,19 @@ ERR_EXTERNAL = "EXTERNAL"
 EVIDENCE_FIELDS = 12
 
 
+@gl.evm.contract_interface
+class _Wallet:
+    """Payout target. Winners are wallets (EVM accounts), so payouts are external
+    EVM value transfers; an internal GenLayer message to a wallet is skipped and
+    its value returned to the sender (observed on Studio Next)."""
+
+    class View:
+        pass
+
+    class Write:
+        pass
+
+
 class SourceError(Exception):
     """Raised inside the nondet block when a source cannot produce a candle."""
 
@@ -378,6 +391,7 @@ class Evidence:
     gate_direction: str
     final_result: str
     terminal_refund: bool
+    agreed_payload: str  # the exact string validators agreed on, stored verbatim
 
 
 # ---------------------------------------------------------------------------
@@ -537,7 +551,7 @@ class HiveCrypto(gl.contract.Contract):
 
         if len(parts) >= 1 and parts[0] == UNAVAILABLE:
             if now >= int(m.terminal_refund_at):
-                return self._terminal_refund(m, now)
+                return self._terminal_refund(m, now, agreed)
             raise gl.vm.UserError(f"{ERR_TRANSIENT}: sources unavailable ({agreed}); retry later")
 
         cg_open, cg_close, cg_dir, gt_open, gt_close, gt_dir, final = validate_agreed(
@@ -555,6 +569,7 @@ class HiveCrypto(gl.contract.Contract):
             gate_direction=gt_dir,
             final_result=final,
             terminal_refund=False,
+            agreed_payload=agreed,
         )
 
         if final == SIDE_UP:
@@ -584,7 +599,7 @@ class HiveCrypto(gl.contract.Contract):
 
         return gl.eq_principle.strict_eq(fetch_evidence)
 
-    def _terminal_refund(self, m: Market, now: int) -> str:
+    def _terminal_refund(self, m: Market, now: int, agreed: str) -> str:
         mid = int(m.id)
         self.evidence[mid] = Evidence(
             market_id=mid,
@@ -597,6 +612,7 @@ class HiveCrypto(gl.contract.Contract):
             gate_direction="",
             final_result=RESULT_INCONCLUSIVE,
             terminal_refund=True,
+            agreed_payload=agreed,
         )
         m.state = STATE_REFUNDED
         m.result = RESULT_INCONCLUSIVE
@@ -629,7 +645,7 @@ class HiveCrypto(gl.contract.Contract):
 
         # Transfer FIRST. If it cannot be emitted the whole transaction reverts
         # and claimed stays False, so the position remains claimable.
-        gl.chain.Account(gl.message.sender_address).emit_transfer(payout)
+        _Wallet(gl.message.sender_address).emit_transfer(payout)
 
         pos.claimed = True
         pos.payout = payout
@@ -773,6 +789,7 @@ class HiveCrypto(gl.contract.Contract):
             "gate_direction": e.gate_direction,
             "final_result": e.final_result,
             "terminal_refund": e.terminal_refund,
+            "agreed_payload": e.agreed_payload,
             "price_scale": PRICE_SCALE,
         }
 

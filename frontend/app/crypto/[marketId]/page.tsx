@@ -4,6 +4,7 @@ import { useParams } from "next/navigation";
 import { useState } from "react";
 import { BackLink, Card, ErrorBox, Loading, SourceLink, Stat } from "@/components/hive/bits";
 import { PhaseBadge } from "@/components/hive/PhaseBadge";
+import { ClaimDialog } from "@/components/hive/ClaimDialog";
 import { TxDialog } from "@/components/hive/TxDialog";
 import { Input } from "@/components/ui/input";
 import { useWallet } from "@/lib/genlayer/wallet";
@@ -113,12 +114,11 @@ export default function CryptoMarketPage() {
           )}
           {m.state !== "PENDING" && position?.exists && !position.claimed && (
             claimable > 0n ? (
-              <TxDialog
+              <ClaimDialog
                 address={HIVE_CRYPTO_ADDRESS}
                 method="claim"
                 args={[m.id]}
-                title={m.refund_all ? "Refund stake" : "Claim winnings"}
-                description={<>Transfers {formatGen(claimable)} GEN to your wallet.</>}
+                amount={claimable}
                 label={`Claim ${formatGen(claimable)} GEN`}
               />
             ) : (
@@ -163,6 +163,12 @@ export default function CryptoMarketPage() {
                 </table>
               )}
               <div>Final: <b>{evidence.final_result}</b></div>
+              {evidence.agreed_payload && (
+                <details className="text-xs">
+                  <summary className="cursor-pointer text-muted-foreground">Exact payload validators agreed on</summary>
+                  <code className="mt-1 block break-all rounded bg-white/5 p-2">{evidence.agreed_payload}</code>
+                </details>
+              )}
               {evidence.resolved_at ? <div className="text-xs text-muted-foreground">Decided at {formatGmt1(evidence.resolved_at)}</div> : null}
             </div>
           )}

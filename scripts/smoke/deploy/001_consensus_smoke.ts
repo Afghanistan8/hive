@@ -59,6 +59,7 @@ const read = (client: any, address: string, functionName: string, args: any[]) =
 
 export default async function main(client: any) {
   if (process.env.SMOKE_ONLY && process.env.SMOKE_ONLY !== "consensus") return;
+  const fail = (m: string) => { throw new Error(`CONSENSUS SMOKE FAILED: ${m}`); };
   const results: any = { network: client.chain?.name, chainId: client.chain?.id, ranAt: new Date().toISOString(), sports: {}, crypto: {} };
 
   // ---- sports: real finished fixture, ESPN + BBC + LLM consensus
@@ -71,8 +72,20 @@ export default async function main(client: any) {
   results.sports.resolve = await write(client, s.address, "resolve", [matchId]);
   results.sports.fixture = await read(client, s.address, "get_fixture", [matchId]);
   results.sports.evidence = await read(client, s.address, "get_evidence", [matchId]);
-  console.log("sports evidence:", JSON.stringify(results.sports.evidence));
+  results.sports.evidenceRaw = await read(client, s.address, "get_evidence_raw", [matchId]);
+  console.log("sports evidence:", results.sports.evidenceRaw);
   writeFileSync(OUT, JSON.stringify(results, null, 2) + "\n");
+
+  const ev = JSON.parse(results.sports.evidenceRaw || "{}");
+  if (results.sports.resolve.execution !== "FINISHED_WITH_RETURN") fail("sports resolve did not execute");
+  if (ev.source_a !== "espn" || ev.source_b !== "bbc") fail("sports evidence must come from ESPN and BBC");
+  for (const src of ["espn", "bbc"]) {
+    if (ev[src]?.status !== "FINISHED" || ev[src]?.home_goals !== 0 || ev[src]?.away_goals !== 1) fail(`${src} reading not stored exactly: ${JSON.stringify(ev[src])}`);
+  }
+  if (ev.outcome !== "AWAY" || results.sports.fixture.result !== "AWAY") fail("sports outcome mismatch");
+  const canonical = (o: any): string => Array.isArray(o) ? `[${o.map(canonical).join(",")}]`
+    : o && typeof o === "object" ? `{${Object.keys(o).sort().map((k) => `${JSON.stringify(k)}:${canonical(o[k])}`).join(",")}}` : JSON.stringify(o);
+  if (canonical(ev) !== results.sports.evidenceRaw) fail("stored sports evidence is not the canonical agreed payload");
 
   // ---- crypto: real closed GMT+1 candles, CoinGecko + Gate.io consensus
   let crypto = readFileSync(path.join(ROOT, "contracts", "hive_crypto.py"), "utf8");
@@ -83,10 +96,27 @@ export default async function main(client: any) {
   for (const asset of CANDLE_ASSETS) {
     const create = await write(client, c.address, "create_market", [asset, CANDLE_DAY]);
     const market = await read(client, c.address, "get_market_by_asset_day", [asset, CANDLE_DAY]);
-    const resolve = await write(client, c.address, "resolve_market", [market.id]);
+    // A public API outage is an agreed UNAVAILABLE -> TRANSIENT revert; retry like any user would.
+    let resolve = await write(client, c.address, "resolve_market", [market.id]);
+    const attempts = [resolve];
+    for (let i = 0; i < 3 && resolve.execution !== "FINISHED_WITH_RETURN"; i++) {
+      await new Promise((r) => setTimeout(r, 90_000));
+      resolve = await write(client, c.address, "resolve_market", [market.id]);
+      attempts.push(resolve);
+    }
     const evidence = await read(client, c.address, "get_evidence", [market.id]);
     console.log(`${asset} evidence:`, JSON.stringify(evidence));
-    results.crypto.markets.push({ asset, day: CANDLE_DAY, create, resolve, evidence, market: await read(client, c.address, "get_market", [market.id]) });
+    results.crypto.markets.push({ asset, day: CANDLE_DAY, create, attempts, evidence, market: await read(client, c.address, "get_market", [market.id]) });
     writeFileSync(OUT, JSON.stringify(results, null, 2) + "\n");
+
+    if (resolve.execution !== "FINISHED_WITH_RETURN") fail(`${asset} never resolved`);
+    const parts = String(evidence.agreed_payload).split("|");
+    const expected = [String(market.id), asset, null, null, CANDLE_DAY,
+      String(evidence.coingecko_open), String(evidence.coingecko_close), evidence.coingecko_direction,
+      String(evidence.gate_open), String(evidence.gate_close), evidence.gate_direction, evidence.final_result];
+    if (parts.length !== 12 || expected.some((v, i) => v !== null && parts[i] !== v)) fail(`${asset} stored fields differ from agreed payload ${evidence.agreed_payload}`);
+    const expectedFinal = evidence.coingecko_direction === evidence.gate_direction ? evidence.coingecko_direction : "INCONCLUSIVE";
+    if (evidence.final_result !== expectedFinal) fail(`${asset} final result contradicts directions`);
   }
+  console.log("CONSENSUS SMOKE PASSED");
 }

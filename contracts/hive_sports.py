@@ -136,6 +136,19 @@ Traps: Le Havre and Le Mans are different clubs; Lens and Lille are different cl
 }
 
 
+@gl.evm.contract_interface
+class _Wallet:
+    """Payout target. Winners are wallets (EVM accounts), so payouts are external
+    EVM value transfers; an internal GenLayer message to a wallet is skipped and
+    its value returned to the sender (observed on Studio Next)."""
+
+    class View:
+        pass
+
+    class Write:
+        pass
+
+
 # ---------------------------------------------------------------------------
 # Time helpers
 # ---------------------------------------------------------------------------
@@ -683,7 +696,7 @@ class HiveSports(gl.contract.Contract):
             raise gl.vm.UserError("INVARIANT: payout exceeds pool")
 
         # Transfer first; a failed emit reverts everything and keeps it claimable.
-        gl.chain.Account(gl.message.sender_address).emit_transfer(payout)
+        _Wallet(gl.message.sender_address).emit_transfer(payout)
 
         pos.claimed = True
         pos.payout = payout
@@ -792,6 +805,11 @@ class HiveSports(gl.contract.Contract):
         payload = json.loads(self.evidence[match_id])
         payload["exists"] = True
         return payload
+
+    @gl.public.view
+    def get_evidence_raw(self, match_id: str) -> str:
+        """The exact canonical JSON validators agreed on, byte for byte ("" if none)."""
+        return self.evidence.get(match_id, "")
 
     @gl.public.view
     def get_source_urls(self, match_id: str) -> dict:

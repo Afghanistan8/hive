@@ -8,9 +8,9 @@ HIVE is one app with two markets, both running as GenLayer Intelligent Contracts
 |---|---|---|
 | Question | Home / Draw / Away for fixtures in the Premier League, La Liga, Bundesliga, Serie A and Ligue 1 | Will the completed GMT+1 daily candle close UP or DOWN? 22 major tokens |
 | Stakes | Pari-mutuel, min 2 GEN, winners split the whole pot, no rake | 2–8 GEN per wallet, pro-rata on the winning pool |
-| Source A | ESPN scoreboard JSON (deterministic parser, matched by event id) | CoinGecko `market_chart/range` (exact GMT+1 window) |
-| Source B | BBC Sport scores page, read by **each validator's own LLM** into a structured score | Gate.io **hourly** candles rebuilt into the same 24h window |
-| Final when | Both report the same full-time score | Both report the same direction |
+| Source A | **ESPN** scoreboard JSON (deterministic parser, matched by event id) — required | CoinGecko `market_chart/range` (exact GMT+1 window) |
+| Source B | **BBC Sport** scores page, read by **each validator's own LLM** into a structured score — required | Gate.io **hourly** candles rebuilt into the same 24h window |
+| Final when | BBC **and** ESPN report the same full-time score — never a single source | Both report the same direction |
 | Otherwise | Stays open and retryable; both confirm postponement → 1:1 refunds; no agreement within 7 days → refunds | Mismatch → INCONCLUSIVE refunds; sources down → retry; still down after 5 days → refunds |
 
 No owner, no admin key, no pause, no sweep, no trusted resolver, no backend. Anyone can create a market, stake,
@@ -30,31 +30,39 @@ resolve and claim. The frontend reads the contracts directly.
 
 | Contract | Address | Deploy tx |
 |---|---|---|
-| `HiveSports` ([contracts/hive_sports.py](contracts/hive_sports.py)) | [`0x750B55C47b292631E291c011A700Af6939736f0A`](https://explorer-studio-dev.genlayer.com/address/0x750B55C47b292631E291c011A700Af6939736f0A) | [`0x3c3a38db…a7614c`](https://explorer-studio-dev.genlayer.com/tx/0x3c3a38db7d77ed41729844aa314e9c5e943f6bebee17fd355d6c030b52a7614c) |
-| `HiveCrypto` ([contracts/hive_crypto.py](contracts/hive_crypto.py)) | [`0xdaB2B7AE913580689F7394cd5071d9E6cd18FcFC`](https://explorer-studio-dev.genlayer.com/address/0xdaB2B7AE913580689F7394cd5071d9E6cd18FcFC) | [`0x79def76e…ce511b0`](https://explorer-studio-dev.genlayer.com/tx/0x79def76e9d264a70f2ea87e51f949af4c9710acf15403f6a01d16d345ce511b0) |
+| `HiveSports` ([contracts/hive_sports.py](contracts/hive_sports.py)) | [`0xEEd7dD67A929a433a27a90DB2463eaC4195cf1f2`](https://explorer-studio-dev.genlayer.com/address/0xEEd7dD67A929a433a27a90DB2463eaC4195cf1f2) | [`0x3627fa57…5182bfdb`](https://explorer-studio-dev.genlayer.com/tx/0x3627fa574a48f4cae5fa4dc626a056a8703e5b9e07957d630af6b3235182bfdb) |
+| `HiveCrypto` ([contracts/hive_crypto.py](contracts/hive_crypto.py)) | [`0x6172565eA61CEa77c8E6d1fBed36936009C10FF1`](https://explorer-studio-dev.genlayer.com/address/0x6172565eA61CEa77c8E6d1fBed36936009C10FF1) | [`0x52df1e75…c50e0626`](https://explorer-studio-dev.genlayer.com/tx/0x52df1e7541f952654d5625e1d89a0fa8aa907deb8d7736fe9d21ba4cc50e0626) |
 
 Demo seed (ordinary permissionless writes, recorded in [deploy/deployments.json](deploy/deployments.json)):
 
-- `create_daily_markets("2026-09-16")` — [`0xd3b0d28e…582db4f`](https://explorer-studio-dev.genlayer.com/tx/0xd3b0d28e95e54ea0e17b792b32fcfd66d7134f4331597dc3faad0a07d582db4f)
-- `create_daily_markets("2026-09-17")` — [`0x35b8136e…fb06bd71`](https://explorer-studio-dev.genlayer.com/tx/0x35b8136eec3b2777a76a18e48b2cdb28fc60f6679fb0546052639404fb06bd71)
-- `add_fixtures(20 fixtures)` — [`0x115f9550…39371dad`](https://explorer-studio-dev.genlayer.com/tx/0x115f955026115b7570e531c51bf2b5a1d0139019b1e2e10e14a6dce539371dad)
+- `create_daily_markets("2026-09-16")` — [`0xbb5661aa…e49adae1`](https://explorer-studio-dev.genlayer.com/tx/0xbb5661aad45fe4a33022bd8c3b8adb1a989c04d9db0c7af45711a6f8e49adae1)
+- `create_daily_markets("2026-09-17")` — [`0xcfe233f4…c35c455a`](https://explorer-studio-dev.genlayer.com/tx/0xcfe233f46fda7d28dfb64da4c656ec18355fa940d2fb994819f7e9b5c35c455a)
+- `add_fixtures(20 fixtures)` — [`0xcbcbb5db…c6db6551`](https://explorer-studio-dev.genlayer.com/tx/0xcbcbb5db912f5ca480a96bbec9aac4b19ebaa32f4e3121da2247f00bc6db6551)
 
 > Why `studio-next.genlayer.com`? It is the RPC in the hackathon announcement and the v2-dev template default, it answers
 > `eth_chainId = 0xf22d (61997)`, and Transaction Kit quotes fees against it. `studio-dev.genlayer.com` serves the same
 > chain (the GenLayer CLI's `studio-dev` network points there). `studio.next.genlayer.com` does not resolve.
 
-### Settlement proven live on Studio Next
+### Settlement and payouts proven live on Studio Next
 
-Waiting for tonight's matches or tomorrow's candles is slow, so [scripts/smoke](scripts/smoke) deploys throwaway copies
-of both contracts where **only the "must be in the future" registration guards are relaxed**, then resolves real,
-already-finished events with the unmodified settlement code. Results: [smoke-results.json](scripts/smoke/smoke-results.json).
+Direct-mode tests cannot represent validator re-execution, real web/LLM access, fee accounting or value-transfer
+messages, so [tests/runtime](tests/runtime/README.md) runs assertion-based tests on the live network. They deploy
+throwaway copies of the contracts where **only the "must be in the future" guards are relaxed** and use real,
+already-finished events; settlement, payout and transfer code are byte-identical to `contracts/`.
+Results: [smoke-results.json](scripts/smoke/smoke-results.json), [claim-results.json](scripts/smoke/claim-results.json).
 
-| What | Transaction | Agreed evidence |
+| What | Transaction | Stored agreed evidence |
 |---|---|---|
-| Man Utd v Man City (PL, 13 Sep) `resolve` | [`0xd5601c11…89ec6db`](https://explorer-studio-dev.genlayer.com/tx/0xd5601c11734dcd45110b9b483ee78399b87e4515910d6ab1e53a0c0fc89ec6db) | ESPN `FINISHED 0–1` · BBC (LLM) `FINISHED 0–1` → **AWAY** |
-| BTC 2026-09-14 `resolve_market` | [`0xa43323e1…2746c22d1`](https://explorer-studio-dev.genlayer.com/tx/0xa43323e1f62bb730075cdb06a1899f67090e54dc5242d4ffa8fb57f2746c22d1) | CoinGecko 76682.57 → 78752.63 UP · Gate 76710.90 → 78553.10 UP → **UP** |
-| ATOM 2026-09-14 first attempt | [`0x00621019…131465632`](https://explorer-studio-dev.genlayer.com/tx/0x00621019cbda9a2cbebb9b63595076cf4fc1d5f8e4b7e78de378671131465632) | validators agreed `UNAVAILABLE\|coingecko` (rate limit) → **TRANSIENT revert, still retryable** |
-| ATOM 2026-09-14 retry | [`0x4fff91ef…f85dc879`](https://explorer-studio-dev.genlayer.com/tx/0x4fff91efe56661c22320fcad37efd4b2eaf702b74c813041c608d1a0f85dc879) | CoinGecko 1.5758 → 1.5807 UP · Gate 1.5830 → 1.5800 DOWN → **INCONCLUSIVE (refunds)** |
+| Man Utd v Man City (PL, 13 Sep) `resolve` | [`0xa825795d…8cbc5671`](https://explorer-studio-dev.genlayer.com/tx/0xa825795dd97a509abdb61daa700e08a00200c3da3e3d13c90f0841218cbc5671) | ESPN `FINISHED 0–1` **and** BBC `FINISHED 0–1` → outcome `AWAY` (canonical JSON stored byte for byte) |
+| BTC 2026-09-14 `resolve_market` | [`0x5631ddcc…e8e2a0da`](https://explorer-studio-dev.genlayer.com/tx/0x5631ddcc35e9dc101298feb07a3b097e6c52313b1987fbc3d59fb4bee8e2a0da) | `1\|BTC\|bitcoin\|BTC_USDT\|2026-09-14\|7668256817293\|7875262563068\|UP\|7671090000000\|7855310000000\|UP\|UP` |
+| ATOM 2026-09-14 first attempt | [`0x1617f227…bec8090c`](https://explorer-studio-dev.genlayer.com/tx/0x1617f22716be4410b8a31d82a81426f664979eac59749010a98b8b1cbec8090c) | source outage → validators agree `UNAVAILABLE` → **TRANSIENT revert, still retryable** |
+| ATOM 2026-09-14 retry | [`0x63cef42b…23fbcf25`](https://explorer-studio-dev.genlayer.com/tx/0x63cef42b157be8664b1eee020711cc641b3258440dd159665b609f5423fbcf25) | CoinGecko `157585286→158071059 UP` vs Gate `158300000→158000000 DOWN` → **INCONCLUSIVE** (refunds) |
+| Payout: stake 2 GEN → resolve → `claim` | [`0xefce964e…0fdfb985`](https://explorer-studio-dev.genlayer.com/tx/0xefce964e12913b2d6e2b511d71f892b3233ec30384c782f680fd89ed0fdfb985) | contract balance 2 GEN → **0**, wallet receives the 2 GEN |
+
+The payout test caught two runtime-only constraints direct mode could not: an *internal* GenLayer message to a wallet
+is skipped (its value returns to the contract), and a transaction that emits a value-transfer message must budget it
+in `fees.messageAllocations`. Payouts therefore use an EVM value transfer, and claims are sent with the fee preset
+Studio returns from simulating the exact call.
 
 ---
 
@@ -115,7 +123,10 @@ single API — one party that can be bribed, hacked, rate-limited or simply wron
   own prices, final = both directions or INCONCLUSIVE) before any write.
 - **Money**: 2–8 GEN per wallet, same-side top-ups, side switch rejected. Winners get `stake × total / winning_pool`;
   the last winner sweeps integer dust so each market pays out exactly its pool. Empty winning side → everyone refunded.
-  `claim` emits the transfer **before** marking claimed; any failure reverts the whole transaction.
+  `claim` emits an EVM value transfer to the wallet **before** marking claimed; any failure reverts the whole
+  transaction.
+- **Exact evidence**: `get_evidence` returns the stored fields plus `agreed_payload`, the exact string
+  validators agreed on (also kept for terminal refunds).
 - Permissionless: `create_market`, `create_daily_markets` (all assets for a day), `take_position`, `resolve_market`,
   `claim`.
 
@@ -128,7 +139,7 @@ single API — one party that can be bribed, hacked, rate-limited or simply wron
   `POSTPONED` / `NOT_FINISHED` / `NOT_FOUND`. BBC scores page for the date → deterministic excerpt around the pairing →
   validator LLM → normalized `{status, home_goals, away_goals}`. Canonical JSON
   `{match_id, source_a, source_b, espn, bbc, outcome}` under `strict_eq`, re-validated before storage. Settles only if
-  both are FINISHED with the same score.
+  both are FINISHED with the same score. `get_evidence_raw` returns the stored agreed JSON byte for byte.
 - **`mark_postponed`** (kickoff + 3 h): only if both sources report a postponement → 1:1 refunds.
 - **Terminal refund**: a `resolve` 7 days after kickoff that still has no agreement refunds everyone.
 - **`claim` / `refund`**: pull payments, transfer first, pari-mutuel with dust sweep, empty winning pool → refunds.
@@ -166,7 +177,8 @@ set; works without it).
 contracts/
   hive_crypto.py            Hive Daily markets
   hive_sports.py            Hive Match multi-fixture markets
-tests/direct/               33 in-memory tests with web/LLM mocks
+tests/direct/               40 in-memory tests (web/LLM mocks, exact agreed-payload regressions, genvm-lint)
+tests/runtime/README.md     live Studio Next tests: consensus settlement + payout path
 deploy/
   001_deploy_crypto.ts      fee-aware, idempotent deploys (writes frontend/.env + deployments.json)
   002_deploy_sports.ts
@@ -177,7 +189,7 @@ scripts/
   generate_fixtures.py      ESPN fixtures verified against BBC (+ football-data.org if keyed)
   demo_seed.py              refresh + seed wrapper
   ops/deploy/001_resolve_ready.ts   resolve everything that is ready (permissionless)
-  smoke/deploy/             live consensus + payout smoke tests on throwaway copies
+  smoke/deploy/             runtime tests (assertion-based) on throwaway copies
 frontend/                   Next.js app (genlayer-js 2.0.0-rc.1, Transaction Kit 0.1.0-rc.2)
 fixtures.demo.json
 DEMO.md                     demo script + video shot list
@@ -206,11 +218,13 @@ npx genlayer network set studio-dev     # chain 61997
 npx genlayer account show
 npm run deploy                          # deploy + seed; re-runs skip unchanged contracts
 npm run resolve:ready                   # settle anything that is ready
-npm run smoke                           # optional: live consensus/payout smoke tests (throwaway contracts)
+npm run smoke                           # runtime tests on the live network (throwaway contracts)
 ```
 
 Fees follow the v2 flow: deploy/seed scripts ask the network for a fee preset (`estimateTransactionFees`, Studio's fee
-policy) instead of hand-written numbers; the frontend uses Transaction Kit's live quote before every signature.
+policy) instead of hand-written numbers. In the frontend, stakes, resolves and market creation use Transaction
+Kit's live quote; claims/refunds use genlayer-js `estimateTransactionFeesForWrite`, because a payout emits a
+value-transfer message that must be budgeted in `messageAllocations`, which Transaction Kit 0.1.0-rc.2 cannot pass.
 
 ## Known limitations
 
@@ -222,6 +236,7 @@ policy) instead of hand-written numbers; the frontend uses Transaction Kit's liv
   fixtures it can find, and a missed pairing simply keeps the fixture open (then refunds after 7 days).
 - Fixture registration is permissionless; a badly registered fixture cannot settle wrongly (both sources must agree),
   it just refunds. The UI shows every fixture's registrant.
+- Payouts are EVM value transfers to the claiming account; contracts claiming on behalf of users are not supported.
 - View `phase` uses the chain's latest consensus time; the UI derives display phases from the clock. The contracts
   enforce every boundary with consensus time.
 

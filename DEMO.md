@@ -11,8 +11,9 @@ If they disagree, nobody wins by accident: fixtures stay open, candles refund. N
 
 1. **Real GenLayer contracts, real consensus.** Two contracts on Studio Next (chain 61997). Settlement runs
    `gl.eq_principle.strict_eq` over web fetches — and, for BBC Sport, over each validator's own LLM reading of a
-   human page. Live proof: Man Utd 0–1 Man City settled AWAY with ESPN and BBC agreeing; BTC settled UP; ATOM landed
-   INCONCLUSIVE because CoinGecko said UP and Gate.io said DOWN (links in README).
+   human page. Live proof: Man Utd 0–1 Man City settled AWAY only because ESPN and BBC both read 0–1; BTC settled UP; ATOM
+   landed INCONCLUSIVE because CoinGecko said UP and Gate.io said DOWN; a 2 GEN stake was claimed back out to the
+   wallet (links in README).
 2. **Why decentralized judgment matters.** A single API or a resolver key is a single point of failure and bribery.
    Here nobody passes the result in; `resolve` takes only an id. The contract owns sources, parsers and rules.
 3. **Meaningful state, validator-checked outcome.** Pools, positions, lifecycle phases, stored evidence. The agreed
@@ -21,7 +22,7 @@ If they disagree, nobody wins by accident: fixtures stay open, candles refund. N
    sources each have an explicit, fund-safe path (retry, 1:1 refund, terminal refund). We hit a real CoinGecko rate
    limit during testing: validators agreed "unavailable", the tx reverted, the retry settled.
 5. **Beyond the template.** Two new products, a 22-asset verified universe, a 5-league fixture registry with club-alias
-   disambiguation, 33 contract tests, source checker + fixture generator, fee-aware idempotent deploys, a
+   disambiguation, 40 contract tests plus live runtime tests, source checker + fixture generator, fee-aware idempotent deploys, a
    Transaction Kit frontend with evidence panels.
 
 ## Live demo script (≈ 5 minutes)

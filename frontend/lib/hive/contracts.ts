@@ -70,6 +70,7 @@ export class HiveReader {
   sportsPosition = (matchId: string, wallet: string) =>
     this.read<SportsPosition>(this.sportsAddress, "get_position", [matchId, wallet.toLowerCase()]);
   sportsEvidence = (matchId: string) => this.read<SportsEvidence>(this.sportsAddress, "get_evidence", [matchId]);
+  sportsEvidenceRaw = (matchId: string) => this.read<string>(this.sportsAddress, "get_evidence_raw", [matchId]);
   sportsSourceUrls = (matchId: string) => this.read<{ espn: string; bbc: string }>(this.sportsAddress, "get_source_urls", [matchId]);
   sportsUserPositions = (wallet: string) =>
     this.read<SportsUserRow[]>(this.sportsAddress, "get_user_positions", [wallet.toLowerCase(), 0, 50]);
