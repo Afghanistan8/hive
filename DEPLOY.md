@@ -1,56 +1,59 @@
-# Deploying HIVE (Vercel hosting + GitHub Actions keeper)
+# Deploying HIVE (Vercel hosting + Vercel Cron keeper)
 
 The contracts are live on GenLayer Studio Next (see README). The frontend is hosted on Vercel and redeploys on every
-push to `main`. Automation runs **only in GitHub Actions**: a keeper that makes permissionless contract calls every
-15 minutes. Nothing here can move funds or decide an outcome. Supabase support exists but is optional and off by
-default — the app reads the contracts directly.
+push to `main`. Automation is a **keeper endpoint on Vercel** (`/api/cron/keeper`) that makes permissionless contract
+calls. Vercel Cron triggers it twice a day (the Hobby-plan limit); an external scheduler such as cron-job.org can call
+it every 15 minutes. Nothing here can move funds or decide an outcome. Supabase support exists but is optional and off.
 
 ```
-GitHub Actions (*/15) ──▶ npm run keeper ──▶ HiveCrypto / HiveSports   (permissionless txs)
-                                    └────▶ Supabase (optional read-mirror)
+Vercel Cron (00:05, 21:30 UTC) ─┐
+cron-job.org (every 15 min)    ─┴─▶ /api/cron/keeper ──▶ HiveCrypto / HiveSports   (permissionless txs)
 Browser ──▶ Next.js on Vercel ──▶ contracts (source of truth)
 ```
 
 **Live app:** https://hive-psi-eight.vercel.app
 
-## 1. Vercel (already set up)
+## 1. Vercel environment variables
 
-Project `hive`, Root Directory `frontend`, connected to `Afghanistan8/hive` (production branch `main`). Public env
-vars are configured: network, RPC, chain ID and both contract addresses (same values as `frontend/.env.example`).
-No secrets are needed on Vercel.
+Project `hive` → Settings → Environment Variables (Production). Public network/contract variables are already set.
+Add these yourself and mark them **Sensitive** — they are never exposed to the browser (no `NEXT_PUBLIC_` prefix):
 
-## 2. Keeper wallet (your deployer) — you add the secret, it is never public
+| Name | Value |
+|---|---|
+| `CRON_SECRET` | any long random string (e.g. `openssl rand -hex 32`) — Vercel Cron sends it automatically |
+| `KEEPER_KEYSTORE_JSON` + `KEEPER_KEYSTORE_PASSWORD` | deployer keystore contents + its password (see below), **or** |
+| `KEEPER_PRIVATE_KEY` | the deployer's raw private key |
 
-GitHub Secrets are encrypted, masked in logs, never shown on the public repo and not given to pull requests from
-forks. The keeper never prints the signing address or anything derived from the key.
-
-**Option A — raw key** (if you have the deployer's private key, e.g. the `PRIVATE_KEY` you used before):
-secret `KEEPER_PRIVATE_KEY`.
-
-**Option B — keystore exported by the GenLayer CLI** (the CLI can't print a raw key):
+Export the deployer keystore (the GenLayer CLI can't print a raw key):
 
 ```bash
 npx genlayer account export --account deployer --output "%USERPROFILE%/Desktop/deployer.keystore.json" --password "<pick-a-strong-password>"
 ```
 
-Add two repository secrets: `KEEPER_KEYSTORE_JSON` = the file's full contents, `KEEPER_KEYSTORE_PASSWORD` = that
-password. Then delete the file.
+Paste the file contents into `KEEPER_KEYSTORE_JSON`, the password into `KEEPER_KEYSTORE_PASSWORD`, then delete the
+file. **Redeploy** (Deployments → ⋯ → Redeploy) so the function picks up the new variables.
 
-GitHub → `Afghanistan8/hive` → Settings → Secrets and variables → Actions → **New repository secret**.
-
-## 3. Turn it on
-
-The workflow `.github/workflows/keeper.yml` is scheduled every 15 minutes. Test it first:
-Actions → **Keeper** → *Run workflow* → tick **dry** → the run summary lists what it would do. Then run it without dry.
-Without the secret every run is a dry run.
-
-Local equivalent:
+Check it without signing anything:
 
 ```bash
-npm run keeper --workspace frontend -- --dry
+curl -H "Authorization: Bearer <CRON_SECRET>" "https://hive-psi-eight.vercel.app/api/cron/keeper?dry=1"
 ```
 
-What a tick does (at most 8 transactions; fee deposits are mostly refunded):
+The response never includes the signer address or anything derived from the key (`"signer": "configured"`).
+
+## 2. Every 15 minutes with cron-job.org (optional, recommended on match days)
+
+cron-job.org → Create cronjob:
+
+- URL: `https://hive-psi-eight.vercel.app/api/cron/keeper`
+- Schedule: every 15 minutes
+- Advanced → Headers: `Authorization` = `Bearer <CRON_SECRET>`
+- Request timeout: 60 s
+
+## What a tick does
+
+At most 6 transactions and ~45 s per run (tunable with `KEEPER_MAX_WRITES` / `KEEPER_BUDGET_MS`); anything skipped is
+picked up next tick. Fee deposits are mostly refunded.
 
 | Job | Rule |
 |---|---|
@@ -61,13 +64,18 @@ What a tick does (at most 8 transactions; fee deposits are mostly refunded):
 | Postponements | `mark_postponed` after kickoff + 3 h when the display feed shows a postponement (the contract re-checks BBC + ESPN) |
 | Resolve markets | staked markets once the candle closes, retried hourly; again at the terminal-refund time |
 
+With only the twice-daily Vercel Cron, retries land at those two times, so settlement is slower; use the 15-minute
+external schedule for quick settlement after matches.
+
+Local equivalent: `npm run keeper --workspace frontend -- --dry`.
+
 ## Optional: Supabase read-mirror
 
-Only if you want mirrored tables for analytics or faster first paint:
-
 1. Create a project at supabase.com and run [`supabase/schema.sql`](supabase/schema.sql) in the SQL editor.
-2. GitHub secrets `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` (keeper writes the mirror).
-3. Vercel env `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` (read-only by RLS), then redeploy.
+2. Vercel env (Sensitive): `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` — the keeper writes the mirror.
+3. Vercel env (public): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` (read-only by RLS). Redeploy.
 
-The `/api/cron/keeper` route is also kept for hosts with their own scheduler; it requires `CRON_SECRET` and a
-`KEEPER_PRIVATE_KEY` in that host's env, and is unused in the GitHub-only setup.
+## GitHub Actions
+
+`.github/workflows/keeper.yml` is manual-only now. CI (`ci.yml`, `frontend.yml`) resumes once the GitHub account's
+billing lock is cleared; it is not needed for the app or the keeper.
