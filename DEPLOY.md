@@ -24,6 +24,10 @@ Add these yourself and mark them **Sensitive** — they are never exposed to the
 | `KEEPER_KEYSTORE_JSON` + `KEEPER_KEYSTORE_PASSWORD` | deployer keystore contents + its password (see below), **or** |
 | `KEEPER_PRIVATE_KEY` | the deployer's raw private key |
 
+Shortcut: fill the gitignored `.env.vercel` in the repo root and run `node scripts/push_vercel_env.mjs` — it verifies
+the key belongs to the deployer, uploads everything as Sensitive via stdin, redeploys and dry-runs the keeper, without
+printing any value.
+
 Export the deployer keystore (the GenLayer CLI can't print a raw key):
 
 ```bash
@@ -77,5 +81,6 @@ Local equivalent: `npm run keeper --workspace frontend -- --dry`.
 
 ## GitHub Actions
 
-`.github/workflows/keeper.yml` is manual-only now. CI (`ci.yml`, `frontend.yml`) resumes once the GitHub account's
-billing lock is cleared; it is not needed for the app or the keeper.
+All workflows are manual-only (`workflow_dispatch`) while the GitHub account's Actions billing is locked, so pushes
+don't produce failure emails. Restore the `push`/`pull_request` triggers in `ci.yml` and `frontend.yml` (and the
+`schedule` in `sources.yml`) once it is cleared; none of them are needed for the app or the keeper.

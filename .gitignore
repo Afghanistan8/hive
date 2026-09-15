@@ -36,3 +36,6 @@ deploy/deployments.local.json
 
 *.keystore.json
 keystore*.json
+.vercel
+.env*
+!.env.example

@@ -1,10 +1,9 @@
 name: CI
 
+# Manual only while the GitHub account's Actions billing is locked (runs fail instantly
+# and email on every push). Restore the push/pull_request triggers once it is cleared.
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+  workflow_dispatch:
 
 jobs:
   lint-contracts:

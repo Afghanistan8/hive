@@ -1,11 +1,9 @@
 name: Settlement sources
 
 # Hits CoinGecko and Gate.io for every listed asset; fails if any pair can no
-# longer reconstruct a GMT+1 candle. Scheduled rather than per-push so public
-# API rate limits never block merges.
+# longer reconstruct a GMT+1 candle. Manual only while the GitHub account's
+# Actions billing is locked; restore `schedule: - cron: "30 6 * * *"` afterwards.
 on:
-  schedule:
-    - cron: "30 6 * * *"
   workflow_dispatch:
 
 jobs:
