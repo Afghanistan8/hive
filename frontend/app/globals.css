@@ -107,6 +107,26 @@
     transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
   }
 
+  /* Transaction dialog: always fits the viewport (scrolls inside if needed) and shows the
+     Transaction Kit panel a notch smaller, since the panel has no size options of its own. */
+  .tx-dialog {
+    max-height: calc(100dvh - 2rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 1.1rem 1.1rem 1rem;
+  }
+  .tx-panel {
+    zoom: 0.8;
+  }
+  @media (max-width: 480px) {
+    .tx-dialog {
+      width: calc(100vw - 1.5rem);
+    }
+    .tx-panel {
+      zoom: 0.72;
+    }
+  }
+
   /* Primary call to action: ink pill. */
   .gradient-purple-pink {
     background: var(--ink);
@@ -159,3 +179,8 @@
 
 /* No WebGL: show the CSS orb in the hero instead. */
 [data-webgl="0"] .orb-fallback { display: block; }
+
+/* Outside any @layer: the Transaction Kit stylesheet is unlayered, so a layered rule would lose. */
+.tx-panel .gltk-panel {
+  max-width: none;
+}

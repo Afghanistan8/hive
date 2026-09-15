@@ -82,26 +82,28 @@ export function TxDialog({
           {label}
         </Button>
       </DialogTrigger>
-      <DialogContent className="brand-card border-2 sm:max-w-[520px]">
-        <DialogHeader>
-          <DialogTitle className="text-xl font-bold">{title}</DialogTitle>
+      <DialogContent className="tx-dialog brand-card border-2 sm:max-w-[440px]">
+        <DialogHeader className="pr-6">
+          <DialogTitle className="text-lg font-bold">{title}</DialogTitle>
           <DialogDescription asChild>
-            <div className="text-sm text-muted-foreground">{description}</div>
+            <div className="line-clamp-2 text-xs text-muted-foreground">{description}</div>
           </DialogDescription>
         </DialogHeader>
         {!isOnCorrectNetwork && (
           <p className="text-sm text-amber-700">Your wallet is not on {GENLAYER_NETWORK.chainName}. Reconnect to switch networks.</p>
         )}
         {kit && open ? (
-          <GenLayerTransactionPanel
-            kit={kit}
-            tx={tx}
-            userValue={value}
-            network={GENLAYER_NETWORK.chainName}
-            theme="light"
-            trackUntil="decided"
-            onDone={handleDone}
-          />
+          <div className="tx-panel">
+            <GenLayerTransactionPanel
+              kit={kit}
+              tx={tx}
+              userValue={value}
+              network={GENLAYER_NETWORK.chainName}
+              theme="light"
+              trackUntil="decided"
+              onDone={handleDone}
+            />
+          </div>
         ) : null}
         {lastHash && (
           <a href={explorerTx(lastHash)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-sm text-accent hover:underline">
