@@ -1105,6 +1105,526 @@
       "status": "FINALIZED",
       "result": "FINISHED_WITH_RETURN",
       "ok": true
+    },
+    {
+      "wallet": "hive_seed_a",
+      "address": "0xDa2b8D9D65FB0CBCe5b9C2778A783a51fA8C9Eff",
+      "what": "ZAMA 2026-09-18 · DOWN 2 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:07:03.815Z",
+      "hash": "0x3633589ce018cfbc472b8a0c6c952ccb5945e49e6b3f3d993c35835a7d92eec6",
+      "feeValue": "175000000000112794",
+      "source": "network-default"
+    },
+    {
+      "wallet": "hive_seed_b",
+      "address": "0xBad85d0D7D7dd34F6618071fDC2054659931C51B",
+      "what": "ZAMA 2026-09-18 · UP 2 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:07:03.920Z",
+      "hash": "0x738af08f0dad1fe7533074575a5a9a9dd9623731f1ff1ec1f8d068dba78a3e39",
+      "feeValue": "175000000000112794",
+      "source": "network-default"
+    },
+    {
+      "wallet": "hive_seed_c",
+      "address": "0x1Ea7F76E44cA00c10B066c2B55535e93DC2F56aD",
+      "what": "ZAMA 2026-09-18 · UP 3 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:07:03.923Z",
+      "hash": "0x3289f13ee5da1fbb1de2f1060d4b77cbdae3595512589efcf042c87d5a860c3f",
+      "feeValue": "175000000000112794",
+      "source": "network-default"
+    },
+    {
+      "wallet": "hive_seed_b",
+      "address": "0xBad85d0D7D7dd34F6618071fDC2054659931C51B",
+      "what": "ZRO 2026-09-18 · DOWN 5 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:07:31.389Z",
+      "hash": "0x30e9e98b66f21e69a044c52ec37c8561eef3bcc07ad399b7d53b204b4e5e54e6",
+      "feeValue": "175000000000112794",
+      "source": "network-default"
+    },
+    {
+      "wallet": "hive_seed_c",
+      "address": "0x1Ea7F76E44cA00c10B066c2B55535e93DC2F56aD",
+      "what": "ARB 2026-09-18 · UP 3 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:07:32.470Z",
+      "hash": "0x4511dd6a2de9cd79edd64df4c0d979fb926b8f4262eba431e16463adedffb5ce",
+      "feeValue": "175000000000112794",
+      "source": "network-default"
+    },
+    {
+      "wallet": "hive_seed_a",
+      "address": "0xDa2b8D9D65FB0CBCe5b9C2778A783a51fA8C9Eff",
+      "what": "ZRO 2026-09-18 · UP 3 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:07:27.675Z",
+      "hash": "0xa5af67c1c590fae4c576e04499d0b7db10d537223e0b86aa19a2b8a24b9e3ef9",
+      "feeValue": "175000000000112794",
+      "source": "network-default"
+    },
+    {
+      "wallet": "hive_seed_b",
+      "address": "0xBad85d0D7D7dd34F6618071fDC2054659931C51B",
+      "what": "JUP 2026-09-18 · DOWN 2 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:10:22.841Z",
+      "hash": "0xf08a36e2be398f333e98893c6319abd3caeb39568366ade24e606646da094bd8",
+      "feeValue": "175000000000112794",
+      "source": "network-default"
+    },
+    {
+      "wallet": "hive_seed_c",
+      "address": "0x1Ea7F76E44cA00c10B066c2B55535e93DC2F56aD",
+      "what": "AAVE 2026-09-18 · UP 3 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:10:27.647Z",
+      "hash": "0x9697f0d7b4bafedbd8552d1e0428bdce3d578c4602af1c533b2706bcf944979e",
+      "feeValue": "175000000000112794",
+      "source": "network-default"
+    },
+    {
+      "wallet": "hive_seed_a",
+      "address": "0xDa2b8D9D65FB0CBCe5b9C2778A783a51fA8C9Eff",
+      "what": "JUP 2026-09-18 · UP 4 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:10:32.485Z",
+      "hash": "0x0917a79bb9fbf1202ae3b99f7b9489c8c003f770d347445603ce5a65077e34b2",
+      "feeValue": "175000000000112794",
+      "source": "network-default"
+    },
+    {
+      "wallet": "hive_seed_a",
+      "address": "0xDa2b8D9D65FB0CBCe5b9C2778A783a51fA8C9Eff",
+      "what": "OP 2026-09-18 · DOWN 5 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:14:01.136Z",
+      "hash": "0x670b63945995fa6c53459526b8b4cc5276b24106a5196bfb26ce9275266c2065",
+      "feeValue": "175000000000112794",
+      "source": "network-default"
+    },
+    {
+      "wallet": "hive_seed_b",
+      "address": "0xBad85d0D7D7dd34F6618071fDC2054659931C51B",
+      "what": "OP 2026-09-18 · UP 5 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:13:17.226Z",
+      "hash": "0x63f6e018a9deb0b6405d94378a7b65aebad3b64057c3ea28833e7fef6dd30cc8",
+      "feeValue": "175000000000112794",
+      "source": "network-default"
+    },
+    {
+      "wallet": "hive_seed_c",
+      "address": "0x1Ea7F76E44cA00c10B066c2B55535e93DC2F56aD",
+      "what": "DOT 2026-09-18 · UP 3 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:13:32.435Z",
+      "hash": "0xfd08302822cab808d6f1780007413030e6579374f3a074a5bd067b230dd36429",
+      "feeValue": "175000000000112794",
+      "source": "network-default"
+    },
+    {
+      "wallet": "hive_seed_a",
+      "address": "0xDa2b8D9D65FB0CBCe5b9C2778A783a51fA8C9Eff",
+      "what": "ARB 2026-09-18 · UP 6 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:33:04.048Z",
+      "hash": "0xa7ce37a72596ade4b9e4d9e1d74bb36cf3fea52cf3dcd0807f04d497104f85b2",
+      "feeValue": "175000000000112794",
+      "source": "network-default"
+    },
+    {
+      "wallet": "hive_seed_b",
+      "address": "0xBad85d0D7D7dd34F6618071fDC2054659931C51B",
+      "what": "ARB 2026-09-18 · UP 2 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:33:06.515Z",
+      "hash": "0x714a71ab9cefc69b30f5f66b9ac9fa4eba8c74cec1a2625c5386db94f277391c",
+      "feeValue": "175000000000112794",
+      "source": "network-default"
+    },
+    {
+      "wallet": "hive_seed_c",
+      "address": "0x1Ea7F76E44cA00c10B066c2B55535e93DC2F56aD",
+      "what": "ADA 2026-09-18 · UP 3 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:33:23.280Z",
+      "hash": "0x73241c19d2000c2409becdfa4e51c6a7f2f8dfd7b2ad113de1bb4fad7a864639",
+      "feeValue": "175000000000112794",
+      "source": "network-default"
+    },
+    {
+      "wallet": "hive_seed_a",
+      "address": "0xDa2b8D9D65FB0CBCe5b9C2778A783a51fA8C9Eff",
+      "what": "APT 2026-09-18 · UP 2 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:33:32.854Z",
+      "hash": "0x2809c0e99d07888a5a28bdfcb471f15777eb92128e0ba0e8df1ef60cb3cc9217",
+      "feeValue": "175000000000112794",
+      "source": "network-default"
+    },
+    {
+      "wallet": "hive_seed_b",
+      "address": "0xBad85d0D7D7dd34F6618071fDC2054659931C51B",
+      "what": "APT 2026-09-18 · DOWN 5 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:33:35.268Z",
+      "hash": "0x974ee2863c454acd91eac1239049c4971c7bbe3901eb3fd33143bf269330b079",
+      "feeValue": "175000000000112794",
+      "source": "network-default"
+    },
+    {
+      "wallet": "hive_seed_c",
+      "address": "0x1Ea7F76E44cA00c10B066c2B55535e93DC2F56aD",
+      "what": "ETH 2026-09-18 · UP 3 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:33:52.053Z",
+      "hash": "0x11274870a2223cc1e537aeaba301c6da1650e5b6cf8068e7898d44a6e4ceac72",
+      "feeValue": "175000000000112794",
+      "source": "network-default"
+    },
+    {
+      "wallet": "hive_seed_a",
+      "address": "0xDa2b8D9D65FB0CBCe5b9C2778A783a51fA8C9Eff",
+      "what": "NEAR 2026-09-18 · DOWN 3 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:34:02.677Z",
+      "hash": "0x9cf8b49fc16d322fdd3c649c500230f91adb099a6b955b7bcf66de1723853454",
+      "feeValue": "175000000000112794",
+      "source": "network-default"
+    },
+    {
+      "wallet": "hive_seed_b",
+      "address": "0xBad85d0D7D7dd34F6618071fDC2054659931C51B",
+      "what": "NEAR 2026-09-18 · UP 2 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:34:04.088Z",
+      "hash": "0x24bde17a6d57f4eeed123c65eea19410ebab3158b49fdad5c922082c90c888fa",
+      "feeValue": "175000000000112794",
+      "source": "network-default"
+    },
+    {
+      "wallet": "hive_seed_c",
+      "address": "0x1Ea7F76E44cA00c10B066c2B55535e93DC2F56aD",
+      "what": "JUP 2026-09-17 · UP 3 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:34:20.842Z",
+      "hash": "0xe2405adb4e34da3d286a15aefe4c85c341bae24c11fa4966b7c7899f77233269",
+      "feeValue": "175000000000112794",
+      "source": "network-default"
+    },
+    {
+      "wallet": "hive_seed_a",
+      "address": "0xDa2b8D9D65FB0CBCe5b9C2778A783a51fA8C9Eff",
+      "what": "SUI 2026-09-18 · UP 4 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:34:30.443Z",
+      "hash": "0x01f9e02ef72c7d8825b7a1f634bca9f1b7a3aec83519aba60a92c6342da84e8f",
+      "feeValue": "175000000000112794",
+      "source": "network-default"
+    },
+    {
+      "wallet": "hive_seed_b",
+      "address": "0xBad85d0D7D7dd34F6618071fDC2054659931C51B",
+      "what": "SUI 2026-09-18 · DOWN 5 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:34:32.950Z",
+      "hash": "0x3d82ccb3490f5bfe026ae234a273547e5caa43c5439db84f72a15fd8d3e474ca",
+      "feeValue": "175000000000112794",
+      "source": "network-default"
+    },
+    {
+      "wallet": "hive_seed_c",
+      "address": "0x1Ea7F76E44cA00c10B066c2B55535e93DC2F56aD",
+      "what": "NEAR 2026-09-17 · UP 3 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:35:40.513Z",
+      "hash": "0xac3c2907985f82462f386e0fee69ec7730259d8955ce093db1bdc9327406f85c",
+      "feeValue": "175000000000112794",
+      "source": "network-default"
+    },
+    {
+      "wallet": "hive_seed_a",
+      "address": "0xDa2b8D9D65FB0CBCe5b9C2778A783a51fA8C9Eff",
+      "what": "AAVE 2026-09-18 · UP 5 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:35:42.317Z",
+      "hash": "0xc6c87daed089cb7c51bb0a3a8ed11c0214f931d5cc3f4464a48d0e8360e1bbc5",
+      "feeValue": "175000000000112794",
+      "source": "network-default"
+    },
+    {
+      "wallet": "hive_seed_b",
+      "address": "0xBad85d0D7D7dd34F6618071fDC2054659931C51B",
+      "what": "AAVE 2026-09-18 · DOWN 2 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:35:44.713Z",
+      "hash": "0xf92069ab4ffd834ee432015dd8658f9775d43f28aab662be132425e23996c983",
+      "feeValue": "175000000000112794",
+      "source": "network-default"
+    },
+    {
+      "wallet": "hive_seed_a",
+      "address": "0xDa2b8D9D65FB0CBCe5b9C2778A783a51fA8C9Eff",
+      "what": "UNI 2026-09-18 · DOWN 6 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:36:11.130Z",
+      "hash": "0xc83dc5c0bd69da46e387dd95a0297fb7b48776031f7680a995aef950694712a6",
+      "feeValue": "175000000000112794",
+      "source": "network-default"
+    },
+    {
+      "wallet": "hive_seed_c",
+      "address": "0x1Ea7F76E44cA00c10B066c2B55535e93DC2F56aD",
+      "what": "LTC 2026-09-17 · UP 3 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:36:08.752Z",
+      "hash": "0x58f5d2ec4f11b1a7a9cf4086a8d5db66aa442f65e7db4d2ae5e8c73191333344",
+      "feeValue": "175000000000112794",
+      "source": "network-default"
+    },
+    {
+      "wallet": "hive_seed_b",
+      "address": "0xBad85d0D7D7dd34F6618071fDC2054659931C51B",
+      "what": "UNI 2026-09-18 · DOWN 5 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:36:27.048Z",
+      "hash": "0xee4609def9e83d3cedc4c1dbf39c1d1af54fc05e96ac6423df8ba722cbc34762",
+      "feeValue": "175000000000112794",
+      "source": "network-default"
+    },
+    {
+      "wallet": "hive_seed_a",
+      "address": "0xDa2b8D9D65FB0CBCe5b9C2778A783a51fA8C9Eff",
+      "what": "LTC 2026-09-18 · UP 2 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:36:41.097Z",
+      "hash": "0x511f3c57eeca6c72c63930634923b5e4a232c1dda97a835d4f8dbf72d63996e2",
+      "feeValue": "175000000000112794",
+      "source": "network-default"
+    },
+    {
+      "wallet": "hive_seed_c",
+      "address": "0x1Ea7F76E44cA00c10B066c2B55535e93DC2F56aD",
+      "what": "AVAX 2026-09-17 · UP 3 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:36:45.948Z",
+      "hash": "0x2b6db6f869af8f3c5ce01a8df149a8ea4053ba53a0781f5265c232eb21304d05",
+      "feeValue": "175000000000112794",
+      "source": "network-default"
+    },
+    {
+      "wallet": "hive_seed_b",
+      "address": "0xBad85d0D7D7dd34F6618071fDC2054659931C51B",
+      "what": "LTC 2026-09-18 · DOWN 2 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:36:57.893Z",
+      "hash": "0x4ba94e61404e56a4d384f5acd95536a02b99c0190754fc34f6c318ddeafb8e38",
+      "feeValue": "175000000000112794",
+      "source": "network-default"
+    },
+    {
+      "wallet": "hive_seed_a",
+      "address": "0xDa2b8D9D65FB0CBCe5b9C2778A783a51fA8C9Eff",
+      "what": "ATOM 2026-09-18 · UP 3 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:37:09.900Z",
+      "hash": "0xddc29a12e728d6b11168171e7a84dc04b3c2ddeec4cd5636481b771088026318",
+      "feeValue": "175000000000112794",
+      "source": "network-default"
+    },
+    {
+      "wallet": "hive_seed_c",
+      "address": "0x1Ea7F76E44cA00c10B066c2B55535e93DC2F56aD",
+      "what": "BNB 2026-09-17 · UP 3 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:37:14.704Z",
+      "hash": "0xcc0be11080e43f75e0817c4ec9907d8044161bdf781644c744eaf51c1ca0c8cd",
+      "feeValue": "175000000000112794",
+      "source": "network-default"
+    },
+    {
+      "wallet": "hive_seed_b",
+      "address": "0xBad85d0D7D7dd34F6618071fDC2054659931C51B",
+      "what": "ATOM 2026-09-18 · DOWN 5 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:37:26.711Z",
+      "hash": "0x23f0e42b314821ff4c8d486d3a665d12af6e87130c0d8b63ea556ba19aae38f2",
+      "feeValue": "175000000000112794",
+      "source": "network-default"
+    },
+    {
+      "wallet": "hive_seed_a",
+      "address": "0xDa2b8D9D65FB0CBCe5b9C2778A783a51fA8C9Eff",
+      "what": "DOT 2026-09-18 · DOWN 4 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:37:38.688Z",
+      "hash": "0xbbcc689770a9159a8c4b586da76e1105d12ec5bf026ca983f439064ba4794e14",
+      "feeValue": "175000000000112794",
+      "source": "network-default"
+    },
+    {
+      "wallet": "hive_seed_b",
+      "address": "0xBad85d0D7D7dd34F6618071fDC2054659931C51B",
+      "what": "DOT 2026-09-18 · UP 2 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:37:53.123Z",
+      "hash": "0x2380e9f7878a22b9775fab75f259638b160e6b38fa69b5df46a876dbd3c8257c",
+      "feeValue": "175000000000112794",
+      "source": "network-default"
+    },
+    {
+      "wallet": "hive_seed_a",
+      "address": "0xDa2b8D9D65FB0CBCe5b9C2778A783a51fA8C9Eff",
+      "what": "LINK 2026-09-18 · UP 5 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:38:00.400Z",
+      "hash": "0x58a5dda1b9e4ba8a5aff3dcf1283b4224f21196a7e02525557aee89db083a3bd",
+      "feeValue": "175000000000112794",
+      "source": "network-default"
+    },
+    {
+      "wallet": "hive_seed_b",
+      "address": "0xBad85d0D7D7dd34F6618071fDC2054659931C51B",
+      "what": "LINK 2026-09-18 · DOWN 5 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:38:12.322Z",
+      "hash": "0x02d37f0ee66ae35bc6ebe572cd1fa2e155bcc5dafa71254c8e3f4c1f56a10ad7",
+      "feeValue": "175000000000112794",
+      "source": "network-default"
+    },
+    {
+      "wallet": "hive_seed_a",
+      "address": "0xDa2b8D9D65FB0CBCe5b9C2778A783a51fA8C9Eff",
+      "what": "AVAX 2026-09-18 · UP 6 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:38:19.498Z",
+      "hash": "0xa2db4523fcc3e9e33b7b6898566a0cb14803b1ee9c10c9c4fa9b0fa00b167d9d",
+      "feeValue": "175000000000112794",
+      "source": "network-default"
+    },
+    {
+      "wallet": "hive_seed_b",
+      "address": "0xBad85d0D7D7dd34F6618071fDC2054659931C51B",
+      "what": "AVAX 2026-09-18 · UP 2 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:38:32.011Z",
+      "hash": "0xb0a2c48003fdd966cc37687b1841c13c618afb9aaa1171d7c7fa76422a8a216d",
+      "feeValue": "175000000000112794",
+      "source": "network-default"
+    },
+    {
+      "wallet": "hive_seed_a",
+      "address": "0xDa2b8D9D65FB0CBCe5b9C2778A783a51fA8C9Eff",
+      "what": "DOGE 2026-09-18 · DOWN 2 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:38:38.710Z",
+      "hash": "0xa896fa31c25805d719a522821263cc8644ac5a1e8f4d9fd81c6372c40bea36a9",
+      "feeValue": "175000000000112794",
+      "source": "network-default"
+    },
+    {
+      "wallet": "hive_seed_b",
+      "address": "0xBad85d0D7D7dd34F6618071fDC2054659931C51B",
+      "what": "DOGE 2026-09-18 · UP 5 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:38:50.710Z",
+      "hash": "0x2b2dc4947486f320ad2c9d4ce6cc99b488a43b001569e6939933cff12d6bb789",
+      "feeValue": "175000000000112794",
+      "source": "network-default"
+    },
+    {
+      "wallet": "hive_seed_a",
+      "address": "0xDa2b8D9D65FB0CBCe5b9C2778A783a51fA8C9Eff",
+      "what": "ADA 2026-09-18 · UP 3 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:38:57.916Z",
+      "hash": "0x113e0e1966f7924659ae281e48e32c345709c05a2959f268b20de6c136eeca0c",
+      "feeValue": "175000000000112794",
+      "source": "network-default"
+    },
+    {
+      "wallet": "hive_seed_b",
+      "address": "0xBad85d0D7D7dd34F6618071fDC2054659931C51B",
+      "what": "ADA 2026-09-18 · DOWN 2 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:39:09.903Z",
+      "hash": "0xe38f4c46955df04b12fe808a924136c043440dda39d25f83386baa2067b774c8",
+      "feeValue": "175000000000112794",
+      "source": "network-default"
+    },
+    {
+      "wallet": "hive_seed_a",
+      "address": "0xDa2b8D9D65FB0CBCe5b9C2778A783a51fA8C9Eff",
+      "what": "XRP 2026-09-18 · UP 4 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:39:17.414Z",
+      "hash": "0xd3f2b310d5da662971b3e956e2888a329bcc87958ca183be3ae67d97488d7399",
+      "feeValue": "175000000000112794",
+      "source": "network-default"
+    },
+    {
+      "wallet": "hive_seed_b",
+      "address": "0xBad85d0D7D7dd34F6618071fDC2054659931C51B",
+      "what": "XRP 2026-09-18 · DOWN 5 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:39:29.095Z",
+      "hash": "0x0ce8b1a25f9c27e78f8e58ba3edc9c0a624b7a293bc576e442c236bd7ef08f4e",
+      "feeValue": "175000000000112794",
+      "source": "network-default"
+    },
+    {
+      "wallet": "hive_seed_a",
+      "address": "0xDa2b8D9D65FB0CBCe5b9C2778A783a51fA8C9Eff",
+      "what": "BNB 2026-09-18 · DOWN 5 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:39:36.560Z",
+      "hash": "0xf0eaf2ea1d5a209fefe910d2e3d31abf0294422cf9e62166bd489c1137e95eee",
+      "feeValue": "175000000000112794",
+      "source": "network-default"
+    },
+    {
+      "wallet": "hive_seed_b",
+      "address": "0xBad85d0D7D7dd34F6618071fDC2054659931C51B",
+      "what": "BNB 2026-09-18 · UP 2 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:39:48.307Z",
+      "hash": "0x9b864647b7e9d3556899a237471dd9beef1fbee736f468f430dbbfbbf7fa8950",
+      "feeValue": "175000000000112794",
+      "source": "network-default"
+    },
+    {
+      "wallet": "hive_seed_a",
+      "address": "0xDa2b8D9D65FB0CBCe5b9C2778A783a51fA8C9Eff",
+      "what": "SOL 2026-09-18 · UP 6 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:39:55.552Z",
+      "hash": "0x31d9f392ea492a7e7951857f78328b4043ae695bef1890cc0e1894cf8be7c1df",
+      "feeValue": "175000000000112794",
+      "source": "network-default"
+    },
+    {
+      "wallet": "hive_seed_b",
+      "address": "0xBad85d0D7D7dd34F6618071fDC2054659931C51B",
+      "what": "SOL 2026-09-18 · UP 5 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:40:07.590Z",
+      "hash": "0x597c773dbff2db4017f99e31af88f0d3f586851f8ab374280c47f7ef95c92ee2",
+      "feeValue": "175000000000112794",
+      "source": "network-default"
+    },
+    {
+      "wallet": "hive_seed_a",
+      "address": "0xDa2b8D9D65FB0CBCe5b9C2778A783a51fA8C9Eff",
+      "what": "ETH 2026-09-18 · UP 2 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:40:14.710Z",
+      "hash": "0xd6a254544ca78c2e4eeac102250684db5e948dd56db84b79838087359adf9521",
+      "feeValue": "175000000000112794",
+      "source": "network-default"
     }
   ]
 }

@@ -127,6 +127,33 @@ async function outcome(hash: string) {
   return { status: String(tx?.statusName ?? ""), result: String(tx?.txExecutionResultName ?? "") };
 }
 
+// --claim: claim/refund everything the seed wallets can, through the ClaimDialog path (Studio
+// simulates the exact call so the payout message is budgeted). Run after settlement.
+if (process.argv.includes("--claim")) {
+  const { createAccount } = await import("genlayer-js");
+  const reader0 = new HiveReader();
+  for (const w of loadWallets()) {
+    const signer: any = createClient({ chain: GENLAYER_CHAIN, account: createAccount(w.pk) });
+    const jobs: { address: string; fn: string; args: unknown[]; label: string }[] = [];
+    for (const r of await reader0.sportsUserPositions(w.address)) {
+      if (!r.claimed && BigInt(r.claimable ?? 0) > 0n) jobs.push({ address: HIVE_SPORTS_ADDRESS, fn: r.fixture.refund_all ? "refund" : "claim", args: [r.fixture.match_id], label: `${r.fixture.match_id} ${r.fixture.refund_all ? "refund" : "claim"}` });
+    }
+    for (const r of await reader0.cryptoUserPositions(w.address)) {
+      if (!r.claimed && BigInt(r.claimable ?? 0) > 0n) jobs.push({ address: HIVE_CRYPTO_ADDRESS, fn: "claim", args: [r.market.id], label: `market #${r.market.id} claim` });
+    }
+    for (const job of jobs) {
+      try {
+        const q = await signer.estimateTransactionFeesForWrite({ address: job.address, functionName: job.fn, args: job.args, value: 0n });
+        const hash = await signer.writeContract({ address: job.address, functionName: job.fn, args: job.args, value: 0n, fees: { distribution: q.distribution, messageAllocations: q.messageAllocations, feeValue: q.feeValue } });
+        console.log(`→ ${w.name} ${job.label} ${hash}`);
+      } catch (e: any) {
+        console.log(`✗ ${w.name} ${job.label}: ${String(e?.shortMessage || e?.message || e).split("\n")[0]}`);
+      }
+    }
+  }
+  process.exit(0);
+}
+
 // --verify: fill in outcomes for transactions already recorded in deploy/seed-liquidity.json.
 if (process.argv.includes("--verify")) {
   const file = JSON.parse(readFileSync(RESULTS_FILE, "utf8"));
