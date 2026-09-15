@@ -2,11 +2,11 @@
 
 import Link from "next/link";
 import { useMemo, useState, type ReactNode } from "react";
-import { Card, ErrorBox, Loading, PageHeader, ReadSource } from "@/components/hive/bits";
+import { Card, ErrorBox, Loading, LocalTime, PageHeader, ReadSource } from "@/components/hive/bits";
 import { PhaseBadge } from "@/components/hive/PhaseBadge";
 import { AiPickChip, Crest, LeaguePills, LiveScore, SportsTabs } from "@/components/hive/sports";
 import { HIVE_SPORTS_ADDRESS } from "@/lib/hive/config";
-import { formatCountdown, formatGen, formatLocal, gatePhase, sportsPhase, toWei } from "@/lib/hive/format";
+import { formatCountdown, formatGen, gatePhase, sportsPhase, toWei } from "@/lib/hive/format";
 import { useFixtures, useNow, useScoreboard } from "@/lib/hive/hooks";
 import type { Snapshot } from "@/lib/hive/serverData";
 import type { Fixture } from "@/lib/hive/types";
@@ -16,7 +16,7 @@ const phaseOf = (f: Fixture, now: number) => gatePhase(sportsPhase(f, now), f.ph
 export function SportsBoard({ initial }: { initial: Snapshot<Fixture[]> | null }) {
   const { data, isPending, error, refetch } = useFixtures(initial);
   const [league, setLeague] = useState("");
-  const now = useNow(1000);
+  const now = useNow(1000, initial?.at);
 
   // Open markets first (soonest kickoff, busiest pot breaks ties), then games awaiting a result,
   // then results (most recent first). Last night's settled match never leads the page.
@@ -100,7 +100,7 @@ function FixtureCard({ f, now }: { f: Fixture; now: number }) {
           <TeamLine name={f.away} logo={live?.awayLogo} score={f.status === "SETTLED" ? f.away_goals : undefined} />
         </div>
         <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-          <span suppressHydrationWarning>{formatLocal(f.kickoff_ts)}</span>
+          <span><LocalTime ts={f.kickoff_ts} /></span>
           {phase === "OPEN" && (
             <span suppressHydrationWarning>
               · kicks off in <b className="text-foreground">{formatCountdown(f.kickoff_ts - now)}</b>

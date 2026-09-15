@@ -17,7 +17,7 @@ const phaseOf = (m: CryptoMarket, now: number) => gatePhase(cryptoPhase(m, now),
 
 export function CryptoBoard({ initial }: { initial: Snapshot<CryptoMarket[]> | null }) {
   const { data, isPending, error, refetch } = useCryptoMarkets(initial);
-  const now = useNow(1000);
+  const now = useNow(1000, initial?.at);
   const [filter, setFilter] = useState<(typeof FILTERS)[number]>("ALL");
 
   // Days still taking entries first (soonest close first), then closed days, newest first.

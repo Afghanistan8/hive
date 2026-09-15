@@ -19,7 +19,7 @@ export function MarketView({ marketId, initial }: { marketId: string; initial: S
   const params = { marketId };
   const id = Number(marketId);
   const { address } = useWallet();
-  const now = useNow(1000);
+  const now = useNow(1000, initial?.at);
   const { data: m, isLoading, error, refetch } = useCryptoMarket(id, initial);
   const { data: position } = useCryptoPosition(id, address);
   const { data: sources } = useCryptoSourceUrls(id);

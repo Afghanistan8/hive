@@ -5,6 +5,8 @@ import { useEffect, useState, type ReactNode } from "react";
 import { ExternalLink } from "lucide-react";
 import { GENLAYER_CHAIN_ID, GENLAYER_NETWORK } from "@/lib/genlayer/network";
 import { explorerAddress } from "@/lib/hive/config";
+import { formatLocal, formatUtc } from "@/lib/hive/format";
+import { useHydrated } from "@/lib/hive/hooks";
 import { cn } from "@/lib/utils";
 
 export function Card({ children, className }: { children: ReactNode; className?: string }) {
@@ -77,6 +79,11 @@ export function ErrorBox({ error, onRetry }: { error: unknown; onRetry?: () => v
       )}
     </div>
   );
+}
+
+/** Kickoff/close time in the viewer's timezone; UTC in server HTML (the server can't know the timezone). */
+export function LocalTime({ ts }: { ts: number }) {
+  return <>{useHydrated() ? formatLocal(ts) : formatUtc(ts)}</>;
 }
 
 /** One muted line saying where the list came from — handy when judging a live deploy. */

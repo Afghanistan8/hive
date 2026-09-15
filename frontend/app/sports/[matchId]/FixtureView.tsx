@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { BackLink, Card, ErrorBox, Loading, SourceLink, Stat } from "@/components/hive/bits";
+import { BackLink, Card, ErrorBox, Loading, LocalTime, SourceLink, Stat } from "@/components/hive/bits";
 import { PhaseBadge } from "@/components/hive/PhaseBadge";
 import { ClaimDialog } from "@/components/hive/ClaimDialog";
 import { TxDialog } from "@/components/hive/TxDialog";
@@ -29,7 +29,7 @@ function Reading({ label, r }: { label: string; r?: SourceReading }) {
 
 export function FixtureView({ matchId, initial }: { matchId: string; initial: Snapshot<Fixture> | null }) {
   const { address } = useWallet();
-  const now = useNow(1000);
+  const now = useNow(1000, initial?.at);
   const { data: f, isLoading, error, refetch } = useFixture(matchId, initial);
   const { data: position } = useSportsPosition(matchId, address);
   const { data: sources } = useSportsSourceUrls(matchId);
@@ -82,10 +82,10 @@ export function FixtureView({ matchId, initial }: { matchId: string; initial: Sn
           </div>
         )}
         <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-          <Stat label="Kickoff" value={formatLocal(f.kickoff_ts)} hint={formatUtc(f.kickoff_ts)} />
+          <Stat label="Kickoff" value={<LocalTime ts={f.kickoff_ts} />} hint={formatUtc(f.kickoff_ts)} />
           <Stat label={phase === "OPEN" ? "Betting closes in" : "Status"} value={phase === "OPEN" ? formatCountdown(f.kickoff_ts - now) : f.status} />
           <Stat label="Total pot" value={`${formatGen(f.total_pool)} GEN`} hint={`${f.positions_count} wallets`} />
-          <Stat label="Resolvable from" value={formatLocal(f.kickoff_ts + 5400)} hint="kickoff + 90 min" />
+          <Stat label="Resolvable from" value={<LocalTime ts={f.kickoff_ts + 5400} />} hint="kickoff + 90 min" />
         </div>
       </Card>
 

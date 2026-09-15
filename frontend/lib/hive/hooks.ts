@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import { hiveReader, markFresh } from "./contracts";
 import type { Snapshot } from "./serverData";
 import type { CryptoMarket, Fixture } from "./types";
@@ -256,11 +256,22 @@ export function useInvalidateHive() {
 }
 
 /** Re-render every `ms` so countdowns and derived phases stay current. */
-export function useNow(ms = 1000) {
-  const [now, setNow] = useState(() => Math.floor(Date.now() / 1000));
+/**
+ * `renderedAt` (epoch ms of a server snapshot) makes the first render identical on the server and
+ * during hydration, so countdowns and phases don't mismatch; the real clock takes over on mount.
+ */
+export function useNow(ms = 1000, renderedAt?: number) {
+  const [now, setNow] = useState(() => Math.floor((renderedAt ?? Date.now()) / 1000));
   useEffect(() => {
+    setNow(Math.floor(Date.now() / 1000));
     const t = setInterval(() => setNow(Math.floor(Date.now() / 1000)), ms);
     return () => clearInterval(t);
   }, [ms]);
   return now;
+}
+
+const noopSubscribe = () => () => {};
+/** False on the server and during hydration, true afterwards. */
+export function useHydrated() {
+  return useSyncExternalStore(noopSubscribe, () => true, () => false);
 }
