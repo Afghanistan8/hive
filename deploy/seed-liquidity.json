@@ -1114,7 +1114,10 @@
       "at": "2026-09-15T23:07:03.815Z",
       "hash": "0x3633589ce018cfbc472b8a0c6c952ccb5945e49e6b3f3d993c35835a7d92eec6",
       "feeValue": "175000000000112794",
-      "source": "network-default"
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
     },
     {
       "wallet": "hive_seed_b",
@@ -1124,7 +1127,10 @@
       "at": "2026-09-15T23:07:03.920Z",
       "hash": "0x738af08f0dad1fe7533074575a5a9a9dd9623731f1ff1ec1f8d068dba78a3e39",
       "feeValue": "175000000000112794",
-      "source": "network-default"
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
     },
     {
       "wallet": "hive_seed_c",
@@ -1134,7 +1140,10 @@
       "at": "2026-09-15T23:07:03.923Z",
       "hash": "0x3289f13ee5da1fbb1de2f1060d4b77cbdae3595512589efcf042c87d5a860c3f",
       "feeValue": "175000000000112794",
-      "source": "network-default"
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
     },
     {
       "wallet": "hive_seed_b",
@@ -1144,7 +1153,10 @@
       "at": "2026-09-15T23:07:31.389Z",
       "hash": "0x30e9e98b66f21e69a044c52ec37c8561eef3bcc07ad399b7d53b204b4e5e54e6",
       "feeValue": "175000000000112794",
-      "source": "network-default"
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
     },
     {
       "wallet": "hive_seed_c",
@@ -1154,7 +1166,10 @@
       "at": "2026-09-15T23:07:32.470Z",
       "hash": "0x4511dd6a2de9cd79edd64df4c0d979fb926b8f4262eba431e16463adedffb5ce",
       "feeValue": "175000000000112794",
-      "source": "network-default"
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
     },
     {
       "wallet": "hive_seed_a",
@@ -1164,7 +1179,10 @@
       "at": "2026-09-15T23:07:27.675Z",
       "hash": "0xa5af67c1c590fae4c576e04499d0b7db10d537223e0b86aa19a2b8a24b9e3ef9",
       "feeValue": "175000000000112794",
-      "source": "network-default"
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
     },
     {
       "wallet": "hive_seed_b",
@@ -1174,7 +1192,10 @@
       "at": "2026-09-15T23:10:22.841Z",
       "hash": "0xf08a36e2be398f333e98893c6319abd3caeb39568366ade24e606646da094bd8",
       "feeValue": "175000000000112794",
-      "source": "network-default"
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
     },
     {
       "wallet": "hive_seed_c",
@@ -1184,7 +1205,10 @@
       "at": "2026-09-15T23:10:27.647Z",
       "hash": "0x9697f0d7b4bafedbd8552d1e0428bdce3d578c4602af1c533b2706bcf944979e",
       "feeValue": "175000000000112794",
-      "source": "network-default"
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
     },
     {
       "wallet": "hive_seed_a",
@@ -1194,7 +1218,10 @@
       "at": "2026-09-15T23:10:32.485Z",
       "hash": "0x0917a79bb9fbf1202ae3b99f7b9489c8c003f770d347445603ce5a65077e34b2",
       "feeValue": "175000000000112794",
-      "source": "network-default"
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
     },
     {
       "wallet": "hive_seed_a",
@@ -1204,7 +1231,10 @@
       "at": "2026-09-15T23:14:01.136Z",
       "hash": "0x670b63945995fa6c53459526b8b4cc5276b24106a5196bfb26ce9275266c2065",
       "feeValue": "175000000000112794",
-      "source": "network-default"
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
     },
     {
       "wallet": "hive_seed_b",
@@ -1214,7 +1244,10 @@
       "at": "2026-09-15T23:13:17.226Z",
       "hash": "0x63f6e018a9deb0b6405d94378a7b65aebad3b64057c3ea28833e7fef6dd30cc8",
       "feeValue": "175000000000112794",
-      "source": "network-default"
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
     },
     {
       "wallet": "hive_seed_c",
@@ -1224,7 +1257,10 @@
       "at": "2026-09-15T23:13:32.435Z",
       "hash": "0xfd08302822cab808d6f1780007413030e6579374f3a074a5bd067b230dd36429",
       "feeValue": "175000000000112794",
-      "source": "network-default"
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
     },
     {
       "wallet": "hive_seed_a",
@@ -1234,7 +1270,10 @@
       "at": "2026-09-15T23:33:04.048Z",
       "hash": "0xa7ce37a72596ade4b9e4d9e1d74bb36cf3fea52cf3dcd0807f04d497104f85b2",
       "feeValue": "175000000000112794",
-      "source": "network-default"
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
     },
     {
       "wallet": "hive_seed_b",
@@ -1244,7 +1283,10 @@
       "at": "2026-09-15T23:33:06.515Z",
       "hash": "0x714a71ab9cefc69b30f5f66b9ac9fa4eba8c74cec1a2625c5386db94f277391c",
       "feeValue": "175000000000112794",
-      "source": "network-default"
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
     },
     {
       "wallet": "hive_seed_c",
@@ -1254,7 +1296,10 @@
       "at": "2026-09-15T23:33:23.280Z",
       "hash": "0x73241c19d2000c2409becdfa4e51c6a7f2f8dfd7b2ad113de1bb4fad7a864639",
       "feeValue": "175000000000112794",
-      "source": "network-default"
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
     },
     {
       "wallet": "hive_seed_a",
@@ -1264,7 +1309,10 @@
       "at": "2026-09-15T23:33:32.854Z",
       "hash": "0x2809c0e99d07888a5a28bdfcb471f15777eb92128e0ba0e8df1ef60cb3cc9217",
       "feeValue": "175000000000112794",
-      "source": "network-default"
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
     },
     {
       "wallet": "hive_seed_b",
@@ -1274,7 +1322,10 @@
       "at": "2026-09-15T23:33:35.268Z",
       "hash": "0x974ee2863c454acd91eac1239049c4971c7bbe3901eb3fd33143bf269330b079",
       "feeValue": "175000000000112794",
-      "source": "network-default"
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
     },
     {
       "wallet": "hive_seed_c",
@@ -1284,7 +1335,10 @@
       "at": "2026-09-15T23:33:52.053Z",
       "hash": "0x11274870a2223cc1e537aeaba301c6da1650e5b6cf8068e7898d44a6e4ceac72",
       "feeValue": "175000000000112794",
-      "source": "network-default"
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
     },
     {
       "wallet": "hive_seed_a",
@@ -1294,7 +1348,10 @@
       "at": "2026-09-15T23:34:02.677Z",
       "hash": "0x9cf8b49fc16d322fdd3c649c500230f91adb099a6b955b7bcf66de1723853454",
       "feeValue": "175000000000112794",
-      "source": "network-default"
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
     },
     {
       "wallet": "hive_seed_b",
@@ -1304,7 +1361,10 @@
       "at": "2026-09-15T23:34:04.088Z",
       "hash": "0x24bde17a6d57f4eeed123c65eea19410ebab3158b49fdad5c922082c90c888fa",
       "feeValue": "175000000000112794",
-      "source": "network-default"
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
     },
     {
       "wallet": "hive_seed_c",
@@ -1314,7 +1374,10 @@
       "at": "2026-09-15T23:34:20.842Z",
       "hash": "0xe2405adb4e34da3d286a15aefe4c85c341bae24c11fa4966b7c7899f77233269",
       "feeValue": "175000000000112794",
-      "source": "network-default"
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
     },
     {
       "wallet": "hive_seed_a",
@@ -1324,7 +1387,10 @@
       "at": "2026-09-15T23:34:30.443Z",
       "hash": "0x01f9e02ef72c7d8825b7a1f634bca9f1b7a3aec83519aba60a92c6342da84e8f",
       "feeValue": "175000000000112794",
-      "source": "network-default"
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
     },
     {
       "wallet": "hive_seed_b",
@@ -1334,7 +1400,10 @@
       "at": "2026-09-15T23:34:32.950Z",
       "hash": "0x3d82ccb3490f5bfe026ae234a273547e5caa43c5439db84f72a15fd8d3e474ca",
       "feeValue": "175000000000112794",
-      "source": "network-default"
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
     },
     {
       "wallet": "hive_seed_c",
@@ -1344,7 +1413,10 @@
       "at": "2026-09-15T23:35:40.513Z",
       "hash": "0xac3c2907985f82462f386e0fee69ec7730259d8955ce093db1bdc9327406f85c",
       "feeValue": "175000000000112794",
-      "source": "network-default"
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
     },
     {
       "wallet": "hive_seed_a",
@@ -1354,7 +1426,10 @@
       "at": "2026-09-15T23:35:42.317Z",
       "hash": "0xc6c87daed089cb7c51bb0a3a8ed11c0214f931d5cc3f4464a48d0e8360e1bbc5",
       "feeValue": "175000000000112794",
-      "source": "network-default"
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
     },
     {
       "wallet": "hive_seed_b",
@@ -1364,7 +1439,10 @@
       "at": "2026-09-15T23:35:44.713Z",
       "hash": "0xf92069ab4ffd834ee432015dd8658f9775d43f28aab662be132425e23996c983",
       "feeValue": "175000000000112794",
-      "source": "network-default"
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
     },
     {
       "wallet": "hive_seed_a",
@@ -1374,7 +1452,10 @@
       "at": "2026-09-15T23:36:11.130Z",
       "hash": "0xc83dc5c0bd69da46e387dd95a0297fb7b48776031f7680a995aef950694712a6",
       "feeValue": "175000000000112794",
-      "source": "network-default"
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
     },
     {
       "wallet": "hive_seed_c",
@@ -1384,7 +1465,10 @@
       "at": "2026-09-15T23:36:08.752Z",
       "hash": "0x58f5d2ec4f11b1a7a9cf4086a8d5db66aa442f65e7db4d2ae5e8c73191333344",
       "feeValue": "175000000000112794",
-      "source": "network-default"
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
     },
     {
       "wallet": "hive_seed_b",
@@ -1394,7 +1478,10 @@
       "at": "2026-09-15T23:36:27.048Z",
       "hash": "0xee4609def9e83d3cedc4c1dbf39c1d1af54fc05e96ac6423df8ba722cbc34762",
       "feeValue": "175000000000112794",
-      "source": "network-default"
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
     },
     {
       "wallet": "hive_seed_a",
@@ -1404,7 +1491,10 @@
       "at": "2026-09-15T23:36:41.097Z",
       "hash": "0x511f3c57eeca6c72c63930634923b5e4a232c1dda97a835d4f8dbf72d63996e2",
       "feeValue": "175000000000112794",
-      "source": "network-default"
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
     },
     {
       "wallet": "hive_seed_c",
@@ -1414,7 +1504,10 @@
       "at": "2026-09-15T23:36:45.948Z",
       "hash": "0x2b6db6f869af8f3c5ce01a8df149a8ea4053ba53a0781f5265c232eb21304d05",
       "feeValue": "175000000000112794",
-      "source": "network-default"
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
     },
     {
       "wallet": "hive_seed_b",
@@ -1424,7 +1517,10 @@
       "at": "2026-09-15T23:36:57.893Z",
       "hash": "0x4ba94e61404e56a4d384f5acd95536a02b99c0190754fc34f6c318ddeafb8e38",
       "feeValue": "175000000000112794",
-      "source": "network-default"
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
     },
     {
       "wallet": "hive_seed_a",
@@ -1434,7 +1530,10 @@
       "at": "2026-09-15T23:37:09.900Z",
       "hash": "0xddc29a12e728d6b11168171e7a84dc04b3c2ddeec4cd5636481b771088026318",
       "feeValue": "175000000000112794",
-      "source": "network-default"
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
     },
     {
       "wallet": "hive_seed_c",
@@ -1444,7 +1543,10 @@
       "at": "2026-09-15T23:37:14.704Z",
       "hash": "0xcc0be11080e43f75e0817c4ec9907d8044161bdf781644c744eaf51c1ca0c8cd",
       "feeValue": "175000000000112794",
-      "source": "network-default"
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
     },
     {
       "wallet": "hive_seed_b",
@@ -1454,7 +1556,10 @@
       "at": "2026-09-15T23:37:26.711Z",
       "hash": "0x23f0e42b314821ff4c8d486d3a665d12af6e87130c0d8b63ea556ba19aae38f2",
       "feeValue": "175000000000112794",
-      "source": "network-default"
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
     },
     {
       "wallet": "hive_seed_a",
@@ -1464,7 +1569,10 @@
       "at": "2026-09-15T23:37:38.688Z",
       "hash": "0xbbcc689770a9159a8c4b586da76e1105d12ec5bf026ca983f439064ba4794e14",
       "feeValue": "175000000000112794",
-      "source": "network-default"
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
     },
     {
       "wallet": "hive_seed_b",
@@ -1474,7 +1582,10 @@
       "at": "2026-09-15T23:37:53.123Z",
       "hash": "0x2380e9f7878a22b9775fab75f259638b160e6b38fa69b5df46a876dbd3c8257c",
       "feeValue": "175000000000112794",
-      "source": "network-default"
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
     },
     {
       "wallet": "hive_seed_a",
@@ -1484,7 +1595,10 @@
       "at": "2026-09-15T23:38:00.400Z",
       "hash": "0x58a5dda1b9e4ba8a5aff3dcf1283b4224f21196a7e02525557aee89db083a3bd",
       "feeValue": "175000000000112794",
-      "source": "network-default"
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
     },
     {
       "wallet": "hive_seed_b",
@@ -1494,7 +1608,10 @@
       "at": "2026-09-15T23:38:12.322Z",
       "hash": "0x02d37f0ee66ae35bc6ebe572cd1fa2e155bcc5dafa71254c8e3f4c1f56a10ad7",
       "feeValue": "175000000000112794",
-      "source": "network-default"
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
     },
     {
       "wallet": "hive_seed_a",
@@ -1504,7 +1621,10 @@
       "at": "2026-09-15T23:38:19.498Z",
       "hash": "0xa2db4523fcc3e9e33b7b6898566a0cb14803b1ee9c10c9c4fa9b0fa00b167d9d",
       "feeValue": "175000000000112794",
-      "source": "network-default"
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
     },
     {
       "wallet": "hive_seed_b",
@@ -1514,7 +1634,10 @@
       "at": "2026-09-15T23:38:32.011Z",
       "hash": "0xb0a2c48003fdd966cc37687b1841c13c618afb9aaa1171d7c7fa76422a8a216d",
       "feeValue": "175000000000112794",
-      "source": "network-default"
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
     },
     {
       "wallet": "hive_seed_a",
@@ -1524,7 +1647,10 @@
       "at": "2026-09-15T23:38:38.710Z",
       "hash": "0xa896fa31c25805d719a522821263cc8644ac5a1e8f4d9fd81c6372c40bea36a9",
       "feeValue": "175000000000112794",
-      "source": "network-default"
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
     },
     {
       "wallet": "hive_seed_b",
@@ -1534,7 +1660,10 @@
       "at": "2026-09-15T23:38:50.710Z",
       "hash": "0x2b2dc4947486f320ad2c9d4ce6cc99b488a43b001569e6939933cff12d6bb789",
       "feeValue": "175000000000112794",
-      "source": "network-default"
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
     },
     {
       "wallet": "hive_seed_a",
@@ -1544,7 +1673,10 @@
       "at": "2026-09-15T23:38:57.916Z",
       "hash": "0x113e0e1966f7924659ae281e48e32c345709c05a2959f268b20de6c136eeca0c",
       "feeValue": "175000000000112794",
-      "source": "network-default"
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
     },
     {
       "wallet": "hive_seed_b",
@@ -1554,7 +1686,10 @@
       "at": "2026-09-15T23:39:09.903Z",
       "hash": "0xe38f4c46955df04b12fe808a924136c043440dda39d25f83386baa2067b774c8",
       "feeValue": "175000000000112794",
-      "source": "network-default"
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
     },
     {
       "wallet": "hive_seed_a",
@@ -1564,7 +1699,10 @@
       "at": "2026-09-15T23:39:17.414Z",
       "hash": "0xd3f2b310d5da662971b3e956e2888a329bcc87958ca183be3ae67d97488d7399",
       "feeValue": "175000000000112794",
-      "source": "network-default"
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
     },
     {
       "wallet": "hive_seed_b",
@@ -1574,7 +1712,10 @@
       "at": "2026-09-15T23:39:29.095Z",
       "hash": "0x0ce8b1a25f9c27e78f8e58ba3edc9c0a624b7a293bc576e442c236bd7ef08f4e",
       "feeValue": "175000000000112794",
-      "source": "network-default"
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
     },
     {
       "wallet": "hive_seed_a",
@@ -1584,7 +1725,10 @@
       "at": "2026-09-15T23:39:36.560Z",
       "hash": "0xf0eaf2ea1d5a209fefe910d2e3d31abf0294422cf9e62166bd489c1137e95eee",
       "feeValue": "175000000000112794",
-      "source": "network-default"
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
     },
     {
       "wallet": "hive_seed_b",
@@ -1594,7 +1738,10 @@
       "at": "2026-09-15T23:39:48.307Z",
       "hash": "0x9b864647b7e9d3556899a237471dd9beef1fbee736f468f430dbbfbbf7fa8950",
       "feeValue": "175000000000112794",
-      "source": "network-default"
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
     },
     {
       "wallet": "hive_seed_a",
@@ -1604,7 +1751,10 @@
       "at": "2026-09-15T23:39:55.552Z",
       "hash": "0x31d9f392ea492a7e7951857f78328b4043ae695bef1890cc0e1894cf8be7c1df",
       "feeValue": "175000000000112794",
-      "source": "network-default"
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
     },
     {
       "wallet": "hive_seed_b",
@@ -1614,7 +1764,10 @@
       "at": "2026-09-15T23:40:07.590Z",
       "hash": "0x597c773dbff2db4017f99e31af88f0d3f586851f8ab374280c47f7ef95c92ee2",
       "feeValue": "175000000000112794",
-      "source": "network-default"
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
     },
     {
       "wallet": "hive_seed_a",
@@ -1624,7 +1777,439 @@
       "at": "2026-09-15T23:40:14.710Z",
       "hash": "0xd6a254544ca78c2e4eeac102250684db5e948dd56db84b79838087359adf9521",
       "feeValue": "175000000000112794",
-      "source": "network-default"
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
+    },
+    {
+      "wallet": "hive_seed_b",
+      "address": "0xBad85d0D7D7dd34F6618071fDC2054659931C51B",
+      "what": "ETH 2026-09-18 · DOWN 2 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:40:26.708Z",
+      "hash": "0x18dfef33f432af8d2a7c4ca990604c89a0f1d9fff279afd3d9bd4e6d490e73dd",
+      "feeValue": "175000000000112794",
+      "source": "network-default",
+      "status": "ACCEPTED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
+    },
+    {
+      "wallet": "hive_seed_a",
+      "address": "0xDa2b8D9D65FB0CBCe5b9C2778A783a51fA8C9Eff",
+      "what": "BTC 2026-09-18 · DOWN 3 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:40:33.916Z",
+      "hash": "0x552137a328ee0ad5e9985f6a840dd7c7d341dcdb364df3c9a29b1484dd713ec2",
+      "feeValue": "175000000000112794",
+      "source": "network-default",
+      "status": "ACCEPTED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
+    },
+    {
+      "wallet": "hive_seed_b",
+      "address": "0xBad85d0D7D7dd34F6618071fDC2054659931C51B",
+      "what": "BTC 2026-09-18 · UP 5 GEN",
+      "method": "take_position",
+      "at": "2026-09-15T23:40:45.921Z",
+      "hash": "0x902c4fd98cbb48a16d83c0c143f99847a6208eb0efa89ca0c77c1fa0a37bc461",
+      "feeValue": "175000000000112794",
+      "source": "network-default",
+      "status": "ACCEPTED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
+    },
+    {
+      "wallet": "hive_seed_a",
+      "address": "0xDa2b8D9D65FB0CBCe5b9C2778A783a51fA8C9Eff",
+      "what": "Osasuna v Rayo Vallecano · HOME 5 GEN",
+      "method": "predict",
+      "at": "2026-09-15T23:43:21.464Z",
+      "hash": "0x9c7edeaa8a82662e811b8cfb82116f7f371c8af40556286741225aa546fbf62f",
+      "feeValue": "175000000000112794",
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
+    },
+    {
+      "wallet": "hive_seed_b",
+      "address": "0xBad85d0D7D7dd34F6618071fDC2054659931C51B",
+      "what": "Osasuna v Rayo Vallecano · DRAW 2 GEN",
+      "method": "predict",
+      "at": "2026-09-15T23:43:21.505Z",
+      "hash": "0x142ebfc703eec3c970c752b67780eac56e756d0a91272aac2025b9edadbcc005",
+      "feeValue": "175000000000112794",
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
+    },
+    {
+      "wallet": "hive_seed_c",
+      "address": "0x1Ea7F76E44cA00c10B066c2B55535e93DC2F56aD",
+      "what": "Osasuna v Rayo Vallecano · AWAY 3 GEN",
+      "method": "predict",
+      "at": "2026-09-15T23:43:21.506Z",
+      "hash": "0x4fccf7663899d050bd111d267274f727c582e1290a1914aafa034318b44ad1da",
+      "feeValue": "175000000000112794",
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
+    },
+    {
+      "wallet": "hive_seed_d",
+      "address": "0x21a2726EA678E9bF6C9681B8FFABf40dd916afb2",
+      "what": "Bologna v Torino · AWAY 4 GEN",
+      "method": "predict",
+      "at": "2026-09-15T23:43:21.508Z",
+      "hash": "0x1869394264dff8d71ed1e8b19492079c49907164d16491ecf4c923ed00d40a3f",
+      "feeValue": "175000000000112794",
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
+    },
+    {
+      "wallet": "hive_seed_e",
+      "address": "0x31734D5B4C6c3ea72E30eFFE947A9a7FA28C1618",
+      "what": "Udinese v Cagliari · DRAW 3 GEN",
+      "method": "predict",
+      "at": "2026-09-15T23:43:21.511Z",
+      "hash": "0x158e14e047e207eb5183eb87cdffe7f50db7687691c6464a15024d1b1e027ae8",
+      "feeValue": "175000000000112794",
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
+    },
+    {
+      "wallet": "hive_seed_a",
+      "address": "0xDa2b8D9D65FB0CBCe5b9C2778A783a51fA8C9Eff",
+      "what": "Udinese v Cagliari · AWAY 2 GEN",
+      "method": "predict",
+      "at": "2026-09-15T23:43:59.762Z",
+      "hash": "0x644868be0a9ece11b58fdd93f1a8f284109dcab82a91e5ba930043006df74d31",
+      "feeValue": "175000000000112794",
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
+    },
+    {
+      "wallet": "hive_seed_b",
+      "address": "0xBad85d0D7D7dd34F6618071fDC2054659931C51B",
+      "what": "Bologna v Torino · HOME 3 GEN",
+      "method": "predict",
+      "at": "2026-09-15T23:44:02.555Z",
+      "hash": "0x4c13cb53401fc4589093ba6b81c8dc5fa1547768e9816f3e61661dbaa263b8af",
+      "feeValue": "175000000000112794",
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
+    },
+    {
+      "wallet": "hive_seed_c",
+      "address": "0x1Ea7F76E44cA00c10B066c2B55535e93DC2F56aD",
+      "what": "Udinese v Cagliari · HOME 2 GEN",
+      "method": "predict",
+      "at": "2026-09-15T23:44:04.565Z",
+      "hash": "0xf39278acab42770a032ff39033bd5e539d1a17bcf93cb78ad56a163bf0b7af37",
+      "feeValue": "175000000000112794",
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
+    },
+    {
+      "wallet": "hive_seed_d",
+      "address": "0x21a2726EA678E9bF6C9681B8FFABf40dd916afb2",
+      "what": "Gladbach v Mainz 05 · HOME 6 GEN",
+      "method": "predict",
+      "at": "2026-09-15T23:44:06.985Z",
+      "hash": "0xf903da576ac2f3a88e976bd6edfd83085216477a51e3708601df30f09f7e7731",
+      "feeValue": "175000000000112794",
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
+    },
+    {
+      "wallet": "hive_seed_e",
+      "address": "0x31734D5B4C6c3ea72E30eFFE947A9a7FA28C1618",
+      "what": "Gladbach v Mainz 05 · AWAY 2 GEN",
+      "method": "predict",
+      "at": "2026-09-15T23:44:09.359Z",
+      "hash": "0xe48677e0222691fa106477de465d684dd2903d9cd51ffd657f5aec06bad0123d",
+      "feeValue": "175000000000112794",
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
+    },
+    {
+      "wallet": "hive_seed_a",
+      "address": "0xDa2b8D9D65FB0CBCe5b9C2778A783a51fA8C9Eff",
+      "what": "Eintracht Frankfurt v Freiburg · HOME 5 GEN",
+      "method": "predict",
+      "at": "2026-09-15T23:44:47.753Z",
+      "hash": "0xe9710ffc1b92fc3881b852092a5f22d778f5e69f311f8139ae64164d10836a19",
+      "feeValue": "175000000000112794",
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
+    },
+    {
+      "wallet": "hive_seed_b",
+      "address": "0xBad85d0D7D7dd34F6618071fDC2054659931C51B",
+      "what": "Eintracht Frankfurt v Freiburg · DRAW 2 GEN",
+      "method": "predict",
+      "at": "2026-09-15T23:44:50.278Z",
+      "hash": "0x164dd7f734b2b4b02f1db38d0f7ee7d3dd485c388c35818a6206a55f36b2744b",
+      "feeValue": "175000000000112794",
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
+    },
+    {
+      "wallet": "hive_seed_c",
+      "address": "0x1Ea7F76E44cA00c10B066c2B55535e93DC2F56aD",
+      "what": "Eintracht Frankfurt v Freiburg · AWAY 3 GEN",
+      "method": "predict",
+      "at": "2026-09-15T23:44:52.563Z",
+      "hash": "0xc4bd6acc3f813182ca1d386d04f4d4159de5fe53561a7fa674b441d3806c0bdc",
+      "feeValue": "175000000000112794",
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
+    },
+    {
+      "wallet": "hive_seed_d",
+      "address": "0x21a2726EA678E9bF6C9681B8FFABf40dd916afb2",
+      "what": "Werder Bremen v Augsburg · AWAY 4 GEN",
+      "method": "predict",
+      "at": "2026-09-15T23:44:54.972Z",
+      "hash": "0x4916f48e57b279b9e755a81de8e5f5bea4c5dccc4ab615d3bd4c137f8ee7f61f",
+      "feeValue": "175000000000112794",
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
+    },
+    {
+      "wallet": "hive_seed_e",
+      "address": "0x31734D5B4C6c3ea72E30eFFE947A9a7FA28C1618",
+      "what": "Brighton & Hove Albion v Arsenal · DRAW 3 GEN",
+      "method": "predict",
+      "at": "2026-09-15T23:44:57.370Z",
+      "hash": "0xac6791a0a583c18b2aeb1e786957e6fdfc207e7d730fb04678e9d0ec809b5171",
+      "feeValue": "175000000000112794",
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
+    },
+    {
+      "wallet": "hive_seed_a",
+      "address": "0xDa2b8D9D65FB0CBCe5b9C2778A783a51fA8C9Eff",
+      "what": "Brighton & Hove Albion v Arsenal · AWAY 2 GEN",
+      "method": "predict",
+      "at": "2026-09-15T23:45:35.772Z",
+      "hash": "0xeaa1e692b5099abf43c0fda85a2bc55986578edac9a859d5b6f43cf13c946975",
+      "feeValue": "175000000000112794",
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
+    },
+    {
+      "wallet": "hive_seed_b",
+      "address": "0xBad85d0D7D7dd34F6618071fDC2054659931C51B",
+      "what": "Werder Bremen v Augsburg · HOME 3 GEN",
+      "method": "predict",
+      "at": "2026-09-15T23:45:38.170Z",
+      "hash": "0x6fc930283e6ee870ce759e57b9f21a130f574af1eb37ce7037a7f221c1c309da",
+      "feeValue": "175000000000112794",
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
+    },
+    {
+      "wallet": "hive_seed_c",
+      "address": "0x1Ea7F76E44cA00c10B066c2B55535e93DC2F56aD",
+      "what": "Brighton & Hove Albion v Arsenal · HOME 2 GEN",
+      "method": "predict",
+      "at": "2026-09-15T23:45:40.592Z",
+      "hash": "0x207543fc47c7841988c6ae350e6977a17eda375e02c9ab84d436bf7529a6e36e",
+      "feeValue": "175000000000112794",
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
+    },
+    {
+      "wallet": "hive_seed_d",
+      "address": "0x21a2726EA678E9bF6C9681B8FFABf40dd916afb2",
+      "what": "Everton v Ipswich Town · HOME 6 GEN",
+      "method": "predict",
+      "at": "2026-09-15T23:45:42.962Z",
+      "hash": "0xd49013a6d7409b35ca1a5f4de2623f07f28ed30a80404031874a069547006569",
+      "feeValue": "175000000000112794",
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
+    },
+    {
+      "wallet": "hive_seed_e",
+      "address": "0x31734D5B4C6c3ea72E30eFFE947A9a7FA28C1618",
+      "what": "Everton v Ipswich Town · AWAY 2 GEN",
+      "method": "predict",
+      "at": "2026-09-15T23:45:45.356Z",
+      "hash": "0xc86bad2aa09e5170edf7d8e3e77bb8f27de49a38776d3d9ff6e8dfb24594944c",
+      "feeValue": "175000000000112794",
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
+    },
+    {
+      "wallet": "hive_seed_a",
+      "address": "0xDa2b8D9D65FB0CBCe5b9C2778A783a51fA8C9Eff",
+      "what": "Newcastle United v Hull City · HOME 5 GEN",
+      "method": "predict",
+      "at": "2026-09-15T23:46:23.781Z",
+      "hash": "0xa11858c06cb1da87b36f91345e4fe7bcc9d5802212be8731cdf049b229dd6f86",
+      "feeValue": "175000000000112794",
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
+    },
+    {
+      "wallet": "hive_seed_b",
+      "address": "0xBad85d0D7D7dd34F6618071fDC2054659931C51B",
+      "what": "Newcastle United v Hull City · DRAW 2 GEN",
+      "method": "predict",
+      "at": "2026-09-15T23:46:26.201Z",
+      "hash": "0x096ae47500069baa4cb80f225ff99a66f4c2d32eb2148420f47a2de4c028ad87",
+      "feeValue": "175000000000112794",
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
+    },
+    {
+      "wallet": "hive_seed_c",
+      "address": "0x1Ea7F76E44cA00c10B066c2B55535e93DC2F56aD",
+      "what": "Newcastle United v Hull City · AWAY 3 GEN",
+      "method": "predict",
+      "at": "2026-09-15T23:46:28.690Z",
+      "hash": "0xfadb2352b4088823fa2f944d37d245ebb039f0e8a5835bdf863e35f4834e0b32",
+      "feeValue": "175000000000112794",
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
+    },
+    {
+      "wallet": "hive_seed_d",
+      "address": "0x21a2726EA678E9bF6C9681B8FFABf40dd916afb2",
+      "what": "Paris FC v Strasbourg · AWAY 4 GEN",
+      "method": "predict",
+      "at": "2026-09-15T23:46:31.006Z",
+      "hash": "0x8829398901c4c9edc1fb3cfb1ec925742e43e760265ea2ed9cf937bb2938267b",
+      "feeValue": "175000000000112794",
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
+    },
+    {
+      "wallet": "hive_seed_e",
+      "address": "0x31734D5B4C6c3ea72E30eFFE947A9a7FA28C1618",
+      "what": "Roma v Inter Milan · DRAW 3 GEN",
+      "method": "predict",
+      "at": "2026-09-15T23:46:33.388Z",
+      "hash": "0x6f04ecd810915605f54b47f4a697bbf50ccfed25519deced998613a4cd5045b3",
+      "feeValue": "175000000000112794",
+      "source": "network-default",
+      "status": "FINALIZED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
+    },
+    {
+      "wallet": "hive_seed_a",
+      "address": "0xDa2b8D9D65FB0CBCe5b9C2778A783a51fA8C9Eff",
+      "what": "Roma v Inter Milan · AWAY 2 GEN",
+      "method": "predict",
+      "at": "2026-09-15T23:47:11.771Z",
+      "hash": "0x9a0f539b2449f874f756128c0a7e19e461e8842743141b2e0082170b136dfda6",
+      "feeValue": "175000000000112794",
+      "source": "network-default",
+      "status": "ACCEPTED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
+    },
+    {
+      "wallet": "hive_seed_b",
+      "address": "0xBad85d0D7D7dd34F6618071fDC2054659931C51B",
+      "what": "Paris FC v Strasbourg · HOME 3 GEN",
+      "method": "predict",
+      "at": "2026-09-15T23:47:14.185Z",
+      "hash": "0x8c1af800c3682259be1141c34377e6f2abf1ba4a541733dc198622bcde48554a",
+      "feeValue": "175000000000112794",
+      "source": "network-default",
+      "status": "ACCEPTED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
+    },
+    {
+      "wallet": "hive_seed_c",
+      "address": "0x1Ea7F76E44cA00c10B066c2B55535e93DC2F56aD",
+      "what": "Roma v Inter Milan · HOME 2 GEN",
+      "method": "predict",
+      "at": "2026-09-15T23:47:16.578Z",
+      "hash": "0x9053a67cc61d275f1bc64ac198fe318e76b0f5b76b95427c7a4310289ae16c0d",
+      "feeValue": "175000000000112794",
+      "source": "network-default",
+      "status": "ACCEPTED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
+    },
+    {
+      "wallet": "hive_seed_d",
+      "address": "0x21a2726EA678E9bF6C9681B8FFABf40dd916afb2",
+      "what": "Nottingham Forest v Coventry City · HOME 6 GEN",
+      "method": "predict",
+      "at": "2026-09-15T23:47:19.055Z",
+      "hash": "0x6b826fdef6397c477db733da2040effa82235fc71b79625866e8846df7ae2608",
+      "feeValue": "175000000000112794",
+      "source": "network-default",
+      "status": "ACCEPTED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
+    },
+    {
+      "wallet": "hive_seed_e",
+      "address": "0x31734D5B4C6c3ea72E30eFFE947A9a7FA28C1618",
+      "what": "Nottingham Forest v Coventry City · AWAY 2 GEN",
+      "method": "predict",
+      "at": "2026-09-15T23:47:21.365Z",
+      "hash": "0x372d641d0b76f4b5d45d774c95738a75b5abe98cea1c382806e21962d95db2d4",
+      "feeValue": "175000000000112794",
+      "source": "network-default",
+      "status": "ACCEPTED",
+      "result": "FINISHED_WITH_RETURN",
+      "ok": true
     }
   ]
 }
