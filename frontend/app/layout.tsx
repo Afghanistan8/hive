@@ -15,7 +15,9 @@ const hiveFont = Geist({
   display: "swap",
 });
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "http://localhost:3000");
 const TITLE = "Hive Markets — prediction markets settled by consensus";
 const DESCRIPTION =
   "Football and crypto prediction markets on GenLayer that settle only when two public sources agree. No oracle key, no admin, no backend.";
