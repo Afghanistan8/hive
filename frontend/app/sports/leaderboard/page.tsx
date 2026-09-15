@@ -43,7 +43,15 @@ export default function LeaderboardPage() {
           <div className="text-sm">
             <b>AI Call record</b>{" "}
             <span className="text-ink/70">
-              {ai.settled ? `${ai.correct}/${ai.settled} correct · ${Math.round(ai.accuracy * 100)}%` : `${ai.total} calls, none settled yet`}
+              {aiCalls.error ? (
+                <button onClick={() => aiCalls.refetch()} className="underline decoration-ember underline-offset-4">unavailable — retry</button>
+              ) : !aiCalls.data ? (
+                "loading…"
+              ) : ai.settled ? (
+                `${ai.correct}/${ai.settled} correct · ${Math.round(ai.accuracy * 100)}%`
+              ) : (
+                `${ai.total} calls, none settled yet`
+              )}
             </span>
           </div>
         </Card>
