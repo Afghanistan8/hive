@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "genlayer-js";
 import { createGenLayerNetworkConfig, GENLAYER_CHAIN } from "@/lib/genlayer/network";
-import { CACHEABLE_METHODS, checkReadRequest, READ_TIMEOUT_MS, type ReadRequest } from "@/lib/hive/readPolicy";
+import { cacheControlFor, checkReadRequest, READ_TIMEOUT_MS, type ReadRequest } from "@/lib/hive/readPolicy";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -54,8 +54,8 @@ async function read({ address, functionName, args }: ReadRequest) {
   throw lastError;
 }
 
-// Last good answer per public list read, kept by this (warm) function instance. Served, marked
-// stale, only when Studio fails — a slow minute on the RPC shouldn't blank the site.
+// Last good answer per read, kept by this (warm) function instance. Served, marked stale, only
+// when Studio fails or rate-limits — a slow minute on the RPC shouldn't blank the site.
 const LAST_GOOD_MAX_AGE_MS = 10 * 60_000;
 const lastGood = new Map<string, { value: unknown; at: number }>();
 
@@ -63,28 +63,24 @@ async function handle(body: unknown) {
   const checked = checkReadRequest(body);
   if (!checked.ok) return NextResponse.json({ error: checked.error }, { status: 400 });
   const { req } = checked;
-  const cacheable = CACHEABLE_METHODS.has(req.functionName);
   const key = `${req.address.toLowerCase()}|${req.functionName}|${JSON.stringify(req.args)}`;
   try {
     const { value, rpcUrl } = await read(req);
-    if (cacheable) {
-      lastGood.set(key, { value, at: Date.now() });
-      if (lastGood.size > 500) lastGood.delete(lastGood.keys().next().value!);
-    }
+    lastGood.set(key, { value, at: Date.now() });
+    if (lastGood.size > 1000) lastGood.delete(lastGood.keys().next().value!);
     return NextResponse.json(
       { result: value },
       {
         headers: {
-          // Fresh for 10 s; after that the CDN answers instantly with the previous copy while it refetches in
-          // the background, so a visitor never waits on Studio for a list someone read in the last hour. The
-          // page's own 15 s refetch then picks up the refreshed copy, so staleness lasts one poll at most.
-          "Cache-Control": cacheable ? "public, s-maxage=10, stale-while-revalidate=3600" : "no-store",
+          // Lists: fresh for 10 s, then the CDN answers instantly with the previous copy while it refetches
+          // in the background; the page's own poll picks up the refreshed copy, so staleness lasts one poll.
+          "Cache-Control": cacheControlFor(req.functionName),
           "X-Hive-Rpc": new URL(rpcUrl).host,
         },
       },
     );
   } catch (e: any) {
-    const stale = cacheable ? lastGood.get(key) : undefined;
+    const stale = lastGood.get(key);
     if (stale && Date.now() - stale.at < LAST_GOOD_MAX_AGE_MS) {
       return NextResponse.json(
         { result: stale.value, stale: true },

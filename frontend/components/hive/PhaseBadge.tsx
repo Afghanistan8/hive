@@ -15,7 +15,7 @@ const LABELS: Record<string, string> = {
 
 export function PhaseBadge({ phase, className }: { phase: string; className?: string }) {
   return (
-    <span className={cn("inline-flex items-center rounded-md border px-2 py-0.5 text-[11px] font-semibold tracking-wide", STYLES[phase] ?? STYLES.INCONCLUSIVE, className)}>
+    <span suppressHydrationWarning className={cn("inline-flex items-center rounded-md border px-2 py-0.5 text-[11px] font-semibold tracking-wide", STYLES[phase] ?? STYLES.INCONCLUSIVE, className)}>
       {LABELS[phase] ?? phase}
     </span>
   );

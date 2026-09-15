@@ -1,15 +1,23 @@
-"use client";
-
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { ContractLink } from "@/components/hive/bits";
 import { GENLAYER_CHAIN, GENLAYER_CHAIN_ID } from "@/lib/genlayer/network";
 import { HIVE_CRYPTO_ADDRESS, HIVE_SPORTS_ADDRESS, STUDIO_URL } from "@/lib/hive/config";
-import { useCryptoMarkets, useFixtures } from "@/lib/hive/hooks";
+import { formatGen, toWei } from "@/lib/hive/format";
+import { fixturesSnapshot, marketsSnapshot } from "@/lib/hive/serverData";
 
-export default function HomePage() {
-  const fixtures = useFixtures();
-  const markets = useCryptoMarkets();
+// Server-rendered with a contract snapshot (refreshed every 30 s) so the first screen shows live numbers.
+export const revalidate = 30;
+
+export default async function HomePage() {
+  const [fixtures, markets] = await Promise.all([fixturesSnapshot(), marketsSnapshot()]);
+  const now = Date.now() / 1000;
+  const sportsStat = fixtures
+    ? `${fixtures.data.filter((f) => f.status === "OPEN" && f.kickoff_ts > now).length} open fixtures · ${formatGen(fixtures.data.reduce((s, f) => s + toWei(f.total_pool), 0n))} GEN staked`
+    : "Live fixtures on-chain";
+  const cryptoStat = markets
+    ? `${markets.data.filter((m) => m.state === "PENDING" && m.cutoff_at > now).length} open markets · ${formatGen(markets.data.reduce((s, m) => s + toWei(m.total_pool), 0n))} GEN staked`
+    : "Live markets on-chain";
 
   return (
     <main>
@@ -47,14 +55,14 @@ export default function HomePage() {
             kicker="Hive Match"
             title="Europe's top five leagues"
             body="Stake on home, draw or away before kickoff. Winners split the whole pot. Settles only when ESPN and BBC Sport report the same full-time score."
-            stat={fixtures.data ? `${fixtures.data.length} fixtures on-chain` : "Reading fixtures…"}
+            stat={sportsStat}
           />
           <Door
             href="/crypto"
             kicker="Hive Daily"
             title="Up or down, every GMT+1 day"
             body="22 major tokens, 2–8 GEN per wallet. Settles only when CoinGecko and Gate.io agree on the candle's direction — otherwise everyone is refunded."
-            stat={markets.data ? `${markets.data.length} markets on-chain` : "Reading markets…"}
+            stat={cryptoStat}
           />
         </div>
       </section>

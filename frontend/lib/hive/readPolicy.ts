@@ -23,8 +23,8 @@ export const READ_METHODS = new Set([
   "get_position_count",
 ]);
 
-/** Public aggregate views: safe to share from the CDN for a few seconds. Per-wallet and detail reads are never cached. */
-export const CACHEABLE_METHODS = new Set([
+/** Public aggregate views. */
+const LIST_METHODS = new Set([
   "get_config",
   "get_fixtures",
   "get_markets",
@@ -34,6 +34,19 @@ export const CACHEABLE_METHODS = new Set([
   "get_position_count",
   "get_leagues",
 ]);
+/** One wallet's rows — still public on-chain data, keyed by the address in the URL. */
+const WALLET_METHODS = new Set(["get_position", "get_user_positions", "get_username"]);
+
+/**
+ * Every view is public chain state, so every answer may be shared from the CDN. That matters:
+ * Studio allows ~30 contract reads per minute per IP, and all visitors reach it from Vercel's IPs.
+ * After a user's own transaction the browser adds a cache-busting `v` parameter (see markFresh).
+ */
+export function cacheControlFor(functionName: string) {
+  if (LIST_METHODS.has(functionName)) return "public, s-maxage=10, stale-while-revalidate=3600";
+  if (WALLET_METHODS.has(functionName)) return "public, s-maxage=3, stale-while-revalidate=30";
+  return "public, s-maxage=5, stale-while-revalidate=120";
+}
 
 export const READ_TIMEOUT_MS = 12_000;
 export const BROWSER_READ_TIMEOUT_MS = 15_000;
@@ -50,6 +63,7 @@ export interface ReadRequest {
 export function checkReadRequest(body: unknown): { ok: true; req: ReadRequest } | { ok: false; error: string } {
   if (!body || typeof body !== "object") return { ok: false, error: "body must be a JSON object" };
   const { address, functionName, args = [] } = body as Record<string, unknown>;
+  // `v` (cache-busting after a user's own write) is accepted and ignored.
   const allowed = [HIVE_SPORTS_ADDRESS, HIVE_CRYPTO_ADDRESS].filter(Boolean).map((a) => a.toLowerCase());
   if (typeof address !== "string" || !allowed.includes(address.toLowerCase())) return { ok: false, error: "address is not a HIVE contract" };
   if (typeof functionName !== "string" || !READ_METHODS.has(functionName)) return { ok: false, error: "functionName is not an allowed view" };

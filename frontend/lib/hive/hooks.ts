@@ -2,7 +2,9 @@
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useState } from "react";
-import { hiveReader } from "./contracts";
+import { hiveReader, markFresh } from "./contracts";
+import type { Snapshot } from "./serverData";
+import type { CryptoMarket, Fixture } from "./types";
 import { HIVE_CRYPTO_ADDRESS, HIVE_SPORTS_ADDRESS } from "./config";
 import type { LiveEvent, StandingRow } from "./espn";
 import { mirrorConfigured, mirrorFixtures, mirrorMarkets, mirrorPositions } from "./mirror";
@@ -17,9 +19,11 @@ function useMirror<T>(key: string, fn: () => Promise<T>) {
   return useQuery({ queryKey: ["mirror", key], queryFn: fn, enabled: mirrorConfigured, staleTime: 60_000, retry: false });
 }
 
-export function useCryptoMarkets() {
+export function useCryptoMarkets(initial?: Snapshot<CryptoMarket[]> | null) {
   const mirror = useMirror("markets", mirrorMarkets);
   return useQuery({
+    initialData: initial?.data,
+    initialDataUpdatedAt: initial?.at,
     queryKey: ["crypto", "markets"],
     ...CONTRACT,
     queryFn: () => hiveReader().cryptoMarkets(),
@@ -29,8 +33,10 @@ export function useCryptoMarkets() {
   });
 }
 
-export function useCryptoMarket(id: number) {
+export function useCryptoMarket(id: number, initial?: Snapshot<CryptoMarket> | null) {
   return useQuery({
+    initialData: initial?.data,
+    initialDataUpdatedAt: initial?.at,
     queryKey: ["crypto", "market", id],
     ...CONTRACT,
     queryFn: () => hiveReader().cryptoMarket(id),
@@ -78,9 +84,11 @@ export function useCryptoAssets() {
   });
 }
 
-export function useFixtures() {
+export function useFixtures(initial?: Snapshot<Fixture[]> | null) {
   const mirror = useMirror("fixtures", mirrorFixtures);
   return useQuery({
+    initialData: initial?.data,
+    initialDataUpdatedAt: initial?.at,
     queryKey: ["sports", "fixtures"],
     ...CONTRACT,
     queryFn: () => hiveReader().fixtures(),
@@ -90,8 +98,10 @@ export function useFixtures() {
   });
 }
 
-export function useFixture(matchId: string) {
+export function useFixture(matchId: string, initial?: Snapshot<Fixture> | null) {
   return useQuery({
+    initialData: initial?.data,
+    initialDataUpdatedAt: initial?.at,
     queryKey: ["sports", "fixture", matchId],
     ...CONTRACT,
     queryFn: () => hiveReader().fixture(matchId),
@@ -239,6 +249,7 @@ export function usePortfolio(wallet: string | null) {
 export function useInvalidateHive() {
   const qc = useQueryClient();
   return useCallback(() => {
+    markFresh();
     qc.invalidateQueries({ queryKey: ["crypto"] });
     qc.invalidateQueries({ queryKey: ["sports"] });
   }, [qc]);

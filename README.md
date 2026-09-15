@@ -267,8 +267,18 @@ value-transfer message that must be budgeted in `messageAllocations`, which Tran
 - Fixture registration is permissionless; a badly registered fixture cannot settle wrongly (both sources must agree),
   it just refunds. The UI shows every fixture's registrant.
 - Payouts are EVM value transfers to the claiming account; contracts claiming on behalf of users are not supported.
-- View `phase` uses the chain's latest consensus time; the UI derives display phases from the clock. The contracts
-  enforce every boundary with consensus time.
+- The contracts enforce every boundary with consensus time. Each view also returns `phase` computed from consensus
+  time; the UI uses the browser clock only for countdowns, and enables Stake / Resolve from whichever of the two
+  phases is further along — so a fast device clock can't offer a stake the contract would reject, and the page says
+  so when the contract has closed a market the clock still shows as open.
+- Studio allows about 30 contract reads (`gen_call`) per minute per IP. The app therefore reads through
+  `/api/gl/read` with CDN caching, and pre-renders `/`, `/sports`, `/crypto` and the detail pages from a contract
+  snapshot refreshed every 30 s, so link previews and first paint show real fixtures and pools without JavaScript.
+- **Demo liquidity**: stakes from five openly-labelled team wallets (`hive_seed_a` … `hive_seed_e`, funded from the
+  Studio Next faucet) sit on the upcoming fixtures and markets so the books are not empty. They are ordinary
+  permissionless positions sent through Transaction Kit by
+  [`frontend/scripts/seed_liquidity.ts`](frontend/scripts/seed_liquidity.ts); every hash is in
+  [`deploy/seed-liquidity.json`](deploy/seed-liquidity.json).
 
 ## License
 

@@ -15,8 +15,8 @@ export function Stat({ label, value, hint }: { label: string; value: ReactNode; 
   return (
     <div className="space-y-1">
       <div className="text-xs uppercase tracking-wide text-muted-foreground">{label}</div>
-      <div className="text-lg font-semibold">{value}</div>
-      {hint && <div className="text-xs text-muted-foreground">{hint}</div>}
+      <div className="text-lg font-semibold" suppressHydrationWarning>{value}</div>
+      {hint && <div className="text-xs text-muted-foreground" suppressHydrationWarning>{hint}</div>}
     </div>
   );
 }

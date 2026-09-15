@@ -25,18 +25,35 @@ const isBrowser = typeof window !== "undefined";
  * small pages in parallel and caps how many (newest rows win); the keeper and other server
  * callers read everything in large pages.
  */
-const PAGE = isBrowser ? 16 : 50;
-const LIMITS = isBrowser
-  ? { fixturePages: 8, marketPages: 5, positionPages: 6, aiCallPages: 8 }
-  : { fixturePages: 40, marketPages: 40, positionPages: 40, aiCallPages: 40 };
+const VIEW = { page: 16, fixturePages: 8, marketPages: 5, positionPages: 6, aiCallPages: 8 };
+const FULL = { page: 50, fixturePages: 40, marketPages: 40, positionPages: 40, aiCallPages: 40 };
+type Limits = typeof VIEW;
 
-const pageOffsets = (count: number, maxPages: number, newestLast: boolean) => {
-  const pages = Math.min(Math.ceil(count / PAGE), maxPages);
-  if (!newestLast) return Array.from({ length: pages }, (_, i) => i * PAGE);
+const pageOffsets = (count: number, page: number, maxPages: number, newestLast: boolean) => {
+  const pages = Math.min(Math.ceil(count / page), maxPages);
+  if (!newestLast) return Array.from({ length: pages }, (_, i) => i * page);
   // Oldest-first lists: skip the oldest rows when capped so the newest are always shown.
-  const start = Math.max(0, count - pages * PAGE);
-  return Array.from({ length: pages }, (_, i) => start + i * PAGE);
+  const start = Math.max(0, count - pages * page);
+  return Array.from({ length: pages }, (_, i) => start + i * page);
 };
+
+// After the user's own transaction, bypass the CDN copy for a minute so they see their stake.
+let freshUntil = 0;
+export const markFresh = () => {
+  freshUntil = Date.now() + 60_000;
+};
+
+export interface ReaderOptions {
+  /**
+   * Read through the /api/gl/read proxy at this origin ("" = same origin). Browsers always use
+   * the proxy; server rendering passes the site origin so it shares the CDN cache with browsers.
+   * Omit on the server (keeper, scripts) to read Studio directly.
+   */
+  proxyBase?: string;
+  /** Extra fetch options for proxy reads (e.g. Next's `{ next: { revalidate } }`). */
+  fetchInit?: RequestInit & { next?: { revalidate?: number } };
+  timeoutMs?: number;
+}
 
 const timeout = <T>(p: Promise<T>, ms: number, label: string) =>
   Promise.race([p, new Promise<never>((_, rej) => setTimeout(() => rej(new Error(`${label}: Studio RPC did not answer within ${Math.round(ms / 1000)} s`)), ms))]);
@@ -48,21 +65,29 @@ const timeout = <T>(p: Promise<T>, ms: number, label: string) =>
  */
 export class HiveReader {
   private client: ReturnType<typeof createClient> | null = null;
+  private readonly proxyBase: string | undefined;
+  private readonly limits: Limits;
 
   constructor(
     readonly cryptoAddress: string = HIVE_CRYPTO_ADDRESS,
     readonly sportsAddress: string = HIVE_SPORTS_ADDRESS,
-  ) {}
+    private readonly opts: ReaderOptions = {},
+  ) {
+    this.proxyBase = isBrowser ? "" : opts.proxyBase;
+    this.limits = this.proxyBase === undefined ? FULL : VIEW;
+  }
 
   private async read<T>(address: string, functionName: string, args: ReadArg[] = []): Promise<T> {
     if (!address) throw new Error(`Contract address for ${functionName} is not configured (NEXT_PUBLIC_HIVE_*_ADDRESS)`);
-    if (isBrowser) {
+    if (this.proxyBase !== undefined) {
       const qs = new URLSearchParams({ address, functionName, args: JSON.stringify(args) });
+      if (isBrowser && Date.now() < freshUntil) qs.set("v", String(Math.floor(Date.now() / 3000)));
+      const timeoutMs = this.opts.timeoutMs ?? BROWSER_READ_TIMEOUT_MS;
       let res: Response;
       try {
-        res = await fetch(`/api/gl/read?${qs}`, { signal: AbortSignal.timeout(BROWSER_READ_TIMEOUT_MS) });
+        res = await fetch(`${this.proxyBase}/api/gl/read?${qs}`, { ...this.opts.fetchInit, signal: AbortSignal.timeout(timeoutMs) });
       } catch (e: any) {
-        throw new Error(e?.name === "TimeoutError" ? `${functionName}: no answer within ${BROWSER_READ_TIMEOUT_MS / 1000} s` : `${functionName}: ${e?.message ?? e}`);
+        throw new Error(e?.name === "TimeoutError" ? `${functionName}: no answer within ${timeoutMs / 1000} s` : `${functionName}: ${e?.message ?? e}`);
       }
       const body = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(body?.error || `${functionName}: read proxy returned HTTP ${res.status}`);
@@ -81,10 +106,10 @@ export class HiveReader {
    * list is longer than the cap allows), then the remaining pages in parallel.
    */
   private async list<T>(address: string, functionName: string, count: Promise<number>, maxPages: number, newestLast: boolean) {
-    const first = this.read<T[]>(address, functionName, [0, PAGE]);
+    const first = this.read<T[]>(address, functionName, [0, this.limits.page]);
     first.catch(() => {}); // may go unused; its failure is reported by the awaited reads below
-    const offsets = pageOffsets(await count, maxPages, newestLast);
-    const chunks = await Promise.all(offsets.map((o) => (o === 0 ? first : this.read<T[]>(address, functionName, [o, PAGE]))));
+    const offsets = pageOffsets(await count, this.limits.page, maxPages, newestLast);
+    const chunks = await Promise.all(offsets.map((o) => (o === 0 ? first : this.read<T[]>(address, functionName, [o, this.limits.page]))));
     return chunks.flat();
   }
 
@@ -92,7 +117,7 @@ export class HiveReader {
   cryptoConfig = () => this.read<{ market_count: number; now: number }>(this.cryptoAddress, "get_config");
   /** Newest first. */
   cryptoMarkets = () =>
-    this.list<CryptoMarket>(this.cryptoAddress, "get_markets", this.cryptoConfig().then((c) => Number(c.market_count ?? 0)), LIMITS.marketPages, false);
+    this.list<CryptoMarket>(this.cryptoAddress, "get_markets", this.cryptoConfig().then((c) => Number(c.market_count ?? 0)), this.limits.marketPages, false);
   cryptoMarket = (id: number) => this.read<CryptoMarket>(this.cryptoAddress, "get_market", [id]);
   cryptoPosition = (id: number, wallet: string) =>
     this.read<CryptoPosition>(this.cryptoAddress, "get_position", [id, wallet.toLowerCase()]);
@@ -106,7 +131,7 @@ export class HiveReader {
   sportsConfig = () => this.read<{ fixture_count: number; now: number }>(this.sportsAddress, "get_config");
   fixtureCount = async () => Number((await this.sportsConfig()).fixture_count ?? 0);
   /** Registration order (oldest first). */
-  fixtures = () => this.list<Fixture>(this.sportsAddress, "get_fixtures", this.fixtureCount(), LIMITS.fixturePages, true);
+  fixtures = () => this.list<Fixture>(this.sportsAddress, "get_fixtures", this.fixtureCount(), this.limits.fixturePages, true);
   fixture = (matchId: string) => this.read<Fixture>(this.sportsAddress, "get_fixture", [matchId]);
   sportsPosition = (matchId: string, wallet: string) =>
     this.read<SportsPosition>(this.sportsAddress, "get_position", [matchId, wallet.toLowerCase()]);
@@ -114,10 +139,10 @@ export class HiveReader {
   sportsEvidenceRaw = (matchId: string) => this.read<string>(this.sportsAddress, "get_evidence_raw", [matchId]);
   sportsSourceUrls = (matchId: string) => this.read<{ espn: string; bbc: string }>(this.sportsAddress, "get_source_urls", [matchId]);
   allPositions = () =>
-    this.list<PositionRow>(this.sportsAddress, "get_positions", this.read<number>(this.sportsAddress, "get_position_count").then(Number), LIMITS.positionPages, true);
+    this.list<PositionRow>(this.sportsAddress, "get_positions", this.read<number>(this.sportsAddress, "get_position_count").then(Number), this.limits.positionPages, true);
   aiCall = (matchId: string) => this.read<AiCall>(this.sportsAddress, "get_ai_call", [matchId]);
   /** get_ai_calls pages over fixtures (not calls): one fixture_count read, then parallel pages. */
-  aiCalls = () => this.list<AiCallRow>(this.sportsAddress, "get_ai_calls", this.fixtureCount(), LIMITS.aiCallPages, true);
+  aiCalls = () => this.list<AiCallRow>(this.sportsAddress, "get_ai_calls", this.fixtureCount(), this.limits.aiCallPages, true);
   username = (wallet: string) => this.read<string>(this.sportsAddress, "get_username", [wallet.toLowerCase()]);
   sportsUserPositions = (wallet: string) =>
     this.read<SportsUserRow[]>(this.sportsAddress, "get_user_positions", [wallet.toLowerCase(), 0, 50]);

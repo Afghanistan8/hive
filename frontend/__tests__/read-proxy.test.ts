@@ -32,7 +32,7 @@ beforeEach(() => {
 afterEach(() => vi.useRealTimers());
 
 describe("/api/gl/read", () => {
-  it("returns a list view with a short CDN cache and a detail view uncached", async () => {
+  it("shares every public view from the CDN, with shorter windows for detail and wallet reads", async () => {
     behaviour["studio-next.genlayer.com"] = async ({ functionName }) => (functionName === "get_fixtures" ? [{ match_id: "pd-1" }] : { match_id: "pd-1" });
     const route = await loadRoute();
 
@@ -42,7 +42,19 @@ describe("/api/gl/read", () => {
     expect(list.headers.get("cache-control")).toBe("public, s-maxage=10, stale-while-revalidate=3600");
 
     const detail = await get(route, SPORTS, "get_fixture", ["pd-1"]);
-    expect(detail.headers.get("cache-control")).toBe("no-store");
+    expect(detail.headers.get("cache-control")).toBe("public, s-maxage=5, stale-while-revalidate=120");
+
+    const wallet = await get(route, SPORTS, "get_position", ["pd-1", "0xabc"]);
+    expect(wallet.headers.get("cache-control")).toBe("public, s-maxage=3, stale-while-revalidate=30");
+  });
+
+  it("treats Studio's rate limit as a transport failure and uses the other hostname", async () => {
+    behaviour["studio-next.genlayer.com"] = async () => { throw new Error("Details: Rate limit exceeded: 30 requests per minute"); };
+    behaviour["studio-dev.genlayer.com"] = async () => ({ market_count: 44 });
+    const route = await loadRoute();
+    const res = await get(route, CRYPTO, "get_config");
+    expect(res.status).toBe(200);
+    expect(res.headers.get("x-hive-rpc")).toBe("studio-dev.genlayer.com");
   });
 
   it("refuses other contracts, write methods and odd arguments", async () => {

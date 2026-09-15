@@ -17,6 +17,8 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 interface ClaimDialogProps {
   address: string;
   method: "claim" | "refund";
+  /** The payout is a refund (e.g. nobody backed the result) even though the method is `claim`. */
+  refund?: boolean;
   args: unknown[];
   amount: bigint;
   label: string;
@@ -31,7 +33,7 @@ type Step = "idle" | "quoting" | "ready" | "signing" | "tracking" | "done" | "fa
  * yet. So claims use genlayer-js directly: Studio simulates the call and
  * returns the exact fee preset, including the message allocation.
  */
-export function ClaimDialog({ address, method, args, amount, label }: ClaimDialogProps) {
+export function ClaimDialog({ address, method, refund = method === "refund", args, amount, label }: ClaimDialogProps) {
   const { address: account, isConnected, requestConnect } = useWallet();
   const invalidate = useInvalidateHive();
   const [open, setOpen] = useState(false);
@@ -79,7 +81,7 @@ export function ClaimDialog({ address, method, args, amount, label }: ClaimDialo
       pushTxLog({ hash: txHash, label: `${method}(${args.map(String).join(", ")})`, at: Date.now(), ok });
       invalidate();
       if (ok) {
-        success("Claim decided", { description: `${formatGen(amount)} GEN is sent to your wallet when the transaction finalizes.` });
+        success(refund ? "Refund decided" : "Claim decided", { description: `${formatGen(amount)} GEN is sent to your wallet when the transaction finalizes.` });
         setStep("done");
       } else {
         setMessage(`Execution: ${receipt.txExecutionResultName}`);
@@ -106,7 +108,7 @@ export function ClaimDialog({ address, method, args, amount, label }: ClaimDialo
       </DialogTrigger>
       <DialogContent className="brand-card border-2 sm:max-w-[480px]">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold">{method === "refund" ? "Refund stake" : "Claim winnings"}</DialogTitle>
+          <DialogTitle className="text-xl font-bold">{refund ? "Refund stake" : "Claim winnings"}</DialogTitle>
           <DialogDescription>
             The contract transfers {formatGen(amount)} GEN to your wallet. Fees are simulated by the network for this exact call.
           </DialogDescription>
@@ -127,7 +129,7 @@ export function ClaimDialog({ address, method, args, amount, label }: ClaimDialo
           {message && <p className="break-words text-destructive">{message}</p>}
         </div>
         <div className="flex gap-2">
-          <Button variant="gradient" className="flex-1" disabled={step !== "ready"} onClick={submit}>Sign &amp; {method}</Button>
+          <Button variant="gradient" className="flex-1" disabled={step !== "ready"} onClick={submit}>Sign &amp; {refund ? "refund" : "claim"}</Button>
           {step === "failed" && <Button variant="outline" onClick={fetchQuote}>Retry</Button>}
         </div>
         {hash && (

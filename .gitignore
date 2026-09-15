@@ -39,3 +39,4 @@ keystore*.json
 .vercel
 .env*
 !.env.example
+deploy/seed-wallets.local.json
