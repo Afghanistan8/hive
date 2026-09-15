@@ -11,8 +11,8 @@ import {
 const tx: SubmitInput = {
   kind: "write",
   address: "0x1234567890123456789012345678901234567890",
-  method: "create_bet",
-  args: ["2026-06-12", "Team A", "Team B", "1"],
+  method: "predict",
+  args: ["pl-401879269", "HOME"],
 };
 
 function renderPanel(

@@ -1,109 +1,89 @@
 "use client";
 
-import { Navbar } from "@/components/Navbar";
-import { BetsTable } from "@/components/BetsTable";
-import { Leaderboard } from "@/components/Leaderboard";
+import Link from "next/link";
+import { Card, ContractLink, NetworkBadge } from "@/components/hive/bits";
+import { Button } from "@/components/ui/button";
+import { GENLAYER_CHAIN, GENLAYER_CHAIN_ID } from "@/lib/genlayer/network";
+import { HIVE_CRYPTO_ADDRESS, HIVE_SPORTS_ADDRESS, STUDIO_URL } from "@/lib/hive/config";
+import { useCryptoMarkets, useFixtures } from "@/lib/hive/hooks";
 
 export default function HomePage() {
+  const fixtures = useFixtures();
+  const markets = useCryptoMarkets();
+
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* Navbar */}
-      <Navbar />
-
-      {/* Main Content - Padding to account for fixed navbar */}
-      <main className="flex-grow pt-20 pb-12 px-4 md:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          {/* Hero Section */}
-          <div className="text-center mb-8 animate-fade-in">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">
-              Football Prediction Betting
-            </h1>
-            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-              AI-powered football match predictions on GenLayer blockchain.
-              <br />
-              Create bets, make predictions, and compete for points.
-            </p>
-          </div>
-
-          {/* Main Grid Layout - 2/1 columns on desktop, stacked on mobile */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
-            {/* Left Column - Bets Table (67% on desktop) */}
-            <div className="lg:col-span-8 animate-slide-up">
-              <BetsTable />
-            </div>
-
-            {/* Right Column - Leaderboard (33% on desktop) */}
-            <div className="lg:col-span-4 animate-slide-up" style={{ animationDelay: "100ms" }}>
-              <Leaderboard />
-            </div>
-          </div>
-
-          {/* Info Section */}
-          <div className="mt-8 glass-card p-6 md:p-8 animate-fade-in" style={{ animationDelay: "200ms" }}>
-            <h2 className="text-2xl font-bold mb-4">How it Works</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="space-y-2">
-                <div className="text-accent font-bold text-lg">1. Create a Bet</div>
-                <p className="text-sm text-muted-foreground">
-                  Connect your wallet and create a football match prediction. Choose the teams, date, and your predicted winner.
-                </p>
-              </div>
-              <div className="space-y-2">
-                <div className="text-accent font-bold text-lg">2. Wait for Resolution</div>
-                <p className="text-sm text-muted-foreground">
-                  After the match, the bet creator resolves the bet. GenLayer's AI verifies the actual match result.
-                </p>
-              </div>
-              <div className="space-y-2">
-                <div className="text-accent font-bold text-lg">3. Earn Points</div>
-                <p className="text-sm text-muted-foreground">
-                  Correct predictions earn you points. Climb the leaderboard and prove your football knowledge!
-                </p>
-              </div>
-            </div>
-          </div>
+    <div className="space-y-10">
+      <section className="space-y-5 pt-6 text-center">
+        <NetworkBadge />
+        <h1 className="text-4xl font-bold md:text-6xl">
+          Prediction markets <span className="bg-gradient-to-r from-[#9B6AF6] to-[#E37DF7] bg-clip-text text-transparent">nobody can rig</span>
+        </h1>
+        <p className="mx-auto max-w-3xl text-lg text-muted-foreground">
+          HIVE settles football and crypto markets inside GenLayer Intelligent Contracts. Validators independently fetch
+          two public sources, and a result is only final when both sources agree. No oracle key, no admin, no backend.
+        </p>
+        <div className="flex flex-wrap justify-center gap-3">
+          <Button asChild variant="gradient" size="lg"><Link href="/sports">Hive Match · Football</Link></Button>
+          <Button asChild variant="outline" size="lg"><Link href="/crypto">Hive Daily · Crypto</Link></Button>
         </div>
-      </main>
+      </section>
 
-      {/* Footer */}
-      <footer className="border-t border-white/10 py-2">
-        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
-          <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground">
-              <a
-                href="https://genlayer.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-accent transition-colors"
-              >
-                Powered by GenLayer
-              </a>
-              <a
-                href="https://studio-next.genlayer.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-accent transition-colors"
-              >
-                Studio
-              </a>
-              <a
-                href="https://docs.genlayer.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-accent transition-colors"
-              >
-                Docs
-              </a>
-              <a
-                href="https://github.com/genlayerlabs/genlayer-project-boilerplate"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-accent transition-colors"
-              >
-                GitHub
-              </a>
-          </div>
+      <section className="grid gap-5 md:grid-cols-2">
+        <Card className="space-y-3">
+          <div className="text-sm uppercase tracking-wide text-accent">Hive Match</div>
+          <h2 className="text-2xl font-bold">Top-5 European leagues, pari-mutuel 1X2</h2>
+          <p className="text-sm text-muted-foreground">
+            Stake on Home / Draw / Away (min 2 GEN) before kickoff. Winners split the whole pot pro-rata, no rake.
+            After full time anyone can press Resolve.
+          </p>
+          <ul className="list-disc space-y-1 pl-5 text-sm text-muted-foreground">
+            <li>Source A: ESPN scoreboard JSON, parsed deterministically by event id</li>
+            <li>Source B: BBC Sport scores page, read by each validator&apos;s LLM into a structured score</li>
+            <li>Both must report the same full-time score — otherwise the fixture stays open</li>
+            <li>Both confirm a postponement → 1:1 refunds; no agreement within 7 days → refunds</li>
+          </ul>
+          <div className="text-sm">{fixtures.data ? `${fixtures.data.length} fixtures on-chain` : "Loading fixtures…"}</div>
+        </Card>
+        <Card className="space-y-3">
+          <div className="text-sm uppercase tracking-wide text-accent">Hive Daily</div>
+          <h2 className="text-2xl font-bold">Will the GMT+1 daily candle close UP or DOWN?</h2>
+          <p className="text-sm text-muted-foreground">
+            22 major tokens. Stake 2–8 GEN per wallet before the day starts (GMT+1). Anyone can open a market for a
+            future day and anyone can settle it once the candle closes.
+          </p>
+          <ul className="list-disc space-y-1 pl-5 text-sm text-muted-foreground">
+            <li>Source A: CoinGecko market chart → open/close of the exact GMT+1 window</li>
+            <li>Source B: Gate.io hourly candles → the same 24h window (never UTC daily bars)</li>
+            <li>UP + UP → UP, DOWN + DOWN → DOWN, disagreement → INCONCLUSIVE refunds</li>
+            <li>Sources down → retry later; still down after 5 days → refunds. A direction is never invented.</li>
+          </ul>
+          <div className="text-sm">{markets.data ? `${markets.data.length} markets on-chain` : "Loading markets…"}</div>
+        </Card>
+      </section>
+
+      <Card className="space-y-4">
+        <h2 className="text-2xl font-bold">Verify this build yourself</h2>
+        <ol className="list-decimal space-y-2 pl-5 text-sm text-muted-foreground">
+          <li>
+            Add the network to your wallet (Connect does it for you): <b>{GENLAYER_CHAIN.name}</b>, chain ID{" "}
+            <b>{GENLAYER_CHAIN_ID}</b>, RPC <code>{GENLAYER_CHAIN.rpcUrls.default.http[0]}</code>, symbol GEN.
+          </li>
+          <li>
+            Get GEN from the faucet in <a className="text-accent underline" href={STUDIO_URL} target="_blank" rel="noreferrer">GenLayer Studio Next</a> (droplet icon on your account).
+          </li>
+          <li>Open <Link className="text-accent underline" href="/crypto">Crypto</Link>, pick an OPEN market and stake 2 GEN UP or DOWN.</li>
+          <li>Open <Link className="text-accent underline" href="/sports">Sports</Link> and stake on an upcoming fixture.</li>
+          <li>Every write shows its fee quote, then an explorer link. Your positions live in <Link className="text-accent underline" href="/portfolio">Portfolio</Link>.</li>
+          <li>
+            After the candle closes / the match ends, press <b>Resolve</b>. The transaction fetches both public sources on-chain; the
+            evidence panel shows exactly what validators agreed on.
+          </li>
+        </ol>
+        <div className="flex flex-col gap-2 border-t border-white/10 pt-4 md:flex-row md:gap-6">
+          <ContractLink label="HiveSports" address={HIVE_SPORTS_ADDRESS} />
+          <ContractLink label="HiveCrypto" address={HIVE_CRYPTO_ADDRESS} />
         </div>
-      </footer>
+      </Card>
     </div>
   );
 }

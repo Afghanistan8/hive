@@ -20,7 +20,7 @@ vi.mock("@genlayer/transaction-kit", async (importOriginal) => ({
   createTransactionKit: mocks.createTransactionKit,
 }));
 
-import FootballBets from "../lib/contracts/FootballBets";
+import { HiveReader } from "../lib/hive/contracts";
 import {
   addGenLayerNetwork,
   switchToGenLayerNetwork,
@@ -45,19 +45,9 @@ describe("network consumers", () => {
     });
   });
 
-  it("uses the shared chain for contract clients", () => {
-    const contract = new FootballBets(account, account);
-
-    expect(mocks.createClient).toHaveBeenLastCalledWith({
-      account,
-      chain: GENLAYER_CHAIN,
-    });
-
-    contract.updateAccount("0x0000000000000000000000000000000000000001");
-    expect(mocks.createClient).toHaveBeenLastCalledWith({
-      account: "0x0000000000000000000000000000000000000001",
-      chain: GENLAYER_CHAIN,
-    });
+  it("uses the shared chain for contract read clients", () => {
+    new HiveReader(account, account);
+    expect(mocks.createClient).toHaveBeenLastCalledWith({ chain: GENLAYER_CHAIN });
   });
 
   it("uses the same chain for Transaction Kit submissions", () => {

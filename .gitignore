@@ -33,3 +33,5 @@ frontend/.env
 frontend/.env.local
 deploy/deployments.local.json
 *.keystore
+
+.claude/

@@ -3,7 +3,9 @@
 import { useState } from "react";
 import { User, LogOut, AlertCircle, ExternalLink } from "lucide-react";
 import { useWallet } from "@/lib/genlayer/wallet";
-import { usePlayerPoints } from "@/lib/hooks/useFootballBets";
+import Link from "next/link";
+import { GENLAYER_NETWORK } from "@/lib/genlayer/network";
+import { STUDIO_URL } from "@/lib/hive/config";
 import { success, error, userRejected } from "@/lib/utils/toast";
 import { AddressDisplay } from "./AddressDisplay";
 import { Button } from "./ui/button";
@@ -30,8 +32,6 @@ export function AccountPanel() {
     disconnectWallet,
     switchWalletAccount,
   } = useWallet();
-
-  const { data: points = 0 } = usePlayerPoints(address);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [connectionError, setConnectionError] = useState("");
@@ -108,7 +108,7 @@ export function AccountPanel() {
               Connect to GenLayer
             </DialogTitle>
             <DialogDescription>
-              Connect your MetaMask wallet to start betting
+              Connect MetaMask — HIVE will add and switch to GenLayer Studio Next (chain 61997).
             </DialogDescription>
           </DialogHeader>
 
@@ -187,11 +187,12 @@ export function AccountPanel() {
             <User className="w-4 h-4 text-accent" />
             <AddressDisplay address={address} maxLength={12} />
           </div>
-          <div className="h-4 w-px bg-white/10" />
-          <div className="flex items-center gap-1">
-            <span className="text-sm font-semibold text-accent">{points}</span>
-            <span className="text-xs text-muted-foreground">pts</span>
-          </div>
+          {!isOnCorrectNetwork && (
+            <>
+              <div className="h-4 w-px bg-white/10" />
+              <span className="text-xs text-yellow-400">wrong network</span>
+            </>
+          )}
         </div>
 
         <DialogTrigger asChild>
@@ -218,8 +219,12 @@ export function AccountPanel() {
           </div>
 
           <div className="brand-card p-4 space-y-2">
-            <p className="text-sm text-muted-foreground">Your Points</p>
-            <p className="text-2xl font-bold text-accent">{points}</p>
+            <p className="text-sm text-muted-foreground">Need GEN?</p>
+            <p className="text-sm">
+              Open <a className="text-accent underline" href={STUDIO_URL} target="_blank" rel="noreferrer">GenLayer Studio Next</a>,
+              import or create this account and use the faucet (droplet icon). Then view your{" "}
+              <Link className="text-accent underline" href="/portfolio" onClick={() => setIsModalOpen(false)}>portfolio</Link>.
+            </p>
           </div>
 
           <div className="brand-card p-4 space-y-2">
@@ -234,7 +239,7 @@ export function AccountPanel() {
               />
               <span className="text-sm">
                 {isOnCorrectNetwork
-                  ? "Connected to GenLayer"
+                  ? `Connected to ${GENLAYER_NETWORK.chainName}`
                   : "Wrong Network"}
               </span>
             </div>

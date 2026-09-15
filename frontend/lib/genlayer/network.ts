@@ -61,7 +61,9 @@ export function createGenLayerNetworkConfig(
       chainName,
       nativeCurrency: chain.nativeCurrency,
       rpcUrls: [rpcUrl],
-      blockExplorerUrls: [],
+      blockExplorerUrls: [
+        (process.env.NEXT_PUBLIC_EXPLORER_URL || "https://explorer-studio-dev.genlayer.com").replace(/\/$/, ""),
+      ],
     },
   };
 }
