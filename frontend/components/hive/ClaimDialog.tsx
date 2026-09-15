@@ -119,7 +119,7 @@ export function ClaimDialog({ address, method, args, amount, label }: ClaimDialo
           {step === "quoting" && <p className="text-muted-foreground">Simulating the claim on {GENLAYER_CHAIN.name}…</p>}
           {step === "signing" && <p className="text-muted-foreground">Confirm in your wallet…</p>}
           {step === "tracking" && <p className="text-muted-foreground">Waiting for validators to decide…</p>}
-          {step === "done" && <p className="text-emerald-300">Decided. The payout is delivered on finalization.</p>}
+          {step === "done" && <p className="text-emerald-700">Decided. The payout is delivered on finalization.</p>}
           {message && <p className="break-words text-destructive">{message}</p>}
         </div>
         <div className="flex gap-2">

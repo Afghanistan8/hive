@@ -90,7 +90,7 @@ export function TxDialog({
           </DialogDescription>
         </DialogHeader>
         {!isOnCorrectNetwork && (
-          <p className="text-sm text-yellow-400">Your wallet is not on {GENLAYER_NETWORK.chainName}. Reconnect to switch networks.</p>
+          <p className="text-sm text-amber-700">Your wallet is not on {GENLAYER_NETWORK.chainName}. Reconnect to switch networks.</p>
         )}
         {kit && open ? (
           <GenLayerTransactionPanel
@@ -98,7 +98,7 @@ export function TxDialog({
             tx={tx}
             userValue={value}
             network={GENLAYER_NETWORK.chainName}
-            theme="dark"
+            theme="light"
             trackUntil="decided"
             onDone={handleDone}
           />

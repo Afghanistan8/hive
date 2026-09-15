@@ -48,7 +48,7 @@ export default function PortfolioPage() {
         {sports.data?.length === 0 && <p className="text-sm text-muted-foreground">No sports positions yet. <Link className="text-accent underline" href="/sports">Browse fixtures</Link>.</p>}
         {sports.data?.map((r) => (
           <Link key={r.fixture.match_id} href={`/sports/${r.fixture.match_id}`}>
-            <Card className="mb-2 flex flex-wrap items-center justify-between gap-3 p-4 hover:border-accent/60">
+            <Card className="mb-2 flex flex-wrap items-center justify-between gap-3 p-4 hover:border-black/25">
               <div>
                 <div className="font-semibold">{r.fixture.home} vs {r.fixture.away}</div>
                 <div className="text-xs text-muted-foreground">{r.fixture.league_name} · picked {r.pick} · {formatGen(r.stake)} GEN</div>
@@ -69,7 +69,7 @@ export default function PortfolioPage() {
         {crypto.data?.length === 0 && <p className="text-sm text-muted-foreground">No crypto positions yet. <Link className="text-accent underline" href="/crypto">Browse markets</Link>.</p>}
         {crypto.data?.map((r) => (
           <Link key={r.market.id} href={`/crypto/${r.market.id}`}>
-            <Card className="mb-2 flex flex-wrap items-center justify-between gap-3 p-4 hover:border-accent/60">
+            <Card className="mb-2 flex flex-wrap items-center justify-between gap-3 p-4 hover:border-black/25">
               <div>
                 <div className="font-semibold">{r.market.asset} · {r.market.target_day}</div>
                 <div className="text-xs text-muted-foreground">{r.side} · {formatGen(r.stake)} GEN {r.market.result && `· result ${r.market.result}`}</div>
@@ -88,9 +88,9 @@ export default function PortfolioPage() {
         {txs.length === 0 ? (
           <p className="text-sm text-muted-foreground">Transactions you send from HIVE appear here with explorer links.</p>
         ) : (
-          <Card className="divide-y divide-white/5 p-0">
+          <Card className="divide-y divide-black/[0.06] p-0">
             {txs.map((t) => (
-              <a key={t.hash} href={explorerTx(t.hash)} target="_blank" rel="noreferrer" className="flex flex-wrap justify-between gap-2 px-4 py-2 text-sm hover:bg-white/5">
+              <a key={t.hash} href={explorerTx(t.hash)} target="_blank" rel="noreferrer" className="flex flex-wrap justify-between gap-2 px-4 py-2 text-sm hover:bg-black/[0.04]">
                 <span className="font-mono">{t.label}</span>
                 <span className="text-muted-foreground">{t.ok === false ? "failed · " : ""}{new Date(t.at).toLocaleString()} · {t.hash.slice(0, 10)}…</span>
               </a>

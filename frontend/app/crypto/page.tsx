@@ -39,7 +39,7 @@ export default function CryptoPage() {
           <button
             key={f}
             onClick={() => setFilter(f)}
-            className={cn("rounded-full border px-3 py-1 text-sm", filter === f ? "border-accent bg-accent/20" : "border-white/10 text-muted-foreground hover:border-white/30")}
+            className={cn("rounded-full border px-3 py-1 text-sm", filter === f ? "border-ink bg-ink text-[#f6f3ee]" : "border-black/10 text-muted-foreground hover:border-black/30")}
           >
             {f.replaceAll("_", " ")}
           </button>
@@ -62,15 +62,15 @@ export default function CryptoPage() {
                 const upShare = total > 0n ? Number((toWei(m.up_pool) * 100n) / total) : 50;
                 return (
                   <Link key={m.id} href={`/crypto/${m.id}`}>
-                    <Card className="h-full space-y-2 p-4 transition-colors hover:border-accent/60">
+                    <Card className="h-full space-y-2 p-4 transition-colors hover:border-black/25">
                       <div className="flex items-center justify-between">
                         <span className="text-lg font-bold">{m.asset}</span>
                         <span className="text-xs text-muted-foreground">#{m.id}</span>
                       </div>
                       <PhaseBadge phase={cryptoPhase(m, now)} />
                       {m.result && <div className="text-sm">Result: <b>{m.result}</b></div>}
-                      <div className="h-1.5 overflow-hidden rounded-full bg-red-500/40">
-                        <div className="h-full bg-emerald-400" style={{ width: `${upShare}%` }} />
+                      <div className="h-1.5 overflow-hidden rounded-full bg-[#d9481f]/35">
+                        <div className="h-full bg-ink" style={{ width: `${upShare}%` }} />
                       </div>
                       <div className="flex justify-between text-xs text-muted-foreground">
                         <span>▲ {formatGen(m.up_pool)}</span>

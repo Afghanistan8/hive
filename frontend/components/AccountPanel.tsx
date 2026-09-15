@@ -115,7 +115,7 @@ export function AccountPanel() {
           <div className="space-y-4 mt-4">
             {!isMetaMaskInstalled ? (
               <>
-                <Alert variant="default" className="bg-accent/10 border-accent/20">
+                <Alert variant="default" className="bg-[#d9481f]/10 border-[#d9481f]/20">
                   <AlertCircle className="h-4 w-4" />
                   <AlertTitle>MetaMask Not Detected</AlertTitle>
                   <AlertDescription>
@@ -133,7 +133,7 @@ export function AccountPanel() {
                   Install MetaMask
                 </Button>
 
-                <div className="p-4 rounded-lg bg-muted/10 border border-muted/20">
+                <div className="p-4 rounded-lg bg-black/[0.04] border border-black/10">
                   <p className="text-xs text-muted-foreground">
                     After installing MetaMask, refresh this page and click
                     &quot;Connect Wallet&quot; again.
@@ -160,7 +160,7 @@ export function AccountPanel() {
                   </Alert>
                 )}
 
-                <div className="p-4 rounded-lg bg-muted/10 border border-muted/20">
+                <div className="p-4 rounded-lg bg-black/[0.04] border border-black/10">
                   <p className="text-xs text-muted-foreground">
                     This will open MetaMask and prompt you to:
                   </p>
@@ -189,8 +189,8 @@ export function AccountPanel() {
           </div>
           {!isOnCorrectNetwork && (
             <>
-              <div className="h-4 w-px bg-white/10" />
-              <span className="text-xs text-yellow-400">wrong network</span>
+              <div className="h-4 w-px bg-black/10" />
+              <span className="text-xs text-amber-700">wrong network</span>
             </>
           )}
         </div>
@@ -233,8 +233,8 @@ export function AccountPanel() {
               <div
                 className={`w-2 h-2 rounded-full ${
                   isOnCorrectNetwork
-                    ? "bg-green-500"
-                    : "bg-yellow-500 animate-pulse"
+                    ? "bg-emerald-600"
+                    : "bg-amber-500 animate-pulse"
                 }`}
               />
               <span className="text-sm">
@@ -246,8 +246,8 @@ export function AccountPanel() {
           </div>
 
           {!isOnCorrectNetwork && (
-            <Alert variant="default" className="bg-yellow-500/10 border-yellow-500/20">
-              <AlertCircle className="h-4 w-4 text-yellow-500" />
+            <Alert variant="default" className="bg-amber-500/10 border-amber-600/25">
+              <AlertCircle className="h-4 w-4 text-amber-600" />
               <AlertTitle>Network Warning</AlertTitle>
               <AlertDescription>
                 You&apos;re not on the GenLayer network. Please switch networks in
@@ -264,7 +264,7 @@ export function AccountPanel() {
             </Alert>
           )}
 
-          <div className="mt-6 pt-4 border-t border-white/10 space-y-3">
+          <div className="mt-6 pt-4 border-t border-black/10 space-y-3">
             <Button
               onClick={handleSwitchAccount}
               variant="outline"
@@ -286,7 +286,7 @@ export function AccountPanel() {
             </Button>
           </div>
 
-          <div className="p-4 rounded-lg bg-muted/10 border border-muted/20">
+          <div className="p-4 rounded-lg bg-black/[0.04] border border-black/10">
             <p className="text-xs text-muted-foreground">
               Use &quot;Switch Account&quot; to select a different MetaMask
               account. Use &quot;Disconnect&quot; to remove this site from

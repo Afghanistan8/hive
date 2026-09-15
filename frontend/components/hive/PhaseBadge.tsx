@@ -1,12 +1,12 @@
 import { cn } from "@/lib/utils";
 
 const STYLES: Record<string, string> = {
-  OPEN: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
-  CLOSED: "bg-sky-500/15 text-sky-300 border-sky-500/30",
-  READY_TO_SETTLE: "bg-amber-500/15 text-amber-300 border-amber-500/30",
-  SETTLED: "bg-purple-500/20 text-purple-200 border-purple-500/40",
-  INCONCLUSIVE: "bg-zinc-500/20 text-zinc-300 border-zinc-500/40",
-  POSTPONED: "bg-orange-500/15 text-orange-300 border-orange-500/30",
+  OPEN: "bg-emerald-600/10 text-emerald-800 border-emerald-700/25",
+  CLOSED: "bg-black/[0.05] text-ink/70 border-black/15",
+  READY_TO_SETTLE: "bg-[#ee6a2c]/12 text-[#b53a17] border-[#ee6a2c]/35",
+  SETTLED: "bg-ink text-[#f6f3ee] border-ink",
+  INCONCLUSIVE: "bg-black/[0.04] text-ink/55 border-black/10",
+  POSTPONED: "bg-amber-500/10 text-amber-800 border-amber-600/30",
 };
 
 const LABELS: Record<string, string> = {

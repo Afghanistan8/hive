@@ -27,16 +27,16 @@ export function Providers({ children }: { children: React.ReactNode }) {
       </WalletProvider>
       <Toaster
         position="top-right"
-        theme="dark"
+        theme="light"
         richColors
         closeButton
         offset="80px"
         toastOptions={{
           style: {
-            background: 'hsl(var(--card))',
-            border: '1px solid hsl(var(--border))',
-            color: 'hsl(var(--foreground))',
-            boxShadow: '0 8px 32px hsl(var(--background) / 0.8)',
+            background: '#f6f3ee',
+            border: '1px solid rgba(22,21,20,0.12)',
+            color: '#161514',
+            boxShadow: '0 12px 32px -16px rgba(40,30,20,0.35)',
           },
         }}
       />

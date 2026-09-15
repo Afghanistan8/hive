@@ -72,7 +72,7 @@ export default function CryptoMarketPage() {
                 onClick={() => setSide(s)}
                 className={cn(
                   "rounded-lg border-2 p-4 text-left disabled:cursor-not-allowed",
-                  activeSide === s ? (s === "UP" ? "border-emerald-400 bg-emerald-400/10" : "border-red-400 bg-red-400/10") : "border-white/10 hover:border-white/25",
+                  activeSide === s ? (s === "UP" ? "border-emerald-600 bg-emerald-500/10" : "border-[#d9481f] bg-[#d9481f]/10") : "border-black/10 hover:border-black/25",
                 )}
               >
                 <div className="text-lg font-bold">{s === "UP" ? "▲ UP" : "▼ DOWN"}</div>
@@ -83,7 +83,7 @@ export default function CryptoMarketPage() {
           </div>
 
           {phase === "OPEN" && (
-            <div className="space-y-3 border-t border-white/10 pt-4">
+            <div className="space-y-3 border-t border-black/10 pt-4">
               <p className="text-sm text-muted-foreground">
                 {lockedSide
                   ? <>You hold {formatGen(current)} GEN on <b className="text-foreground">{lockedSide}</b>. Top-ups on the same side only, up to 8 GEN total.</>
@@ -107,7 +107,7 @@ export default function CryptoMarketPage() {
           )}
 
           {position?.exists && (
-            <div className="rounded-md border border-white/10 p-3 text-sm">
+            <div className="rounded-md border border-black/10 p-3 text-sm">
               Your position: <b>{position.side}</b> · {formatGen(position.stake)} GEN
               {position.claimed && <> · claimed {formatGen(position.payout)} GEN</>}
             </div>
@@ -151,7 +151,7 @@ export default function CryptoMarketPage() {
             />
           )}
           {evidence?.exists && (
-            <div className="space-y-2 border-t border-white/10 pt-3 text-sm">
+            <div className="space-y-2 border-t border-black/10 pt-3 text-sm">
               <div className="font-semibold">Agreed evidence{evidence.terminal_refund && " (terminal refund)"}</div>
               {!evidence.terminal_refund && (
                 <table className="w-full text-left text-xs">
@@ -166,7 +166,7 @@ export default function CryptoMarketPage() {
               {evidence.agreed_payload && (
                 <details className="text-xs">
                   <summary className="cursor-pointer text-muted-foreground">Exact payload validators agreed on</summary>
-                  <code className="mt-1 block break-all rounded bg-white/5 p-2">{evidence.agreed_payload}</code>
+                  <code className="mt-1 block break-all rounded bg-black/[0.04] p-2">{evidence.agreed_payload}</code>
                 </details>
               )}
               {evidence.resolved_at ? <div className="text-xs text-muted-foreground">Decided at {formatGmt1(evidence.resolved_at)}</div> : null}

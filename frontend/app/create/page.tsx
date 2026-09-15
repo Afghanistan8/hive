@@ -38,7 +38,7 @@ export default function CreatePage() {
                 title={`CoinGecko ${a.coingecko_id} · Gate ${a.gate_pair}`}
                 className={cn(
                   "rounded-md border px-3 py-1.5 text-sm",
-                  asset === a.asset ? "border-accent bg-accent/20" : "border-white/10 hover:border-white/30",
+                  asset === a.asset ? "border-ink bg-ink text-[#f6f3ee]" : "border-black/10 hover:border-black/30",
                   openDays.has(a.asset) && "opacity-50",
                 )}
               >

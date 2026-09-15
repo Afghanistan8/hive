@@ -10,9 +10,9 @@ const defaultOptions: ExternalToast = {
   duration: 4000,
   closeButton: true,
   style: {
-    background: 'hsl(var(--background))',
-    border: '1px solid hsl(var(--border))',
-    color: 'hsl(var(--foreground))',
+    background: 'rgba(246,243,238,1)',
+    border: '1px solid rgba(22,21,20,0.12)',
+    color: 'rgba(22,21,20,1)',
   },
 };
 
@@ -22,9 +22,9 @@ export const success = (message: string, options?: ExternalToast) => {
     ...defaultOptions,
     duration: 4000,
     style: {
-      background: 'hsl(var(--background))',
-      border: '1px solid hsl(var(--accent) / 0.3)',
-      color: 'hsl(var(--accent))',
+      background: 'rgba(246,243,238,1)',
+      border: '1px solid rgba(217,72,31,0.3)',
+      color: 'rgba(217,72,31,1)',
       ...options?.style,
     },
     ...options,
@@ -37,24 +37,24 @@ export const error = (message: string, options?: ExternalToast) => {
     ...defaultOptions,
     duration: 6000, // Longer for errors
     style: {
-      background: 'hsl(var(--background))',
-      border: '1px solid hsl(var(--destructive) / 0.5)',
-      color: 'hsl(var(--destructive))',
+      background: 'rgba(246,243,238,1)',
+      border: '1px solid rgba(194,54,28,0.5)',
+      color: 'rgba(194,54,28,1)',
       ...options?.style,
     },
     ...options,
   });
 };
 
-// Warning toast with yellow colors (matching text-yellow-400)
+// Warning toast (amber)
 export const warning = (message: string, options?: ExternalToast) => {
   return sonnerToast.warning(message, {
     ...defaultOptions,
     duration: 5000,
     style: {
-      background: 'hsl(var(--background))',
-      border: '1px solid rgb(234 179 8 / 0.3)', // yellow-500/30
-      color: 'rgb(250 204 21)', // yellow-400
+      background: 'rgba(246,243,238,1)',
+      border: '1px solid rgba(217,119,6,0.3)',
+      color: 'rgb(146 64 14)',
       ...options?.style,
     },
     ...options,
@@ -109,9 +109,9 @@ export const configError = (message: string, description?: string, action?: { la
       onClick: action.onClick,
     } : undefined,
     style: {
-      background: 'hsl(var(--background))',
-      border: '1px solid hsl(var(--destructive) / 0.5)',
-      color: 'hsl(var(--destructive))',
+      background: 'rgba(246,243,238,1)',
+      border: '1px solid rgba(194,54,28,0.5)',
+      color: 'rgba(194,54,28,1)',
     },
   });
 };
@@ -122,9 +122,9 @@ export const userRejected = (message: string) => {
     duration: 2000,
     closeButton: false,
     style: {
-      background: 'hsl(var(--background))',
-      border: '1px solid hsl(var(--border))',
-      color: 'hsl(var(--muted-foreground))',
+      background: 'rgba(246,243,238,1)',
+      border: '1px solid rgba(22,21,20,0.12)',
+      color: 'rgba(109,104,96,1)',
     },
   });
 };

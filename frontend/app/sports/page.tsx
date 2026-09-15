@@ -40,7 +40,7 @@ export default function SportsPage() {
           <button
             key={l.code}
             onClick={() => setLeague(l.code)}
-            className={cn("rounded-full border px-3 py-1 text-sm", league === l.code ? "border-accent bg-accent/20" : "border-white/10 text-muted-foreground hover:border-white/30")}
+            className={cn("rounded-full border px-3 py-1 text-sm", league === l.code ? "border-ink bg-ink text-[#f6f3ee]" : "border-black/10 text-muted-foreground hover:border-black/30")}
           >
             {l.label}
           </button>
@@ -53,7 +53,7 @@ export default function SportsPage() {
           const phase = sportsPhase(f, now);
           return (
             <Link key={f.match_id} href={`/sports/${f.match_id}`}>
-              <Card className="h-full space-y-3 transition-colors hover:border-accent/60">
+              <Card className="h-full space-y-3 transition-colors hover:border-black/25">
                 <div className="flex items-center justify-between text-xs text-muted-foreground">
                   <span>{f.league_name}</span>
                   <PhaseBadge phase={phase} />
@@ -71,7 +71,7 @@ export default function SportsPage() {
                 )}
                 <div className="grid grid-cols-3 gap-2 text-center text-xs">
                   {([["Home", f.pool_home], ["Draw", f.pool_draw], ["Away", f.pool_away]] as const).map(([label, pool]) => (
-                    <div key={label} className="rounded-md bg-white/5 py-1.5">
+                    <div key={label} className="rounded-md bg-black/[0.04] py-1.5">
                       <div className="text-muted-foreground">{label}</div>
                       <div className="font-semibold">{formatGen(pool)} GEN</div>
                     </div>

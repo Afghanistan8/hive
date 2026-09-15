@@ -18,7 +18,7 @@ const PICKS = ["HOME", "DRAW", "AWAY"] as const;
 
 function Reading({ label, r }: { label: string; r?: SourceReading }) {
   return (
-    <div className="rounded-md bg-white/5 p-3">
+    <div className="rounded-md bg-black/[0.04] p-3">
       <div className="text-xs text-muted-foreground">{label}</div>
       <div className="font-semibold">{r ? (r.status === "FINISHED" ? `FT ${r.home_goals}–${r.away_goals}` : r.status) : "—"}</div>
     </div>
@@ -83,8 +83,8 @@ export default function FixturePage() {
                 onClick={() => setPick(p)}
                 className={cn(
                   "rounded-lg border-2 p-4 text-left transition-all disabled:cursor-not-allowed",
-                  activePick === p ? "border-accent bg-accent/15" : "border-white/10 hover:border-white/25",
-                  f.result === p && "border-emerald-400 bg-emerald-400/10",
+                  activePick === p ? "border-ink bg-black/[0.06]" : "border-black/10 hover:border-black/25",
+                  f.result === p && "border-emerald-600 bg-emerald-500/10",
                 )}
               >
                 <div className="text-sm font-semibold">{labels[p]}</div>
@@ -95,7 +95,7 @@ export default function FixturePage() {
           </div>
 
           {phase === "OPEN" && (
-            <div className="space-y-3 border-t border-white/10 pt-4">
+            <div className="space-y-3 border-t border-black/10 pt-4">
               <div className="text-sm text-muted-foreground">
                 {lockedPick
                   ? <>You backed <b className="text-foreground">{labels[lockedPick as keyof typeof labels]}</b> with {formatGen(position?.stake)} GEN. You can top up the same side.</>
@@ -119,7 +119,7 @@ export default function FixturePage() {
           )}
 
           {position?.exists && (
-            <div className="rounded-md border border-white/10 p-3 text-sm">
+            <div className="rounded-md border border-black/10 p-3 text-sm">
               Your position: <b>{labels[position.pick as keyof typeof labels]}</b> · {formatGen(position.stake)} GEN
               {position.claimed && <> · claimed {formatGen(position.payout)} GEN</>}
             </div>
@@ -178,7 +178,7 @@ export default function FixturePage() {
             </div>
           )}
           {evidence?.exists && (
-            <div className="space-y-2 border-t border-white/10 pt-3">
+            <div className="space-y-2 border-t border-black/10 pt-3">
               <div className="text-sm font-semibold">Agreed evidence</div>
               <div className="grid grid-cols-2 gap-2">
                 <Reading label="ESPN" r={evidence.espn} />
@@ -188,7 +188,7 @@ export default function FixturePage() {
               {evidenceRaw && (
                 <details className="text-xs">
                   <summary className="cursor-pointer text-muted-foreground">Exact payload validators agreed on</summary>
-                  <code className="mt-1 block break-all rounded bg-white/5 p-2">{evidenceRaw}</code>
+                  <code className="mt-1 block break-all rounded bg-black/[0.04] p-2">{evidenceRaw}</code>
                 </details>
               )}
               {f.resolved_at > 0 && <div className="text-xs text-muted-foreground">Decided at {formatGmt1(f.resolved_at)}</div>}

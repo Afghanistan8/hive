@@ -1,3 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 97.76 91.93">
-  <path fill="#FFFFFF" d="M44.26 32.35L27.72 67.12L43.29 74.9L0 91.93L44.26 0L44.26 32.35ZM53.5 32.35L70.04 67.12L54.47 74.9L97.76 91.93L53.5 0L53.5 32.35ZM48.64 43.78L58.33 62.94L48.64 67.69L39.47 62.92L48.64 43.78Z"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <radialGradient id="b" cx="38%" cy="32%" r="72%">
+      <stop offset="0%" stop-color="#FFC08A"/>
+      <stop offset="28%" stop-color="#F7843D"/>
+      <stop offset="62%" stop-color="#E4562A"/>
+      <stop offset="100%" stop-color="#B73A1C"/>
+    </radialGradient>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="#ECE8E0"/>
+  <circle cx="32" cy="32" r="22" fill="#D9D2C6" opacity="0.55"/>
+  <circle cx="32" cy="32" r="18" fill="url(#b)"/>
+  <ellipse cx="26.5" cy="25" rx="5.2" ry="3.4" fill="#FFE2C4" opacity="0.55" transform="rotate(-28 26.5 25)"/>
 </svg>
