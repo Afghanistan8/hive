@@ -27,6 +27,7 @@ resolve and claim. The frontend reads the contracts directly.
 | RPC used | `https://studio-next.genlayer.com/api` (same chain as `https://studio-dev.genlayer.com/api`) |
 | Explorer | https://explorer-studio-dev.genlayer.com |
 | Studio / faucet | https://studio-next.genlayer.com |
+| **Live app** | https://hive-psi-eight.vercel.app |
 
 | Contract | Address | Deploy tx |
 |---|---|---|
@@ -75,7 +76,7 @@ Studio returns from simulating the exact call.
    network name `GenLayer Studio Next`, RPC `https://studio-next.genlayer.com/api`, chain ID `61997`, symbol `GEN`,
    explorer `https://explorer-studio-dev.genlayer.com`.
 2. **Get GEN**: open https://studio-next.genlayer.com, import/create your account and press the faucet (droplet) icon.
-3. **Run the app** (or use the hosted build if provided):
+3. **Open the live app** at https://hive-psi-eight.vercel.app — or run it locally:
    ```bash
    npm ci
    cp frontend/.env.example frontend/.env   # already contains the deployed addresses
@@ -213,7 +214,7 @@ scripts/
 frontend/                   Next.js app (genlayer-js 2.0.0-rc.1, Transaction Kit 0.1.0-rc.2)
 fixtures.demo.json
 DEMO.md                     demo script + video shot list
-DEPLOY.md                   Vercel + keeper cron + Supabase mirror runbook
+DEPLOY.md                   Vercel hosting + GitHub Actions keeper runbook
 ```
 
 ## Development

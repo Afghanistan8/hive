@@ -1,4 +1,4 @@
-import "server-only";
+// Server-side only (Node / GitHub Actions / API route). Never import from client components.
 import { ESPN_HEADERS, ESPN_SLUGS, fold } from "../hive/espn";
 
 // Finds upcoming top-5-league fixtures on ESPN and keeps only pairings the BBC

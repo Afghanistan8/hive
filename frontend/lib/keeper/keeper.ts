@@ -1,4 +1,4 @@
-import "server-only";
+// Server-side only (Node / GitHub Actions / API route). Never import from client components.
 import { createAccount, createClient } from "genlayer-js";
 import { GENLAYER_CHAIN } from "../genlayer/network";
 import { HiveReader } from "../hive/contracts";

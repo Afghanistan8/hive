@@ -1,11 +1,16 @@
 name: Keeper
 
-# Vercel Hobby crons run at most once a day, so this schedule pings the
-# deployed keeper every 15 minutes. The keeper only makes permissionless calls.
+# Runs the HIVE keeper every 15 minutes inside GitHub Actions. Every transaction
+# it sends is a permissionless call any wallet could make: open tomorrow's crypto
+# markets, register BBC-verified fixtures, request AI Calls before kickoff,
+# resolve what is ready, mark verified postponements. The keeper key has no
+# special powers in the contracts.
 #
-# Repository settings:
-#   Variables -> KEEPER_URL   e.g. https://hive-xyz.vercel.app
-#   Secrets   -> CRON_SECRET  same value as the Vercel env var
+# Repository → Settings → Secrets and variables → Actions → Secrets:
+#   KEEPER_PRIVATE_KEY          required for live runs (fund the wallet with GEN on Studio Next)
+#   SUPABASE_URL                optional read-mirror
+#   SUPABASE_SERVICE_ROLE_KEY   optional read-mirror
+# Without KEEPER_PRIVATE_KEY the job runs as a dry run (plans, signs nothing).
 on:
   schedule:
     - cron: "*/15 * * * *"
@@ -16,23 +21,26 @@ on:
         type: boolean
         default: false
 
+concurrency:
+  group: hive-keeper
+  cancel-in-progress: false
+
 jobs:
   tick:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
-      - name: Call keeper
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - name: Run keeper
+        working-directory: frontend
         env:
-          KEEPER_URL: ${{ vars.KEEPER_URL }}
-          CRON_SECRET: ${{ secrets.CRON_SECRET }}
-          DRY: ${{ inputs.dry && '1' || '0' }}
-        run: |
-          if [ -z "$KEEPER_URL" ] || [ -z "$CRON_SECRET" ]; then
-            echo "KEEPER_URL / CRON_SECRET not configured; skipping."
-            exit 0
-          fi
-          url="$KEEPER_URL/api/cron/keeper"
-          if [ "$DRY" = "1" ]; then url="$url?dry=1"; fi
-          curl -fsS --max-time 120 -H "Authorization: Bearer $CRON_SECRET" "$url" | tee report.json
-          echo
-          if command -v jq >/dev/null; then jq '{dryRun, signer, mirror, actions: (.actions|length), errors}' report.json; fi
+          KEEPER_PRIVATE_KEY: ${{ secrets.KEEPER_PRIVATE_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          KEEPER_DRY: ${{ inputs.dry && '1' || '0' }}
+        run: npm run keeper

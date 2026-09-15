@@ -1,4 +1,4 @@
-import "server-only";
+// Server-side only (Node / GitHub Actions / API route). Never import from client components.
 
 // Server-side writer for the Supabase read-mirror. Uses the service-role key,
 // which must only ever live in server env (never NEXT_PUBLIC_*).
