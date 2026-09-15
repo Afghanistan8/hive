@@ -70,13 +70,20 @@ if (address.toLowerCase() !== DEPLOYER) {
 }
 console.log(`• key verified: deployer ${address}`);
 
+// Arguments are fixed strings (no user input), so one command line through the shell is safe.
 const vercel = (args, input) =>
-  spawnSync("npx", ["vercel", ...args], { cwd: ROOT, input, encoding: "utf8", shell: process.platform === "win32" });
+  spawnSync(`npx vercel ${args.join(" ")}`, { cwd: ROOT, input, encoding: "utf8", shell: true });
+
+const listed = () => {
+  const r = vercel(["env", "ls", "production"]);
+  return new Set([...`${r.stdout}\n${r.stderr}`.matchAll(/^\s*([A-Z0-9_]+)\s+/gm)].map((m) => m[1]));
+};
 
 for (const [name, value] of Object.entries(uploads)) {
   // Value goes through stdin, never the command line.
   const r = vercel(["env", "add", name, "production", "--sensitive", "--force", "--yes"], value);
-  if (r.status !== 0) fail(`uploading ${name} failed:\n${(r.stderr || r.stdout).replaceAll(value, "***")}`);
+  const output = `${r.stdout}\n${r.stderr}`.replaceAll(value, "***").trim();
+  if (r.status !== 0 || !listed().has(name)) fail(`uploading ${name} did not stick. Vercel CLI said:\n${output}`);
   console.log(`✓ ${name} set (production, sensitive)`);
 }
 
@@ -91,8 +98,14 @@ if (deploy.status !== 0) fail(`redeploy failed:\n${deploy.stderr || deploy.stdou
 console.log("✓ redeployed");
 
 console.log("• dry-running the keeper (nothing is signed)…");
-const res = await fetch(`${SITE}/api/cron/keeper?dry=1`, { headers: { Authorization: `Bearer ${env.CRON_SECRET}` } });
-const body = await res.json().catch(() => ({}));
+let res, body;
+for (let attempt = 0; attempt < 6; attempt++) {
+  // The production alias can take a few seconds to move to the new deployment.
+  res = await fetch(`${SITE}/api/cron/keeper?dry=1`, { headers: { Authorization: `Bearer ${env.CRON_SECRET}` } });
+  body = await res.json().catch(() => ({}));
+  if (res.status !== 401) break;
+  await new Promise((r) => setTimeout(r, 10_000));
+}
 if (!res.ok) fail(`keeper check returned HTTP ${res.status}`);
 const planned = (body.actions ?? []).map((a) => a.method ?? a.kind ?? a.type).filter(Boolean);
 console.log(`✓ keeper reachable (HTTP ${res.status}); planned: ${planned.length ? planned.join(", ") : "nothing due right now"}`);
