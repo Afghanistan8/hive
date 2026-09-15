@@ -111,6 +111,35 @@ describe("/api/gl/read", () => {
     expect(await res.json()).toEqual({ result: [{ id: 44 }], stale: true });
   });
 
+  it("retries Studio's 'all execution slots occupied' reply instead of failing the page", async () => {
+    let calls = 0;
+    const busyThenOk = async () => {
+      calls++;
+      if (calls < 3) throw Object.assign(new Error("Version of JSON-RPC protocol is not supported."), { details: "Server busy: all 8 execution slots occupied, retry later" });
+      return [{ id: 44 }];
+    };
+    behaviour["studio-next.genlayer.com"] = busyThenOk;
+    behaviour["studio-dev.genlayer.com"] = busyThenOk;
+    const route = await loadRoute();
+    const res = await get(route, CRYPTO, "get_markets", [0, 16]);
+    expect(res.status).toBe(200);
+    expect(calls).toBe(3);
+  });
+
+  it("answers 503 with Retry-After when Studio stays busy", async () => {
+    vi.useFakeTimers();
+    const busy = async () => { throw Object.assign(new Error("x"), { details: "Server busy: all 8 execution slots occupied, retry later" }); };
+    behaviour["studio-next.genlayer.com"] = busy;
+    behaviour["studio-dev.genlayer.com"] = busy;
+    const route = await loadRoute();
+    const pending = get(route, SPORTS, "get_fixture", ["pd-1"]);
+    await vi.advanceTimersByTimeAsync(13_000);
+    const res = await pending;
+    expect(res.status).toBe(503);
+    expect(res.headers.get("retry-after")).toBe("2");
+    expect((await res.json()).error).toMatch(/Studio is busy/);
+  });
+
   it("does not retry contract errors on the other hostname", async () => {
     const seen: string[] = [];
     behaviour["studio-next.genlayer.com"] = async () => { seen.push("next"); throw new Error("fixture not found"); };

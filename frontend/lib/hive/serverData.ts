@@ -21,16 +21,20 @@ const reader = () =>
   new HiveReader(undefined, undefined, {
     proxyBase: SITE_ORIGIN,
     fetchInit: { next: { revalidate: SNAPSHOT_REVALIDATE } },
-    timeoutMs: 8000,
+    // The proxy itself retries busy/rate-limited reads for up to 12 s.
+    timeoutMs: 14_000,
   });
 
 async function snapshot<T>(fn: (r: HiveReader) => Promise<T>): Promise<Snapshot<T> | null> {
-  try {
-    return { data: await fn(reader()), at: Date.now() };
-  } catch (e) {
-    console.warn("[hive] server snapshot unavailable:", (e as Error)?.message ?? e);
-    return null;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      return { data: await fn(reader()), at: Date.now() };
+    } catch (e) {
+      console.warn(`[hive] server snapshot attempt ${attempt + 1} failed:`, (e as Error)?.message ?? e);
+      await new Promise((r) => setTimeout(r, 1500));
+    }
   }
+  return null;
 }
 
 export const fixturesSnapshot = () => snapshot<Fixture[]>((r) => r.fixtures());

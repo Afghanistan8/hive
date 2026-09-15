@@ -28,27 +28,50 @@ class ReadTimeout extends Error {}
 const withTimeout = <T,>(p: Promise<T>, ms: number) =>
   Promise.race([p, new Promise<never>((_, rej) => setTimeout(() => rej(new ReadTimeout(`Studio RPC did not answer within ${Math.round(ms / 1000)} s`)), ms))]);
 
-// Network-level failures are worth one retry on the other hostname; contract errors are not.
-const isTransport = (e: unknown) =>
-  e instanceof ReadTimeout || /fetch failed|HTTP request failed|ECONN|ETIMEDOUT|ENOTFOUND|socket|429|rate limit|503|502/i.test(String((e as any)?.message ?? e));
+// viem spreads the RPC's own words across message / shortMessage / details / cause.
+const errorText = (e: any) => [e?.message, e?.shortMessage, e?.details, e?.cause?.message, e?.cause?.details].filter(Boolean).join(" | ");
+
+// Worth retrying (possibly on the other hostname): network trouble, rate limits, and Studio's
+// "Server busy: all 8 execution slots occupied" — it runs at most 8 contract reads at once for
+// everyone. viem relabels some of those replies as "Version of JSON-RPC protocol is not supported".
+// Contract errors (a view raising) are returned as-is.
+const isRetryable = (e: unknown) =>
+  e instanceof ReadTimeout ||
+  /fetch failed|HTTP request failed|ECONN|ETIMEDOUT|ENOTFOUND|socket|429|rate limit|503|502|server busy|execution slots|retry later|JSON-RPC protocol/i.test(errorText(e));
+
+// Keep this instance from adding more than a few concurrent reads to Studio's shared slots.
+const MAX_CONCURRENT = 4;
+let active = 0;
+const waiters: (() => void)[] = [];
+async function withSlot<T>(fn: () => Promise<T>): Promise<T> {
+  if (active >= MAX_CONCURRENT) await new Promise<void>((r) => waiters.push(r));
+  active++;
+  try {
+    return await fn();
+  } finally {
+    active--;
+    waiters.shift()?.();
+  }
+}
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 async function read({ address, functionName, args }: ReadRequest) {
   const started = Date.now();
   let lastError: unknown;
-  for (const [i, { client, rpcUrl }] of clients.entries()) {
+  for (let attempt = 0; ; attempt++) {
     const remaining = READ_TIMEOUT_MS - (Date.now() - started);
-    if (remaining < 1500) break;
-    // Leave the fallback a real chance: the primary gets at most two thirds of the budget.
-    const budget = i === 0 && clients.length > 1 ? Math.round(READ_TIMEOUT_MS * 0.66) : remaining;
+    if (remaining < 1000) break;
+    const { client, rpcUrl } = clients[attempt % clients.length];
     try {
-      const value = await withTimeout(
-        client.readContract({ address: address as `0x${string}`, functionName, args, jsonSafeReturn: true }),
-        budget,
+      const value = await withSlot(() =>
+        withTimeout(client.readContract({ address: address as `0x${string}`, functionName, args, jsonSafeReturn: true }), Math.min(remaining, 8000)),
       );
       return { value, rpcUrl };
     } catch (e) {
       lastError = e;
-      if (!isTransport(e)) throw e;
+      if (!isRetryable(e)) throw e;
+      if (!(e instanceof ReadTimeout)) await sleep(Math.min(250 * 2 ** attempt, 2000) + Math.random() * 250);
     }
   }
   throw lastError;
@@ -87,11 +110,12 @@ async function handle(body: unknown) {
         { headers: { "Cache-Control": "no-store", "X-Hive-Stale": `${Math.round((Date.now() - stale.at) / 1000)}s` } },
       );
     }
-    const message = String(e?.shortMessage || e?.message || e).split("\n")[0].slice(0, 300);
+    const message = (/server busy|execution slots/i.test(errorText(e)) ? "Studio is busy (all execution slots occupied), retry shortly" : String(e?.details || e?.shortMessage || e?.message || e)).split("\n")[0].slice(0, 300);
     const timeout = e instanceof ReadTimeout;
+    const busy = !timeout && isRetryable(e);
     return NextResponse.json(
       { error: `${req.functionName}: ${message}` },
-      { status: timeout ? 504 : 502, headers: { "Cache-Control": "no-store" } },
+      { status: timeout ? 504 : busy ? 503 : 502, headers: { "Cache-Control": "no-store", ...(busy ? { "Retry-After": "2" } : {}) } },
     );
   }
 }

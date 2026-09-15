@@ -94,11 +94,21 @@ export class HiveReader {
       return body.result as T;
     }
     this.client ??= createClient({ chain: GENLAYER_CHAIN });
-    return (await timeout(
-      this.client.readContract({ address: address as `0x${string}`, functionName, args, jsonSafeReturn: true }),
-      READ_TIMEOUT_MS,
-      functionName,
-    )) as T;
+    // Studio runs at most 8 contract reads at once for everyone ("Server busy: all 8 execution
+    // slots occupied"); back off and retry a few times rather than failing a keeper tick.
+    for (let attempt = 0; ; attempt++) {
+      try {
+        return (await timeout(
+          this.client.readContract({ address: address as `0x${string}`, functionName, args, jsonSafeReturn: true }),
+          READ_TIMEOUT_MS,
+          functionName,
+        )) as T;
+      } catch (e: any) {
+        const text = [e?.message, e?.details, e?.cause?.message].filter(Boolean).join(" ");
+        if (attempt >= 4 || !/server busy|execution slots|retry later|rate limit|JSON-RPC protocol/i.test(text)) throw e;
+        await new Promise((r) => setTimeout(r, 400 * 2 ** attempt + Math.random() * 300));
+      }
+    }
   }
 
   /**
