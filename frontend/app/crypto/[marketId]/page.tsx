@@ -10,7 +10,7 @@ import { CryptoTabs, Lifecycle, PriceChart } from "@/components/hive/crypto";
 import { Input } from "@/components/ui/input";
 import { useWallet } from "@/lib/genlayer/wallet";
 import { CRYPTO_MAX_STAKE, CRYPTO_MIN_STAKE, GEN, HIVE_CRYPTO_ADDRESS } from "@/lib/hive/config";
-import { cryptoPhase, formatCountdown, formatGen, formatGmt1, formatScaledPrice, impliedMultiplier, parseGen, toWei } from "@/lib/hive/format";
+import { cryptoPhase, formatCountdown, gatePhase, formatGen, formatGmt1, formatScaledPrice, impliedMultiplier, parseGen, toWei } from "@/lib/hive/format";
 import { useCryptoEvidence, useCryptoMarket, useCryptoPosition, useCryptoSourceUrls, useNow } from "@/lib/hive/hooks";
 import { cn } from "@/lib/utils";
 
@@ -31,7 +31,7 @@ export default function CryptoMarketPage() {
   if (error) return <ErrorBox error={error} onRetry={() => refetch()} />;
   if (isLoading || !m) return <Loading what="market" />;
 
-  const phase = cryptoPhase(m, now);
+  const { phase, contractClosed } = gatePhase(cryptoPhase(m, now), m.phase);
   const lockedSide = position?.exists ? position.side : "";
   const activeSide = (lockedSide || side) as "UP" | "DOWN";
   const current = toWei(position?.stake);
@@ -55,6 +55,9 @@ export default function CryptoMarketPage() {
         <h1 className="text-3xl font-bold md:text-4xl">
           {m.asset} daily candle · {m.target_day} <span className="text-muted-foreground text-xl">(GMT+1)</span>
         </h1>
+        {contractClosed && (
+          <p className="text-sm text-amber-700">The contract reports this market as {phase.replaceAll("_", " ").toLowerCase()} — your device clock is ahead of the chain&apos;s, so entries are disabled.</p>
+        )}
         {m.result && <div className="text-2xl font-semibold text-accent">Result: {m.result}{m.refund_all && " · everyone refunded"}</div>}
         <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
           <Stat label="Entries close" value={formatGmt1(m.cutoff_at)} hint={now < m.cutoff_at ? `in ${formatCountdown(m.cutoff_at - now)}` : "closed"} />

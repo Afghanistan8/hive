@@ -11,7 +11,7 @@ import { findStanding } from "@/lib/hive/espn";
 import { Input } from "@/components/ui/input";
 import { useWallet } from "@/lib/genlayer/wallet";
 import { HIVE_SPORTS_ADDRESS, SPORTS_MIN_STAKE } from "@/lib/hive/config";
-import { formatCountdown, formatGen, formatGmt1, formatLocal, formatUtc, impliedMultiplier, parseGen, sportsPhase, toWei } from "@/lib/hive/format";
+import { formatCountdown, formatGen, formatGmt1, gatePhase, formatLocal, formatUtc, impliedMultiplier, parseGen, sportsPhase, toWei } from "@/lib/hive/format";
 import { useFixture, useNow, useScoreboard, useSportsEvidence, useSportsEvidenceRaw, useSportsPosition, useSportsSourceUrls, useStandings } from "@/lib/hive/hooks";
 import type { SourceReading } from "@/lib/hive/types";
 import { cn } from "@/lib/utils";
@@ -45,7 +45,7 @@ export default function FixturePage() {
   if (error) return <ErrorBox error={error} onRetry={() => refetch()} />;
   if (isLoading || !f) return <Loading what="fixture" />;
 
-  const phase = sportsPhase(f, now);
+  const { phase, contractClosed } = gatePhase(sportsPhase(f, now), f.phase);
   const pools = { HOME: f.pool_home, DRAW: f.pool_draw, AWAY: f.pool_away };
   const labels = { HOME: f.home, DRAW: "Draw", AWAY: f.away };
   const lockedPick = position?.exists ? position.pick : "";
@@ -71,6 +71,9 @@ export default function FixturePage() {
           <span className="text-muted-foreground text-2xl md:text-3xl">vs</span>
           <span className="inline-flex items-center gap-3"><Crest src={live?.awayLogo} name={f.away} size={44} />{f.away}</span>
         </h1>
+        {contractClosed && (
+          <p className="text-sm text-amber-700">The contract reports this fixture as {phase.replaceAll("_", " ").toLowerCase()} — your device clock is ahead of the chain&apos;s, so staking is disabled.</p>
+        )}
         {f.status === "SETTLED" && (
           <div className="text-2xl font-semibold text-accent">Full time {f.home_goals}–{f.away_goals} · {labels[f.result as keyof typeof labels]} {f.result !== "DRAW" && "win"}</div>
         )}

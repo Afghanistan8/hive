@@ -39,7 +39,7 @@ describe("/api/gl/read", () => {
     const list = await get(route, SPORTS, "get_fixtures", [0, 16]);
     expect(list.status).toBe(200);
     expect(await list.json()).toEqual({ result: [{ match_id: "pd-1" }] });
-    expect(list.headers.get("cache-control")).toBe("public, s-maxage=10, stale-while-revalidate=30");
+    expect(list.headers.get("cache-control")).toBe("public, s-maxage=10, stale-while-revalidate=600");
 
     const detail = await get(route, SPORTS, "get_fixture", ["pd-1"]);
     expect(detail.headers.get("cache-control")).toBe("no-store");

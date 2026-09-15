@@ -73,6 +73,20 @@ export function sportsPhase(f: Fixture, now = nowSeconds()): SportsPhase {
   return "READY_TO_SETTLE";
 }
 
+const PHASE_ORDER: Record<string, number> = { OPEN: 0, CLOSED: 1, READY_TO_SETTLE: 2 };
+
+/**
+ * Phase used to enable Stake / Resolve / Claim. The local clock drives countdowns, but it can be
+ * off; the contract's `phase` (computed from consensus time at the last read) wins whenever it is
+ * further along. Returns whether the contract overrode a local OPEN, so the page can say so.
+ */
+export function gatePhase<P extends string>(local: P, contract: P | undefined): { phase: P; contractClosed: boolean } {
+  if (!contract) return { phase: local, contractClosed: false };
+  const rank = (p: string) => PHASE_ORDER[p] ?? 3;
+  const phase = rank(contract) > rank(local) ? contract : local;
+  return { phase, contractClosed: local === "OPEN" && phase !== "OPEN" };
+}
+
 export function impliedMultiplier(pool: Wei, total: Wei): string {
   const p = toWei(pool);
   const t = toWei(total);

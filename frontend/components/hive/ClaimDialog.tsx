@@ -47,11 +47,15 @@ export function ClaimDialog({ address, method, args, amount, label }: ClaimDialo
     setStep("quoting");
     setMessage("");
     try {
-      const q = await client().estimateTransactionFeesForWrite({ address, functionName: method, args, value: 0n });
+      const q = await Promise.race([
+        client().estimateTransactionFeesForWrite({ address, functionName: method, args, value: 0n }),
+        new Promise<never>((_, rej) => setTimeout(() => rej(new Error("Studio did not return a fee quote within 30 s")), 30_000)),
+      ]);
       setQuote(q);
       setStep("ready");
     } catch (e: any) {
-      setMessage(e?.shortMessage || e?.message || String(e));
+      // Claims need the simulated preset (it budgets the payout message), so never fall back to a guess.
+      setMessage(`Could not simulate this ${method}: ${e?.shortMessage || e?.message || String(e)}. Nothing was sent — press Retry.`);
       setStep("failed");
     }
   };

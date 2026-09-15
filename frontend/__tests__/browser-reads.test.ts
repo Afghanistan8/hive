@@ -53,8 +53,9 @@ describe("browser contract reads", () => {
     }));
     const reader = await loadReader();
     await reader.fixtures();
-    expect(offsets).toHaveLength(8);
-    expect(Math.max(...offsets)).toBe(1000 - 16);
+    // page 0 is requested alongside the count, then the 8 newest pages
+    expect(offsets).toHaveLength(9);
+    expect(offsets.filter((o) => o > 0).sort((a, b) => a - b)).toEqual(Array.from({ length: 8 }, (_, i) => 1000 - 16 * (8 - i)));
   });
 
   it("surface the proxy's error message instead of hanging", async () => {

@@ -76,18 +76,23 @@ export class HiveReader {
     )) as T;
   }
 
-  private async pages<T>(address: string, functionName: string, offsets: number[], extra: ReadArg[] = []) {
-    const chunks = await Promise.all(offsets.map((o) => this.read<T[]>(address, functionName, [...extra, o, PAGE])));
+  /**
+   * Paged list read. Page 0 is requested together with the row count (it is needed unless the
+   * list is longer than the cap allows), then the remaining pages in parallel.
+   */
+  private async list<T>(address: string, functionName: string, count: Promise<number>, maxPages: number, newestLast: boolean) {
+    const first = this.read<T[]>(address, functionName, [0, PAGE]);
+    first.catch(() => {}); // may go unused; its failure is reported by the awaited reads below
+    const offsets = pageOffsets(await count, maxPages, newestLast);
+    const chunks = await Promise.all(offsets.map((o) => (o === 0 ? first : this.read<T[]>(address, functionName, [o, PAGE]))));
     return chunks.flat();
   }
 
   // ---- HiveCrypto
   cryptoConfig = () => this.read<{ market_count: number; now: number }>(this.cryptoAddress, "get_config");
   /** Newest first. */
-  cryptoMarkets = async () => {
-    const count = Number((await this.cryptoConfig()).market_count ?? 0);
-    return this.pages<CryptoMarket>(this.cryptoAddress, "get_markets", pageOffsets(count, LIMITS.marketPages, false));
-  };
+  cryptoMarkets = () =>
+    this.list<CryptoMarket>(this.cryptoAddress, "get_markets", this.cryptoConfig().then((c) => Number(c.market_count ?? 0)), LIMITS.marketPages, false);
   cryptoMarket = (id: number) => this.read<CryptoMarket>(this.cryptoAddress, "get_market", [id]);
   cryptoPosition = (id: number, wallet: string) =>
     this.read<CryptoPosition>(this.cryptoAddress, "get_position", [id, wallet.toLowerCase()]);
@@ -101,22 +106,18 @@ export class HiveReader {
   sportsConfig = () => this.read<{ fixture_count: number; now: number }>(this.sportsAddress, "get_config");
   fixtureCount = async () => Number((await this.sportsConfig()).fixture_count ?? 0);
   /** Registration order (oldest first). */
-  fixtures = async () =>
-    this.pages<Fixture>(this.sportsAddress, "get_fixtures", pageOffsets(await this.fixtureCount(), LIMITS.fixturePages, true));
+  fixtures = () => this.list<Fixture>(this.sportsAddress, "get_fixtures", this.fixtureCount(), LIMITS.fixturePages, true);
   fixture = (matchId: string) => this.read<Fixture>(this.sportsAddress, "get_fixture", [matchId]);
   sportsPosition = (matchId: string, wallet: string) =>
     this.read<SportsPosition>(this.sportsAddress, "get_position", [matchId, wallet.toLowerCase()]);
   sportsEvidence = (matchId: string) => this.read<SportsEvidence>(this.sportsAddress, "get_evidence", [matchId]);
   sportsEvidenceRaw = (matchId: string) => this.read<string>(this.sportsAddress, "get_evidence_raw", [matchId]);
   sportsSourceUrls = (matchId: string) => this.read<{ espn: string; bbc: string }>(this.sportsAddress, "get_source_urls", [matchId]);
-  allPositions = async () => {
-    const count = Number(await this.read<number>(this.sportsAddress, "get_position_count"));
-    return this.pages<PositionRow>(this.sportsAddress, "get_positions", pageOffsets(count, LIMITS.positionPages, true));
-  };
+  allPositions = () =>
+    this.list<PositionRow>(this.sportsAddress, "get_positions", this.read<number>(this.sportsAddress, "get_position_count").then(Number), LIMITS.positionPages, true);
   aiCall = (matchId: string) => this.read<AiCall>(this.sportsAddress, "get_ai_call", [matchId]);
   /** get_ai_calls pages over fixtures (not calls): one fixture_count read, then parallel pages. */
-  aiCalls = async () =>
-    this.pages<AiCallRow>(this.sportsAddress, "get_ai_calls", pageOffsets(await this.fixtureCount(), LIMITS.aiCallPages, true));
+  aiCalls = () => this.list<AiCallRow>(this.sportsAddress, "get_ai_calls", this.fixtureCount(), LIMITS.aiCallPages, true);
   username = (wallet: string) => this.read<string>(this.sportsAddress, "get_username", [wallet.toLowerCase()]);
   sportsUserPositions = (wallet: string) =>
     this.read<SportsUserRow[]>(this.sportsAddress, "get_user_positions", [wallet.toLowerCase(), 0, 50]);

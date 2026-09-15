@@ -75,7 +75,9 @@ async function handle(body: unknown) {
       { result: value },
       {
         headers: {
-          "Cache-Control": cacheable ? "public, s-maxage=10, stale-while-revalidate=30" : "no-store",
+          // Fresh for 10 s; after that the CDN answers instantly with the previous copy while it refetches
+          // in the background, so a visitor never waits on Studio for a list someone read in the last 10 minutes.
+          "Cache-Control": cacheable ? "public, s-maxage=10, stale-while-revalidate=600" : "no-store",
           "X-Hive-Rpc": new URL(rpcUrl).host,
         },
       },
