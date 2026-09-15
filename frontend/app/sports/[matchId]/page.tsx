@@ -6,11 +6,13 @@ import { BackLink, Card, ErrorBox, Loading, SourceLink, Stat } from "@/component
 import { PhaseBadge } from "@/components/hive/PhaseBadge";
 import { ClaimDialog } from "@/components/hive/ClaimDialog";
 import { TxDialog } from "@/components/hive/TxDialog";
+import { AiCallPanel, Crest, LiveScore, SportsTabs } from "@/components/hive/sports";
+import { findStanding } from "@/lib/hive/espn";
 import { Input } from "@/components/ui/input";
 import { useWallet } from "@/lib/genlayer/wallet";
 import { HIVE_SPORTS_ADDRESS, SPORTS_MIN_STAKE } from "@/lib/hive/config";
 import { formatCountdown, formatGen, formatGmt1, formatLocal, formatUtc, impliedMultiplier, parseGen, sportsPhase, toWei } from "@/lib/hive/format";
-import { useFixture, useNow, useSportsEvidence, useSportsEvidenceRaw, useSportsPosition, useSportsSourceUrls } from "@/lib/hive/hooks";
+import { useFixture, useNow, useScoreboard, useSportsEvidence, useSportsEvidenceRaw, useSportsPosition, useSportsSourceUrls, useStandings } from "@/lib/hive/hooks";
 import type { SourceReading } from "@/lib/hive/types";
 import { cn } from "@/lib/utils";
 
@@ -34,6 +36,8 @@ export default function FixturePage() {
   const { data: sources } = useSportsSourceUrls(matchId);
   const { data: evidence } = useSportsEvidence(matchId, !!f && f.status !== "OPEN");
   const { data: evidenceRaw } = useSportsEvidenceRaw(matchId, !!f && f.status !== "OPEN");
+  const { data: board } = useScoreboard(f?.league ?? "", f?.kickoff_ts);
+  const { data: table } = useStandings(f?.league ?? "");
   const [pick, setPick] = useState<(typeof PICKS)[number]>("HOME");
   const [amount, setAmount] = useState(String(SPORTS_MIN_STAKE));
 
@@ -49,17 +53,23 @@ export default function FixturePage() {
   const wei = parseGen(amount);
   const stakeError = wei === null ? "Enter a GEN amount" : wei < BigInt(SPORTS_MIN_STAKE) * 10n ** 18n ? `Minimum stake is ${SPORTS_MIN_STAKE} GEN` : "";
   const claimable = toWei(position?.claimable);
+  const live = board?.[f.espn_event_id];
+  const homeRow = table ? findStanding(table.rows, live?.homeName || f.home) : undefined;
+  const awayRow = table ? findStanding(table.rows, live?.awayName || f.away) : undefined;
 
   return (
     <div className="space-y-5">
       <BackLink href="/sports">All fixtures</BackLink>
+      <SportsTabs />
       <Card className="space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-2 text-sm text-muted-foreground">
           <span>{f.league_name} · match <code>{f.match_id}</code></span>
-          <PhaseBadge phase={phase} />
+          <span className="flex items-center gap-2"><LiveScore live={live} /><PhaseBadge phase={phase} /></span>
         </div>
-        <h1 className="text-3xl font-bold md:text-4xl">
-          {f.home} <span className="text-muted-foreground">vs</span> {f.away}
+        <h1 className="flex flex-wrap items-center gap-x-4 gap-y-2 text-3xl font-bold md:text-5xl">
+          <span className="inline-flex items-center gap-3"><Crest src={live?.homeLogo} name={f.home} size={44} />{f.home}</span>
+          <span className="text-muted-foreground text-2xl md:text-3xl">vs</span>
+          <span className="inline-flex items-center gap-3"><Crest src={live?.awayLogo} name={f.away} size={44} />{f.away}</span>
         </h1>
         {f.status === "SETTLED" && (
           <div className="text-2xl font-semibold text-accent">Full time {f.home_goals}–{f.away_goals} · {labels[f.result as keyof typeof labels]} {f.result !== "DRAW" && "win"}</div>
@@ -194,6 +204,47 @@ export default function FixturePage() {
               {f.resolved_at > 0 && <div className="text-xs text-muted-foreground">Decided at {formatGmt1(f.resolved_at)}</div>}
             </div>
           )}
+        </Card>
+      </div>
+
+      <div className="grid gap-5 lg:grid-cols-3">
+        <Card className="lg:col-span-1">
+          <AiCallPanel fixture={f} now={now} />
+        </Card>
+        <Card className="space-y-3 lg:col-span-2">
+          <div className="flex items-baseline justify-between">
+            <h2 className="text-xl font-bold">Form guide</h2>
+            <span className="text-xs text-muted-foreground">{table?.season} · display only</span>
+          </div>
+          {homeRow || awayRow ? (
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[520px] text-sm">
+                <thead className="text-left text-xs uppercase tracking-wide text-muted-foreground">
+                  <tr className="border-b border-black/10">
+                    <th className="py-2">#</th><th className="py-2">Club</th><th className="py-2 text-center">P</th><th className="py-2 text-center">W</th>
+                    <th className="py-2 text-center">D</th><th className="py-2 text-center">L</th><th className="py-2 text-center">GD</th><th className="py-2 text-right">Pts</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[homeRow, awayRow].filter(Boolean).map((r) => (
+                    <tr key={r!.team} className="border-b border-black/[0.06] last:border-0">
+                      <td className="py-2.5 font-semibold tabular-nums">{r!.rank}</td>
+                      <td className="py-2.5"><span className="inline-flex items-center gap-2"><Crest src={r!.logo} name={r!.team} size={20} />{r!.team}</span></td>
+                      <td className="py-2.5 text-center tabular-nums">{r!.played}</td>
+                      <td className="py-2.5 text-center tabular-nums">{r!.won}</td>
+                      <td className="py-2.5 text-center tabular-nums">{r!.drawn}</td>
+                      <td className="py-2.5 text-center tabular-nums">{r!.lost}</td>
+                      <td className="py-2.5 text-center tabular-nums">{r!.gd}</td>
+                      <td className="py-2.5 text-right font-semibold tabular-nums">{r!.points}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">Loading the {f.league_name} table…</p>
+          )}
+          <a href="/sports/tables" className="inline-block text-sm underline decoration-ember underline-offset-4">Full league tables</a>
         </Card>
       </div>
     </div>

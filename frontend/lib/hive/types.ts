@@ -86,6 +86,7 @@ export interface Fixture {
   refund_all: boolean;
   resolved_at: number;
   phase: SportsPhase;
+  ai_pick: "" | "HOME" | "DRAW" | "AWAY";
 }
 
 export interface SportsPosition {
@@ -125,4 +126,38 @@ export interface SupportedAsset {
   asset: string;
   coingecko_id: string;
   gate_pair: string;
+}
+
+export interface PositionRow {
+  match_id: string;
+  league: string;
+  owner: string;
+  username: string;
+  pick: "HOME" | "DRAW" | "AWAY";
+  stake: Wei;
+  claimed: boolean;
+  payout: Wei;
+  claimable: Wei;
+  fixture_status: Fixture["status"];
+  fixture_result: Fixture["result"];
+  refund_all: boolean;
+}
+
+export interface AiCall {
+  exists: boolean;
+  pick?: "HOME" | "DRAW" | "AWAY";
+  confidence?: "low" | "medium" | "high";
+  reason?: string;
+  raw?: string;
+  requested_by?: string;
+  requested_at?: number;
+}
+
+export interface AiCallRow {
+  match_id: string;
+  league: string;
+  pick: "HOME" | "DRAW" | "AWAY";
+  confidence: string;
+  fixture_status: Fixture["status"];
+  fixture_result: Fixture["result"];
 }

@@ -4,6 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useState } from "react";
 import { hiveReader } from "./contracts";
 import { HIVE_CRYPTO_ADDRESS, HIVE_SPORTS_ADDRESS } from "./config";
+import type { LiveEvent, StandingRow } from "./espn";
 
 const REFRESH = 15_000;
 
@@ -109,6 +110,80 @@ export function useSportsSourceUrls(matchId: string) {
     queryFn: () => hiveReader().sportsSourceUrls(matchId),
     enabled: !!HIVE_SPORTS_ADDRESS && !!matchId,
     staleTime: Infinity,
+  });
+}
+
+export function useAllPositions() {
+  return useQuery({
+    queryKey: ["sports", "positions"],
+    queryFn: () => hiveReader().allPositions(),
+    enabled: !!HIVE_SPORTS_ADDRESS,
+    refetchInterval: 30_000,
+  });
+}
+
+export function useAiCall(matchId: string) {
+  return useQuery({
+    queryKey: ["sports", "ai", matchId],
+    queryFn: () => hiveReader().aiCall(matchId),
+    enabled: !!HIVE_SPORTS_ADDRESS && !!matchId,
+    refetchInterval: REFRESH,
+  });
+}
+
+export function useAiCalls() {
+  return useQuery({
+    queryKey: ["sports", "ai-calls"],
+    queryFn: () => hiveReader().aiCalls(),
+    enabled: !!HIVE_SPORTS_ADDRESS,
+    refetchInterval: 60_000,
+  });
+}
+
+export function useUsername(wallet: string | null) {
+  return useQuery({
+    queryKey: ["sports", "username", wallet],
+    queryFn: () => hiveReader().username(wallet!),
+    enabled: !!HIVE_SPORTS_ADDRESS && !!wallet,
+  });
+}
+
+async function getJson<T>(url: string): Promise<T> {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`${url} → ${res.status}`);
+  return res.json();
+}
+
+/** Display-only league table (ESPN). */
+export function useStandings(league: string) {
+  return useQuery({
+    queryKey: ["display", "standings", league],
+    queryFn: () => getJson<{ season: string; rows: StandingRow[] }>(`/api/espn/standings/${league}`),
+    enabled: !!league,
+    staleTime: 10 * 60_000,
+  });
+}
+
+/** Display-only live scores + crests for one league-day (ESPN). */
+export function useScoreboard(league: string, kickoffTs: number | undefined) {
+  const date = kickoffTs ? new Date(kickoffTs * 1000).toISOString().slice(0, 10).replaceAll("-", "") : "";
+  return useQuery({
+    queryKey: ["display", "scoreboard", league, date],
+    queryFn: () => getJson<Record<string, LiveEvent>>(`/api/espn/scoreboard?league=${league}&date=${date}`),
+    enabled: !!league && !!date,
+    refetchInterval: 60_000,
+    staleTime: 30_000,
+  });
+}
+
+/** Display-only hourly candles (Gate.io). */
+export function useCandles(pair: string, from?: number, to?: number) {
+  const qs = from ? `?from=${from}${to ? `&to=${to}` : ""}` : "";
+  return useQuery({
+    queryKey: ["display", "candles", pair, from, to],
+    queryFn: () => getJson<{ candles: { t: number; o: number; h: number; l: number; c: number }[] }>(`/api/candles/${pair}${qs}`),
+    enabled: !!pair,
+    refetchInterval: 60_000,
   });
 }
 

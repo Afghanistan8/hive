@@ -2,11 +2,14 @@ import { createClient } from "genlayer-js";
 import { GENLAYER_CHAIN } from "../genlayer/network";
 import { HIVE_CRYPTO_ADDRESS, HIVE_SPORTS_ADDRESS } from "./config";
 import type {
+  AiCall,
+  AiCallRow,
   CryptoEvidence,
   CryptoMarket,
   CryptoPosition,
   CryptoUserRow,
   Fixture,
+  PositionRow,
   SportsEvidence,
   SportsPosition,
   SportsUserRow,
@@ -72,6 +75,28 @@ export class HiveReader {
   sportsEvidence = (matchId: string) => this.read<SportsEvidence>(this.sportsAddress, "get_evidence", [matchId]);
   sportsEvidenceRaw = (matchId: string) => this.read<string>(this.sportsAddress, "get_evidence_raw", [matchId]);
   sportsSourceUrls = (matchId: string) => this.read<{ espn: string; bbc: string }>(this.sportsAddress, "get_source_urls", [matchId]);
+  allPositions = async () => {
+    const all: PositionRow[] = [];
+    for (let page = 0; page < 40; page++) {
+      const rows = await this.read<PositionRow[]>(this.sportsAddress, "get_positions", [page * 50, 50]);
+      all.push(...rows);
+      if (rows.length < 50) break;
+    }
+    return all;
+  };
+  aiCall = (matchId: string) => this.read<AiCall>(this.sportsAddress, "get_ai_call", [matchId]);
+  aiCalls = async () => {
+    const all: AiCallRow[] = [];
+    for (let page = 0; page < 20; page++) {
+      // get_ai_calls pages over fixtures (not calls), so walk until past the fixture count
+      const rows = await this.read<AiCallRow[]>(this.sportsAddress, "get_ai_calls", [page * 50, 50]);
+      all.push(...rows);
+      if (page * 50 + 50 >= (await this.fixtureCount())) break;
+    }
+    return all;
+  };
+  fixtureCount = async () => Number((await this.read<any>(this.sportsAddress, "get_config")).fixture_count ?? 0);
+  username = (wallet: string) => this.read<string>(this.sportsAddress, "get_username", [wallet.toLowerCase()]);
   sportsUserPositions = (wallet: string) =>
     this.read<SportsUserRow[]>(this.sportsAddress, "get_user_positions", [wallet.toLowerCase(), 0, 50]);
 }

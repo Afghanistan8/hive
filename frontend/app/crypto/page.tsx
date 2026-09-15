@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { Card, ErrorBox, Loading, PageHeader } from "@/components/hive/bits";
 import { PhaseBadge } from "@/components/hive/PhaseBadge";
-import { Button } from "@/components/ui/button";
+import { CryptoTabs } from "@/components/hive/crypto";
 import { HIVE_CRYPTO_ADDRESS } from "@/lib/hive/config";
 import { cryptoPhase, formatCountdown, formatGen, toWei } from "@/lib/hive/format";
 import { useCryptoMarkets, useNow } from "@/lib/hive/hooks";
@@ -31,8 +31,8 @@ export default function CryptoPage() {
       <PageHeader
         title="Hive Daily"
         subtitle="Will the GMT+1 daily candle close UP or DOWN? Entries close when the day starts (00:00 GMT+1). Settlement requires CoinGecko and Gate.io to agree on the direction."
-        actions={<Button asChild variant="outline"><Link href="/create">Open a market</Link></Button>}
       />
+      <CryptoTabs />
       {!HIVE_CRYPTO_ADDRESS && <ErrorBox error="NEXT_PUBLIC_HIVE_CRYPTO_ADDRESS is not set in frontend/.env" />}
       <div className="mb-5 flex flex-wrap gap-2">
         {FILTERS.map((f) => (

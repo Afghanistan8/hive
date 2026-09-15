@@ -66,15 +66,46 @@ export default async function main(client: any) {
   const results: any[] = [];
   const days = Number(process.env.HIVE_SEED_DAYS ?? 2);
   for (let i = 1; i <= days; i++) {
-    results.push(await write(client, crypto, "create_daily_markets", [gmt1Day(i)]));
+    const day = gmt1Day(i);
+    const existing = await client.readContract({ address: crypto, functionName: "get_market_by_asset_day", args: ["BTC", day], jsonSafeReturn: true });
+    if (existing?.exists) {
+      console.log(`skip create_daily_markets(${day}): already open`);
+      continue;
+    }
+    results.push(await write(client, crypto, "create_daily_markets", [day]));
   }
 
   const nowSec = Math.floor(Date.now() / 1000);
   const fixtures = JSON.parse(readFileSync(path.join(ROOT, "fixtures.demo.json"), "utf8"))
     .filter((f: any) => f.kickoff_ts > nowSec + 30 * 60)
     .map((f: any) => ({ league: f.league, espn_event_id: f.espn_event_id, home: f.home, away: f.away, kickoff_ts: f.kickoff_ts }));
-  for (let i = 0; i < fixtures.length; i += BATCH) {
-    results.push(await write(client, sports, "add_fixtures", [JSON.stringify(fixtures.slice(i, i + BATCH))]));
+  const registered = Number((await client.readContract({ address: sports, functionName: "get_config", args: [], jsonSafeReturn: true })).fixture_count ?? 0);
+  if (registered === 0) {
+    for (let i = 0; i < fixtures.length; i += BATCH) {
+      results.push(await write(client, sports, "add_fixtures", [JSON.stringify(fixtures.slice(i, i + BATCH))]));
+    }
+  } else {
+    console.log(`skip add_fixtures: ${registered} fixtures already registered`);
+  }
+
+  // AI Calls: validators' pre-match picks for the next few fixtures (no funds). Also a live
+  // runtime check of the non-comparative consensus path: every published call is asserted.
+  const aiTarget = Number(process.env.HIVE_SEED_AI_CALLS ?? 4);
+  let published = 0;
+  for (const f of fixtures) {
+    if (published >= aiTarget) break;
+    const matchId = `${f.league.toLowerCase()}-${f.espn_event_id}`;
+    const existing = await client.readContract({ address: sports, functionName: "get_ai_call", args: [matchId], jsonSafeReturn: true });
+    if (existing?.exists) { published++; continue; }
+    const r = await write(client, sports, "request_ai_call", [matchId]);
+    results.push(r);
+    if (!r.ok) continue;
+    const call = await client.readContract({ address: sports, functionName: "get_ai_call", args: [matchId], jsonSafeReturn: true });
+    if (!call?.exists || !["HOME", "DRAW", "AWAY"].includes(call.pick) || typeof call.raw !== "string" || !call.raw.length) {
+      throw new Error(`AI call for ${matchId} was not stored correctly: ${JSON.stringify(call)}`);
+    }
+    console.log(`AI call ${matchId}: ${call.pick} (${call.confidence}) — ${call.reason}`);
+    published++;
   }
 
   state.seeds = [...(state.seeds ?? []), { at: new Date().toISOString(), results }];

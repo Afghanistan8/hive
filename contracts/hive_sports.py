@@ -432,6 +432,91 @@ def validate_agreed(agreed: str, match_id: str) -> dict:
 
 
 # ---------------------------------------------------------------------------
+# AI Call: validators' pre-match pick (holds and moves no funds)
+# ---------------------------------------------------------------------------
+
+AI_CONFIDENCE = ("low", "medium", "high")
+MAX_AI_RAW = 1200
+USERNAME_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-."
+
+
+def standings_url(league: str) -> str:
+    return "https://site.api.espn.com/apis/v2/sports/soccer/" + LEAGUES[league][1] + "/standings"
+
+
+def compact_standings(raw: str) -> str:
+    """ESPN standings JSON -> one short line per club, deterministic ordering."""
+    data = json.loads(raw)
+    children = data.get("children") or []
+    if not children:
+        raise gl.vm.UserError("EXTERNAL: standings unavailable")
+    entries = (children[0].get("standings") or {}).get("entries") or []
+    rows = []
+    for e in entries:
+        team = (e.get("team") or {}).get("displayName", "?")
+        stats = {}
+        for st in e.get("stats") or []:
+            stats[str(st.get("name"))] = str(st.get("displayValue", ""))
+        rows.append((int(stats.get("rank", "99") or 99), team, stats))
+    rows.sort(key=lambda r: r[0])
+    lines = []
+    for rank, team, st in rows:
+        lines.append(
+            f"{rank}. {team} P{st.get('gamesPlayed', '?')} W{st.get('wins', '?')} D{st.get('ties', '?')} "
+            f"L{st.get('losses', '?')} GF{st.get('pointsFor', '?')} GA{st.get('pointsAgainst', '?')} Pts{st.get('points', '?')}"
+        )
+    if not lines:
+        raise gl.vm.UserError("EXTERNAL: standings empty")
+    return "\n".join(lines)
+
+
+def ai_task(league: str, home: str, away: str) -> str:
+    return (
+        f"Predict the full-time result of this {LEAGUES[league][0]} fixture: {home} (home) vs {away} (away). "
+        "The input is the current league table. Use it (form, points, goal difference, home advantage) as evidence. "
+        'Respond with JSON only: {"pick": "HOME" | "DRAW" | "AWAY", "confidence": "low" | "medium" | "high", '
+        '"reason": "one sentence under 200 characters citing the table"}'
+    )
+
+
+AI_CRITERIA = (
+    "The output is JSON with pick exactly HOME, DRAW or AWAY, confidence exactly low, medium or high, and a single-sentence "
+    "reason under 200 characters. The reason refers to the two named clubs and is consistent with the league table in the "
+    "input; the pick is a defensible forecast from that evidence (it need not be the only reasonable pick)."
+)
+
+
+def parse_ai_call(raw: str, home: str, away: str) -> dict:
+    """Deterministic post-consensus normalisation of the agreed model output."""
+    text = str(raw).strip().replace("```json", "").replace("```", "").strip()
+    obj = {}
+    lo, hi = text.find("{"), text.rfind("}")
+    if lo >= 0 and hi > lo:
+        try:
+            parsed = json.loads(text[lo : hi + 1])
+            if isinstance(parsed, dict):
+                obj = parsed
+        except Exception:
+            obj = {}
+    pick = str(obj.get("pick", "")).strip().upper().replace(" WIN", "")
+    aliases = {"H": PICK_HOME, "1": PICK_HOME, "A": PICK_AWAY, "2": PICK_AWAY, "D": PICK_DRAW, "X": PICK_DRAW, "TIE": PICK_DRAW}
+    pick = aliases.get(pick, pick)
+    if pick not in PICKS:
+        name = fold(pick)
+        if name and name == fold(home):
+            pick = PICK_HOME
+        elif name and name == fold(away):
+            pick = PICK_AWAY
+    if pick not in PICKS:
+        raise gl.vm.UserError("EXTERNAL: AI call did not produce a HOME/DRAW/AWAY pick")
+    confidence = str(obj.get("confidence", "medium")).strip().lower()
+    if confidence not in AI_CONFIDENCE:
+        confidence = "medium"
+    reason = " ".join(str(obj.get("reason", "")).split())[:280]
+    return {"pick": pick, "confidence": confidence, "reason": reason}
+
+
+# ---------------------------------------------------------------------------
 # Storage
 # ---------------------------------------------------------------------------
 
@@ -480,9 +565,15 @@ class HiveSports(gl.contract.Contract):
     user_count: gl.storage.TreeMap[str, gl.u256]
     user_index: gl.storage.TreeMap[str, str]  # "owner|i" -> match_id
     evidence: gl.storage.TreeMap[str, str]  # match_id -> agreed canonical JSON
+    position_count: gl.u256
+    position_keys: gl.storage.TreeMap[gl.u256, str]  # 1-based -> "match_id|owner"
+    usernames: gl.storage.TreeMap[str, str]  # owner -> display name
+    username_owner: gl.storage.TreeMap[str, str]  # lowercase name -> owner
+    ai_calls: gl.storage.TreeMap[str, str]  # match_id -> canonical JSON (includes the exact agreed text)
 
     def __init__(self) -> None:
         self.fixture_count = 0
+        self.position_count = 0
 
     # ---- helpers ------------------------------------------------------------
 
@@ -595,6 +686,9 @@ class HiveSports(gl.contract.Contract):
             self.user_index[f"{owner}|{i}"] = match_id
             self.user_count[owner] = i + 1
             f.positions_count = int(f.positions_count) + 1
+            n = int(self.position_count) + 1
+            self.position_keys[n] = pkey
+            self.position_count = n
         if pick == PICK_HOME:
             f.pool_home = int(f.pool_home) + value
         elif pick == PICK_DRAW:
@@ -729,6 +823,58 @@ class HiveSports(gl.contract.Contract):
             return total - int(f.paid_out)  # last winner sweeps rounding dust
         return (stake * total) // winning_pool
 
+    # ---- writes: profile + AI call ------------------------------------------
+
+    @gl.public.write
+    def set_username(self, name: str) -> str:
+        """Any wallet. 3–20 chars of letters, digits, _ - . ; unique (case-insensitive)."""
+        name = str(name).strip()
+        if not (3 <= len(name) <= 20) or any(ch not in USERNAME_CHARS for ch in name):
+            raise gl.vm.UserError("EXPECTED: username must be 3-20 letters, digits, _ - or .")
+        owner = self._sender()
+        key = name.lower()
+        holder = self.username_owner.get(key, "")
+        if holder and holder != owner:
+            raise gl.vm.UserError("EXPECTED: username already taken")
+        previous = self.usernames.get(owner, "")
+        if previous and previous.lower() != key:
+            self.username_owner[previous.lower()] = ""
+        self.usernames[owner] = name
+        self.username_owner[key] = owner
+        return name
+
+    @gl.public.write
+    def request_ai_call(self, match_id: str) -> str:
+        """Any caller, before kickoff, once per fixture. Validators publish a pre-match pick.
+
+        Uses the non-comparative equivalence principle: the leader's model forecasts
+        from the live league table, and every validator's model checks the forecast
+        against fixed criteria. The agreed text is stored verbatim next to the
+        normalised pick. No funds are touched.
+        """
+        f = self._fixture(match_id)
+        if f.status != ST_OPEN or consensus_now() >= int(f.kickoff_ts):
+            raise gl.vm.UserError("EXPECTED: AI calls close at kickoff")
+        if match_id in self.ai_calls:
+            raise gl.vm.UserError("EXPECTED: AI call already published for this fixture")
+        league, home, away = f.league, f.home, f.away
+        url = standings_url(league)
+
+        def evidence() -> str:
+            resp = gl.nondet.web.get(url, headers=HTTP_HEADERS)
+            if resp.status != 200 or not resp.body:
+                raise gl.vm.UserError("EXTERNAL: standings unavailable")
+            return compact_standings(resp.body.decode("utf-8", errors="replace"))
+
+        raw = gl.eq_principle.prompt_non_comparative(evidence, task=ai_task(league, home, away), criteria=AI_CRITERIA)
+        raw = str(raw)[:MAX_AI_RAW]
+        call = parse_ai_call(raw, home, away)
+        call["raw"] = raw
+        call["requested_by"] = self._sender()
+        call["requested_at"] = consensus_now()
+        self.ai_calls[match_id] = canonical(call)
+        return call["pick"]
+
     # ---- views --------------------------------------------------------------
 
     @gl.public.view
@@ -816,6 +962,59 @@ class HiveSports(gl.contract.Contract):
         f = self._fixture(match_id)
         return {"espn": espn_url(f.league, int(f.kickoff_ts)), "bbc": bbc_url(int(f.kickoff_ts))}
 
+    @gl.public.view
+    def get_positions(self, offset: int, limit: int) -> list:
+        """Every position ever opened, oldest first — enough to rebuild a leaderboard."""
+        lim = min(max(int(limit), 0), MAX_PAGE)
+        i = max(int(offset), 0) + 1
+        total = int(self.position_count)
+        out = []
+        while i <= total and len(out) < lim:
+            p = self.positions[self.position_keys[i]]
+            f = self.fixtures[p.match_id]
+            out.append({
+                "match_id": p.match_id, "league": f.league, "owner": p.owner,
+                "username": self.usernames.get(p.owner, ""), "pick": p.pick, "stake": int(p.stake),
+                "claimed": p.claimed, "payout": int(p.payout),
+                "claimable": 0 if p.claimed else self._payout(f, p),
+                "fixture_status": f.status, "fixture_result": f.result, "refund_all": f.refund_all,
+            })
+            i += 1
+        return out
+
+    @gl.public.view
+    def get_position_count(self) -> int:
+        return int(self.position_count)
+
+    @gl.public.view
+    def get_username(self, wallet: str) -> str:
+        return self.usernames.get(str(wallet).lower(), "")
+
+    @gl.public.view
+    def get_ai_call(self, match_id: str) -> dict:
+        if match_id not in self.ai_calls:
+            return {"exists": False}
+        call = json.loads(self.ai_calls[match_id])
+        call["exists"] = True
+        return call
+
+    @gl.public.view
+    def get_ai_calls(self, offset: int, limit: int) -> list:
+        """AI calls in fixture registration order, with the fixture outcome for scoring."""
+        lim = min(max(int(limit), 0), MAX_PAGE)
+        i = max(int(offset), 0) + 1
+        total = int(self.fixture_count)
+        out = []
+        while i <= total and len(out) < lim:
+            mid = self.fixture_ids[i]
+            if mid in self.ai_calls:
+                call = json.loads(self.ai_calls[mid])
+                f = self.fixtures[mid]
+                out.append({"match_id": mid, "league": f.league, "pick": call["pick"], "confidence": call["confidence"],
+                            "fixture_status": f.status, "fixture_result": f.result})
+            i += 1
+        return out
+
     def _fixture_dict(self, f: Fixture, now: int) -> dict:
         return {
             "match_id": f.match_id, "league": f.league, "league_name": LEAGUES[f.league][0],
@@ -827,4 +1026,5 @@ class HiveSports(gl.contract.Contract):
             "total_pool": self._total(f), "paid_out": int(f.paid_out),
             "positions_count": int(f.positions_count), "refund_all": f.refund_all,
             "resolved_at": int(f.resolved_at), "phase": self._phase(f, now),
+            "ai_pick": json.loads(self.ai_calls[f.match_id])["pick"] if f.match_id in self.ai_calls else "",
         }

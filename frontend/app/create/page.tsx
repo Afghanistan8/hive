@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { Card, PageHeader } from "@/components/hive/bits";
 import { TxDialog } from "@/components/hive/TxDialog";
+import { CryptoTabs } from "@/components/hive/crypto";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { HIVE_CRYPTO_ADDRESS } from "@/lib/hive/config";
@@ -27,6 +28,7 @@ export default function CreatePage() {
         title="Open a crypto market"
         subtitle="Permissionless: any wallet can open an UP/DOWN market for a supported asset on any future GMT+1 day (up to 60 days ahead). One market per asset per day."
       />
+      <CryptoTabs />
       <Card className="space-y-5">
         <div className="space-y-2">
           <Label>Asset</Label>

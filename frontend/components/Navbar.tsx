@@ -11,9 +11,16 @@ import { cn } from "@/lib/utils";
 const LINKS = [
   { href: "/sports", label: "Sports" },
   { href: "/crypto", label: "Crypto" },
-  { href: "/create", label: "Create" },
+  { href: "/sports/leaderboard", label: "Leaderboard" },
   { href: "/portfolio", label: "Portfolio" },
 ];
+
+function isActive(pathname: string | null, href: string) {
+  if (!pathname) return false;
+  if (href === "/sports") return pathname.startsWith("/sports") && !pathname.startsWith("/sports/leaderboard");
+  if (href === "/crypto") return pathname.startsWith("/crypto") || pathname.startsWith("/create");
+  return pathname.startsWith(href);
+}
 
 export function Navbar() {
   const pathname = usePathname();
@@ -49,7 +56,7 @@ export function Navbar() {
                 href={l.href}
                 className={cn(
                   "rounded-full px-3.5 py-1.5 text-[14px] transition-colors",
-                  pathname?.startsWith(l.href) ? "bg-ink text-[#f6f3ee]" : "text-ink/70 hover:text-ink",
+                  isActive(pathname, l.href) ? "bg-ink text-[#f6f3ee]" : "text-ink/70 hover:text-ink",
                 )}
               >
                 {l.label}
@@ -71,7 +78,7 @@ export function Navbar() {
             href={l.href}
             className={cn(
               "rounded-full px-3 py-1 text-[13px] backdrop-blur",
-              pathname?.startsWith(l.href) ? "bg-ink text-[#f6f3ee]" : "bg-[#f4f1eb]/80 text-ink/70",
+              isActive(pathname, l.href) ? "bg-ink text-[#f6f3ee]" : "bg-[#f4f1eb]/80 text-ink/70",
             )}
           >
             {l.label}

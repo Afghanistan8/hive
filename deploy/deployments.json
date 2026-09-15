@@ -13,11 +13,11 @@
       "deployedAt": "2026-09-15T12:42:28.446Z"
     },
     "HiveSports": {
-      "address": "0xEEd7dD67A929a433a27a90DB2463eaC4195cf1f2",
-      "txHash": "0x3627fa574a48f4cae5fa4dc626a056a8703e5b9e07957d630af6b3235182bfdb",
+      "address": "0xeE172062d021f4dE2B4fEbad0B945e769a62C954",
+      "txHash": "0xc871602acf25e062ff390ac237ba7edcbd01ba33e7a190bbaa20e98b4ed90e09",
       "chainId": 61997,
-      "codeHash": "bab0fe5b5a109155e65070f8365f9e172a0d24e7db9ec1381ec341a0486b9a31",
-      "deployedAt": "2026-09-15T12:42:34.138Z"
+      "codeHash": "54e4ecfe038eba11f623730acf3904a8d298eb8d7dae41e36c39a474a35ca0df",
+      "deployedAt": "2026-09-15T13:53:07.789Z"
     }
   },
   "seeds": [
@@ -72,6 +72,49 @@
           "ok": true,
           "functionName": "add_fixtures",
           "args": "20 fixtures"
+        }
+      ]
+    },
+    {
+      "at": "2026-09-15T13:55:32.108Z",
+      "results": [
+        {
+          "txHash": "0x100d438744cf4c79bd60c499af23fddb7f480fd12ba4e86d05d2049c6a34434f",
+          "ok": true,
+          "functionName": "add_fixtures",
+          "args": "20 fixtures"
+        },
+        {
+          "txHash": "0xbc2019c85c34a72ee5eff8ac4b41720ae03f5f105f6e3175f908cdd94cfd0cc2",
+          "ok": true,
+          "functionName": "request_ai_call",
+          "args": [
+            "pd-401882876"
+          ]
+        },
+        {
+          "txHash": "0x6f3777f67d8a81d006ed2e66020a32f2d711a30794c62b5146e250bca112ed20",
+          "ok": true,
+          "functionName": "request_ai_call",
+          "args": [
+            "pd-401882872"
+          ]
+        },
+        {
+          "txHash": "0xe327e19d930a271c0eb3b8bdb80521a520fba33c17baaafe4a4c6655aafda953",
+          "ok": true,
+          "functionName": "request_ai_call",
+          "args": [
+            "pd-401882875"
+          ]
+        },
+        {
+          "txHash": "0xce2840c081c28ada99252b23f243f4a3d44f81a31293d514c5be8c2733331511",
+          "ok": true,
+          "functionName": "request_ai_call",
+          "args": [
+            "pd-401882873"
+          ]
         }
       ]
     }

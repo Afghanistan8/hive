@@ -41,8 +41,12 @@ Prep: wallet on Studio Next with ≥ 10 GEN from the Studio faucet, `npm run dev
    and the disabled *Resolve* countdown (kickoff + 90 min).
 6. **Evidence** — open a settled market/fixture (or show the smoke-test explorer txs from the README): ESPN
    `FINISHED 0–1`, BBC `FINISHED 0–1`, outcome AWAY; ATOM with CoinGecko UP vs Gate DOWN → INCONCLUSIVE.
-7. **Portfolio `/portfolio`** — positions, claimable amount, transaction links.
-8. **Create `/create`** — open a market for another asset/day in one click, permissionlessly.
+7. **Tables / My Picks / Leaderboard** — `/sports/tables` for all five leagues, `/sports/picks` for your record,
+   `/sports/leaderboard` for top predictors (set a username) with the AI Call's own accuracy alongside.
+8. **AI Call** — on a fixture page, show the validators' pre-match pick and reason, then press *Request AI Call* on a
+   fixture that has none.
+9. **Portfolio `/portfolio`** — positions, claimable amount, transaction links.
+10. **Create `/create`** — open a market for another asset/day in one click, permissionlessly.
 
 After a real match ends (e.g. the La Liga fixtures on 15–16 Sep 2026): press **Resolve** on the fixture, then **Claim**,
 or run `npm run resolve:ready` to settle everything with stakes that is ready.

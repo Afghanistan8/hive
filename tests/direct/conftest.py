@@ -28,6 +28,39 @@ if sys.platform == "win32":
     os.unlink = _tolerant_unlink
 
 
+def _install_prompt_template_shim() -> None:
+    """Teach gltest's direct runner the `ExecPromptTemplate` request.
+
+    `gl.eq_principle.prompt_non_comparative` asks the host to run a prompt
+    template instead of a raw prompt; gltest 0.30 only handles raw prompts. The
+    leader template is answered from the registered LLM mocks (matched against
+    task + input) and returned as text, which is what the real host returns.
+    Validator templates are not reachable in direct mode (leader side only);
+    real validator behaviour is covered by the live runtime tests.
+    """
+    from gltest.direct import wasi_mock
+
+    if getattr(wasi_mock, "_hive_template_shim", False):
+        return
+    original = wasi_mock._handle_gl_call
+
+    def handle(vm, request):
+        if isinstance(request, dict) and "ExecPromptTemplate" in request:
+            data = request["ExecPromptTemplate"]
+            haystack = f"{data.get('task', '')}\n{data.get('input', '')}"
+            for pattern, response in vm._llm_mocks:
+                if pattern.search(haystack):
+                    return {"ok": response if isinstance(response, str) else json.dumps(response)}
+            raise wasi_mock.MockNotFoundError(f"No LLM mock for prompt template: {haystack[:100]}")
+        return original(vm, request)
+
+    wasi_mock._handle_gl_call = handle
+    wasi_mock._hive_template_shim = True
+
+
+_install_prompt_template_shim()
+
+
 def iso(ts: int) -> str:
     y, mo, d, hh, mi, sec = time.gmtime(int(ts))[:6]
     return f"{y:04d}-{mo:02d}-{d:02d}T{hh:02d}:{mi:02d}:{sec:02d}Z"

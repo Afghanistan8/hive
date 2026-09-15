@@ -30,14 +30,15 @@ resolve and claim. The frontend reads the contracts directly.
 
 | Contract | Address | Deploy tx |
 |---|---|---|
-| `HiveSports` ([contracts/hive_sports.py](contracts/hive_sports.py)) | [`0xEEd7dD67A929a433a27a90DB2463eaC4195cf1f2`](https://explorer-studio-dev.genlayer.com/address/0xEEd7dD67A929a433a27a90DB2463eaC4195cf1f2) | [`0x3627fa57…5182bfdb`](https://explorer-studio-dev.genlayer.com/tx/0x3627fa574a48f4cae5fa4dc626a056a8703e5b9e07957d630af6b3235182bfdb) |
+| `HiveSports` ([contracts/hive_sports.py](contracts/hive_sports.py)) | [`0xeE172062d021f4dE2B4fEbad0B945e769a62C954`](https://explorer-studio-dev.genlayer.com/address/0xeE172062d021f4dE2B4fEbad0B945e769a62C954) | [`0xc871602a…4ed90e09`](https://explorer-studio-dev.genlayer.com/tx/0xc871602acf25e062ff390ac237ba7edcbd01ba33e7a190bbaa20e98b4ed90e09) |
 | `HiveCrypto` ([contracts/hive_crypto.py](contracts/hive_crypto.py)) | [`0x6172565eA61CEa77c8E6d1fBed36936009C10FF1`](https://explorer-studio-dev.genlayer.com/address/0x6172565eA61CEa77c8E6d1fBed36936009C10FF1) | [`0x52df1e75…c50e0626`](https://explorer-studio-dev.genlayer.com/tx/0x52df1e7541f952654d5625e1d89a0fa8aa907deb8d7736fe9d21ba4cc50e0626) |
 
 Demo seed (ordinary permissionless writes, recorded in [deploy/deployments.json](deploy/deployments.json)):
 
 - `create_daily_markets("2026-09-16")` — [`0xbb5661aa…e49adae1`](https://explorer-studio-dev.genlayer.com/tx/0xbb5661aad45fe4a33022bd8c3b8adb1a989c04d9db0c7af45711a6f8e49adae1)
 - `create_daily_markets("2026-09-17")` — [`0xcfe233f4…c35c455a`](https://explorer-studio-dev.genlayer.com/tx/0xcfe233f46fda7d28dfb64da4c656ec18355fa940d2fb994819f7e9b5c35c455a)
-- `add_fixtures(20 fixtures)` — [`0xcbcbb5db…c6db6551`](https://explorer-studio-dev.genlayer.com/tx/0xcbcbb5db912f5ca480a96bbec9aac4b19ebaa32f4e3121da2247f00bc6db6551)
+- `add_fixtures(20 fixtures)` — [`0x100d4387…6a34434f`](https://explorer-studio-dev.genlayer.com/tx/0x100d438744cf4c79bd60c499af23fddb7f480fd12ba4e86d05d2049c6a34434f)
+- `request_ai_call` × 4 (live validator forecasts, see below)
 
 > Why `studio-next.genlayer.com`? It is the RPC in the hackathon announcement and the v2-dev template default, it answers
 > `eth_chainId = 0xf22d (61997)`, and Transaction Kit quotes fees against it. `studio-dev.genlayer.com` serves the same
@@ -57,6 +58,8 @@ Results: [smoke-results.json](scripts/smoke/smoke-results.json), [claim-results.
 | BTC 2026-09-14 `resolve_market` | [`0x5631ddcc…e8e2a0da`](https://explorer-studio-dev.genlayer.com/tx/0x5631ddcc35e9dc101298feb07a3b097e6c52313b1987fbc3d59fb4bee8e2a0da) | `1\|BTC\|bitcoin\|BTC_USDT\|2026-09-14\|7668256817293\|7875262563068\|UP\|7671090000000\|7855310000000\|UP\|UP` |
 | ATOM 2026-09-14 first attempt | [`0x1617f227…bec8090c`](https://explorer-studio-dev.genlayer.com/tx/0x1617f22716be4410b8a31d82a81426f664979eac59749010a98b8b1cbec8090c) | source outage → validators agree `UNAVAILABLE` → **TRANSIENT revert, still retryable** |
 | ATOM 2026-09-14 retry | [`0x63cef42b…23fbcf25`](https://explorer-studio-dev.genlayer.com/tx/0x63cef42b157be8664b1eee020711cc641b3258440dd159665b609f5423fbcf25) | CoinGecko `157585286→158071059 UP` vs Gate `158300000→158000000 DOWN` → **INCONCLUSIVE** (refunds) |
+| AI Call · Alavés v Valencia `request_ai_call` | [`0xbc2019c8…4cfd0cc2`](https://explorer-studio-dev.genlayer.com/tx/0xbc2019c85c34a72ee5eff8ac4b41720ae03f5f105f6e3175f908cdd94cfd0cc2) | `HOME` (high) — "Alavés are 4th with 10 points and 11-5 GD, while Valencia are 20th with 1 point…" |
+| AI Call · Elche v Real Madrid `request_ai_call` | [`0x6f3777f6…a112ed20`](https://explorer-studio-dev.genlayer.com/tx/0x6f3777f67d8a81d006ed2e66020a32f2d711a30794c62b5146e250bca112ed20) | `AWAY` (high) — "Real Madrid sit 2nd with 12 pts and +10 GD while Elche are 19th…" |
 | Payout: stake 2 GEN → resolve → `claim` | [`0xefce964e…0fdfb985`](https://explorer-studio-dev.genlayer.com/tx/0xefce964e12913b2d6e2b511d71f892b3233ec30384c782f680fd89ed0fdfb985) | contract balance 2 GEN → **0**, wallet receives the 2 GEN |
 
 The payout test caught two runtime-only constraints direct mode could not: an *internal* GenLayer message to a wallet
@@ -90,6 +93,23 @@ Studio returns from simulating the exact call.
    the transaction reverts and anyone can retry later. Claim appears once settled.
 
 ---
+
+## Hive Match features
+
+| Feature | Where | Source of truth |
+|---|---|---|
+| Fixtures with crests, live scores and pools | `/sports` | pools/status: contract · crests & live score: ESPN (display only) |
+| **League tables** for all five leagues, zone markers | `/sports/tables` | ESPN standings (display only) |
+| **My Picks** — every prediction, result, accuracy, net, claim | `/sports/picks` | `get_user_positions` |
+| **Top predictors leaderboard** with per-league split and on-chain usernames | `/sports/leaderboard` | `get_positions` + `set_username` — rebuilt from every position, nobody can edit a row |
+| **AI Call** — validators' pre-match pick, confidence and reason; its accuracy is scored next to humans | fixture page, leaderboard | `request_ai_call` (non-comparative consensus, holds no funds, exact agreed text stored) |
+| Form guide for the two clubs | fixture page | ESPN standings (display only) |
+
+Hive Daily adds a display-only hourly price chart with the candle window shaded, a lifecycle timeline and an
+activity feed (`/crypto/activity`).
+
+Display data is served by small Next.js route handlers (`/api/espn/*`, `/api/candles/*`) for the UI only; settlement
+never reads them — the contracts fetch their own sources under consensus.
 
 ## Why decentralized judgment matters here
 
@@ -177,7 +197,7 @@ set; works without it).
 contracts/
   hive_crypto.py            Hive Daily markets
   hive_sports.py            Hive Match multi-fixture markets
-tests/direct/               40 in-memory tests (web/LLM mocks, exact agreed-payload regressions, genvm-lint)
+tests/direct/               45 in-memory tests (web/LLM mocks, exact agreed-payload regressions, AI Call, genvm-lint)
 tests/runtime/README.md     live Studio Next tests: consensus settlement + payout path
 deploy/
   001_deploy_crypto.ts      fee-aware, idempotent deploys (writes frontend/.env + deployments.json)

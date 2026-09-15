@@ -6,6 +6,7 @@ import { BackLink, Card, ErrorBox, Loading, SourceLink, Stat } from "@/component
 import { PhaseBadge } from "@/components/hive/PhaseBadge";
 import { ClaimDialog } from "@/components/hive/ClaimDialog";
 import { TxDialog } from "@/components/hive/TxDialog";
+import { CryptoTabs, Lifecycle, PriceChart } from "@/components/hive/crypto";
 import { Input } from "@/components/ui/input";
 import { useWallet } from "@/lib/genlayer/wallet";
 import { CRYPTO_MAX_STAKE, CRYPTO_MIN_STAKE, GEN, HIVE_CRYPTO_ADDRESS } from "@/lib/hive/config";
@@ -44,6 +45,7 @@ export default function CryptoMarketPage() {
   return (
     <div className="space-y-5">
       <BackLink href="/crypto">All markets</BackLink>
+      <CryptoTabs />
       <Card className="space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-2 text-sm text-muted-foreground">
           <span>Market #{m.id} · CoinGecko <code>{m.coingecko_id}</code> · Gate.io <code>{m.gate_pair}</code></span>
@@ -60,6 +62,11 @@ export default function CryptoMarketPage() {
           <Stat label="Terminal refund" value={formatGmt1(m.terminal_refund_at)} hint="if sources never recover" />
         </div>
       </Card>
+
+      <div className="grid gap-5 lg:grid-cols-3">
+        <Card className="lg:col-span-2"><PriceChart market={m} /></Card>
+        <Card><Lifecycle market={m} now={now} /></Card>
+      </div>
 
       <div className="grid gap-5 lg:grid-cols-3">
         <Card className="space-y-4 lg:col-span-2">
