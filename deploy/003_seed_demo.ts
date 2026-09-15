@@ -13,13 +13,37 @@ const STATE_FILE = path.join(ROOT, "deploy", "deployments.json");
 const DAY = 86_400;
 const BATCH = 20;
 
+// Fee preset for a concrete call: Studio simulates the write and returns the budget
+// it needs (the v2 Transaction Kit flow). Falls back to the network policy preset.
+async function writeFees(client: any, address: string, functionName: string, args: any[]) {
+  let estimate: any;
+  try {
+    estimate = await client.estimateTransactionFeesForWrite({ address, functionName, args, value: 0n });
+  } catch (err) {
+    console.warn(`simulated fee estimate failed for ${functionName}, using policy preset: ${err}`);
+    estimate = await client.estimateTransactionFees({});
+  }
+  return {
+    distribution: estimate.distribution,
+    ...(estimate.messageAllocations ? { messageAllocations: estimate.messageAllocations } : {}),
+    feeValue: BigInt(estimate.feeValue),
+  };
+}
+
+function accepted(receipt: any): boolean {
+  const execution = String(receipt.txExecutionResultName ?? receipt.data?.tx_execution_result_name ?? "");
+  const labels = [receipt.statusName, receipt.resultName, receipt.status, receipt.data?.status]
+    .map((v) => String(v ?? "").toUpperCase());
+  if (labels.some((l) => l.includes("UNDETERMINED") || l.includes("CANCELED") || l.includes("TIMEOUT"))) return false;
+  return execution === "FINISHED_WITH_RETURN";
+}
+
 async function write(client: any, address: string, functionName: string, args: any[]) {
-  const txHash = await client.writeContract({ address, functionName, args, value: 0n });
+  const fees = await writeFees(client, address, functionName, args);
+  const txHash = await client.writeContract({ address, functionName, args, value: 0n, fees });
   const receipt = await client.waitForTransactionReceipt({ hash: txHash, waitUntil: "decided", retries: 300, interval: 3000 });
-  const statusName = String(receipt.statusName ?? "");
-  const execution = String(receipt.txExecutionResultName ?? "");
-  const ok = ["ACCEPTED", "FINALIZED"].includes(statusName) && !execution.includes("ERROR");
-  console.log(`${ok ? "ok  " : "FAIL"} ${functionName} ${txHash} status=${statusName} execution=${execution}`);
+  const ok = accepted(receipt);
+  console.log(`${ok ? "ok  " : "FAIL"} ${functionName} ${txHash} execution=${receipt.txExecutionResultName}`);
   return { txHash, ok, functionName, args: functionName === "add_fixtures" ? `${JSON.parse(args[0]).length} fixtures` : args };
 }
 

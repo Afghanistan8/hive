@@ -1,0 +1,52 @@
+{
+  "network": {
+    "chainId": 61997,
+    "name": "GenLayer Studio Devnet",
+    "rpc": "https://studio-dev.genlayer.com/api"
+  },
+  "contracts": {
+    "HiveCrypto": {
+      "address": "0xdaB2B7AE913580689F7394cd5071d9E6cd18FcFC",
+      "txHash": "0x79def76e9d264a70f2ea87e51f949af4c9710acf15403f6a01d16d345ce511b0",
+      "chainId": 61997,
+      "codeHash": "a1228ed86fff07b1e05e99fdf135edf29189fb75892d8a70262f3ad682523e1f",
+      "deployedAt": "2026-09-15T11:52:04.462841+00:00"
+    },
+    "HiveSports": {
+      "address": "0x750B55C47b292631E291c011A700Af6939736f0A",
+      "txHash": "0x3c3a38db7d77ed41729844aa314e9c5e943f6bebee17fd355d6c030b52a7614c",
+      "chainId": 61997,
+      "codeHash": "aca4455d03dcbfb2920490da3ce77c4e375c3d812bfad8c710d7d24c73ed67ef",
+      "deployedAt": "2026-09-15T11:52:18.258Z"
+    }
+  },
+  "seeds": [
+    {
+      "at": "2026-09-15T11:53:19.750Z",
+      "results": [
+        {
+          "txHash": "0xd3b0d28e95e54ea0e17b792b32fcfd66d7134f4331597dc3faad0a07d582db4f",
+          "ok": true,
+          "functionName": "create_daily_markets",
+          "args": [
+            "2026-09-16"
+          ]
+        },
+        {
+          "txHash": "0x35b8136eec3b2777a76a18e48b2cdb28fc60f6679fb0546052639404fb06bd71",
+          "ok": true,
+          "functionName": "create_daily_markets",
+          "args": [
+            "2026-09-17"
+          ]
+        },
+        {
+          "txHash": "0x115f955026115b7570e531c51bf2b5a1d0139019b1e2e10e14a6dce539371dad",
+          "ok": true,
+          "functionName": "add_fixtures",
+          "args": "20 fixtures"
+        }
+      ]
+    }
+  ]
+}

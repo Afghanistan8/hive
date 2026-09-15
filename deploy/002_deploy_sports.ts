@@ -29,6 +29,24 @@ function upsertEnv(key: string, value: string) {
   writeFileSync(envPath, next);
 }
 
+function accepted(receipt: any): boolean {
+  const execution = String(receipt.txExecutionResultName ?? receipt.data?.tx_execution_result_name ?? "");
+  const labels = [receipt.statusName, receipt.resultName, receipt.status, receipt.data?.status]
+    .map((v) => String(v ?? "").toUpperCase());
+  if (labels.some((l) => l.includes("UNDETERMINED") || l.includes("CANCELED") || l.includes("TIMEOUT"))) return false;
+  return execution === "FINISHED_WITH_RETURN";
+}
+
+// Fee preset from the network's own policy (Studio trusted mode) — no hand-written numbers.
+async function deployFees(client: any) {
+  const estimate = await client.estimateTransactionFees({});
+  return {
+    distribution: estimate.distribution,
+    ...(estimate.messageAllocations ? { messageAllocations: estimate.messageAllocations } : {}),
+    feeValue: BigInt(estimate.feeValue),
+  };
+}
+
 export default async function main(client: any) {
   const source = readFileSync(path.join(ROOT, CONTRACT));
   const codeHash = createHash("sha256").update(source).digest("hex");
@@ -42,15 +60,14 @@ export default async function main(client: any) {
     return;
   }
 
-  await client.initializeConsensusSmartContract();
-  const txHash = await client.deployContract({ code: new Uint8Array(source), args: [] });
+  const fees = await deployFees(client);
+  console.log(`${NAME} fee deposit: ${fees.feeValue} wei`);
+  const txHash = await client.deployContract({ code: new Uint8Array(source), args: [], fees });
   console.log(`${NAME} deploy tx: ${txHash}`);
   const receipt = await client.waitForTransactionReceipt({ hash: txHash, waitUntil: "decided", retries: 300, interval: 3000 });
 
-  const statusName = String(receipt.statusName ?? "");
-  const execution = String(receipt.txExecutionResultName ?? "");
-  if (!["ACCEPTED", "FINALIZED"].includes(statusName) || execution.includes("ERROR")) {
-    throw new Error(`${NAME} deployment not accepted: status=${statusName} execution=${execution}`);
+  if (!accepted(receipt)) {
+    throw new Error(`${NAME} deployment not accepted: status=${receipt.statusName ?? receipt.status} execution=${receipt.txExecutionResultName}`);
   }
   const address = receipt.txDataDecoded?.contractAddress ?? receipt.data?.contract_address ?? receipt.recipient;
   if (!address) throw new Error(`${NAME} receipt has no contract address`);

@@ -2,7 +2,9 @@
   "name": "genlayer-project",
   "type": "module",
   "private": true,
-  "workspaces": ["frontend"],
+  "workspaces": [
+    "frontend"
+  ],
   "scripts": {
     "dev": "cd frontend && npm run dev",
     "build": "cd frontend && npm run build",
@@ -12,6 +14,7 @@
     "deploy": "genlayer deploy"
   },
   "devDependencies": {
+    "genlayer": "^0.40.0-rc.3",
     "genlayer-js": "2.0.0-rc.1"
   }
 }
