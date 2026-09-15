@@ -1,0 +1,202 @@
+[
+  {
+    "match_id": "pd-401882876",
+    "league": "PD",
+    "espn_event_id": "401882876",
+    "home": "Alavés",
+    "away": "Valencia",
+    "kickoff_ts": 1789495200,
+    "kickoff_utc": "2026-09-15T18:00Z",
+    "football_data_checked": false
+  },
+  {
+    "match_id": "pd-401882872",
+    "league": "PD",
+    "espn_event_id": "401882872",
+    "home": "Elche",
+    "away": "Real Madrid",
+    "kickoff_ts": 1789500600,
+    "kickoff_utc": "2026-09-15T19:30Z",
+    "football_data_checked": false
+  },
+  {
+    "match_id": "pd-401882875",
+    "league": "PD",
+    "espn_event_id": "401882875",
+    "home": "Atletico Madrid",
+    "away": "Osasuna",
+    "kickoff_ts": 1789578000,
+    "kickoff_utc": "2026-09-16T17:00Z",
+    "football_data_checked": false
+  },
+  {
+    "match_id": "pd-401882873",
+    "league": "PD",
+    "espn_event_id": "401882873",
+    "home": "Deportivo",
+    "away": "Sevilla",
+    "kickoff_ts": 1789578000,
+    "kickoff_utc": "2026-09-16T17:00Z",
+    "football_data_checked": false
+  },
+  {
+    "match_id": "bl1-401884790",
+    "league": "BL1",
+    "espn_event_id": "401884790",
+    "home": "Bayern Munich",
+    "away": "Union Berlin",
+    "kickoff_ts": 1789756200,
+    "kickoff_utc": "2026-09-18T18:30Z",
+    "football_data_checked": false
+  },
+  {
+    "match_id": "fl1-401876453",
+    "league": "FL1",
+    "espn_event_id": "401876453",
+    "home": "Monaco",
+    "away": "Lens",
+    "kickoff_ts": 1789757100,
+    "kickoff_utc": "2026-09-18T18:45Z",
+    "football_data_checked": false
+  },
+  {
+    "match_id": "sa-401874756",
+    "league": "SA",
+    "espn_event_id": "401874756",
+    "home": "Monza",
+    "away": "Sassuolo",
+    "kickoff_ts": 1789757100,
+    "kickoff_utc": "2026-09-18T18:45Z",
+    "football_data_checked": false
+  },
+  {
+    "match_id": "pl-401879275",
+    "league": "PL",
+    "espn_event_id": "401879275",
+    "home": "Brentford",
+    "away": "Chelsea",
+    "kickoff_ts": 1789758000,
+    "kickoff_utc": "2026-09-18T19:00Z",
+    "football_data_checked": false
+  },
+  {
+    "match_id": "pl-401879269",
+    "league": "PL",
+    "espn_event_id": "401879269",
+    "home": "Tottenham Hotspur",
+    "away": "Aston Villa",
+    "kickoff_ts": 1789817400,
+    "kickoff_utc": "2026-09-19T11:30Z",
+    "football_data_checked": false
+  },
+  {
+    "match_id": "sa-401874767",
+    "league": "SA",
+    "espn_event_id": "401874767",
+    "home": "Bologna",
+    "away": "Torino",
+    "kickoff_ts": 1789822800,
+    "kickoff_utc": "2026-09-19T13:00Z",
+    "football_data_checked": false
+  },
+  {
+    "match_id": "sa-401874964",
+    "league": "SA",
+    "espn_event_id": "401874964",
+    "home": "Udinese",
+    "away": "Cagliari",
+    "kickoff_ts": 1789822800,
+    "kickoff_utc": "2026-09-19T13:00Z",
+    "football_data_checked": false
+  },
+  {
+    "match_id": "bl1-401884786",
+    "league": "BL1",
+    "espn_event_id": "401884786",
+    "home": "Gladbach",
+    "away": "Mainz 05",
+    "kickoff_ts": 1789824600,
+    "kickoff_utc": "2026-09-19T13:30Z",
+    "football_data_checked": false
+  },
+  {
+    "match_id": "bl1-401884787",
+    "league": "BL1",
+    "espn_event_id": "401884787",
+    "home": "Eintracht Frankfurt",
+    "away": "Freiburg",
+    "kickoff_ts": 1789824600,
+    "kickoff_utc": "2026-09-19T13:30Z",
+    "football_data_checked": false
+  },
+  {
+    "match_id": "bl1-401884784",
+    "league": "BL1",
+    "espn_event_id": "401884784",
+    "home": "Werder Bremen",
+    "away": "Augsburg",
+    "kickoff_ts": 1789824600,
+    "kickoff_utc": "2026-09-19T13:30Z",
+    "football_data_checked": false
+  },
+  {
+    "match_id": "pl-401879274",
+    "league": "PL",
+    "espn_event_id": "401879274",
+    "home": "Brighton & Hove Albion",
+    "away": "Arsenal",
+    "kickoff_ts": 1789826400,
+    "kickoff_utc": "2026-09-19T14:00Z",
+    "football_data_checked": false
+  },
+  {
+    "match_id": "pl-401878778",
+    "league": "PL",
+    "espn_event_id": "401878778",
+    "home": "Everton",
+    "away": "Ipswich Town",
+    "kickoff_ts": 1789826400,
+    "kickoff_utc": "2026-09-19T14:00Z",
+    "football_data_checked": false
+  },
+  {
+    "match_id": "fl1-401876451",
+    "league": "FL1",
+    "espn_event_id": "401876451",
+    "home": "Paris FC",
+    "away": "Strasbourg",
+    "kickoff_ts": 1789830900,
+    "kickoff_utc": "2026-09-19T15:15Z",
+    "football_data_checked": false
+  },
+  {
+    "match_id": "sa-401874753",
+    "league": "SA",
+    "espn_event_id": "401874753",
+    "home": "Roma",
+    "away": "Inter Milan",
+    "kickoff_ts": 1789833600,
+    "kickoff_utc": "2026-09-19T16:00Z",
+    "football_data_checked": false
+  },
+  {
+    "match_id": "fl1-401876457",
+    "league": "FL1",
+    "espn_event_id": "401876457",
+    "home": "Angers",
+    "away": "Troyes",
+    "kickoff_ts": 1789843500,
+    "kickoff_utc": "2026-09-19T18:45Z",
+    "football_data_checked": false
+  },
+  {
+    "match_id": "fl1-401876455",
+    "league": "FL1",
+    "espn_event_id": "401876455",
+    "home": "Le Mans",
+    "away": "Lorient",
+    "kickoff_ts": 1789843500,
+    "kickoff_utc": "2026-09-19T18:45Z",
+    "football_data_checked": false
+  }
+]

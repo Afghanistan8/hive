@@ -44,6 +44,8 @@ MAX_BATCH = 40
 MAX_ESPN_BYTES = 600_000
 WINDOW_RADIUS = 350
 MAX_WINDOWS = 4
+# ESPN rejects many generic/browser user agents; this honest curl-style one is accepted.
+HTTP_HEADERS = {"Accept": "application/json", "User-Agent": "curl/8.5.0 (HIVE GenLayer validator)"}
 
 # code -> (competition name used in prompts, ESPN league slug)
 LEAGUES = {
@@ -372,7 +374,7 @@ def canonical(payload: dict) -> str:
 def collect_evidence(match_id: str, league: str, event_id: str, home: str, away: str, kickoff_ts: int) -> str:
     """Nondet worker: both readings + derived outcome as canonical JSON."""
     try:
-        resp = gl.nondet.web.get(espn_url(league, kickoff_ts), headers={"Accept": "application/json"})
+        resp = gl.nondet.web.get(espn_url(league, kickoff_ts), headers=HTTP_HEADERS)
         body = resp.body.decode("utf-8", errors="replace") if resp.status == 200 and resp.body else ""
         espn = parse_espn(body, event_id)
     except Exception:

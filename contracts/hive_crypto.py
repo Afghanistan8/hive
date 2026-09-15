@@ -49,6 +49,7 @@ MAX_PAGE = 50
 MAX_SOURCE_BYTES = 120_000
 PRICE_SCALE = 10**8
 EDGE_TOLERANCE = 90 * 60  # CoinGecko hourly samples must hug both window edges
+HTTP_HEADERS = {"Accept": "application/json", "User-Agent": "curl/8.5.0 (HIVE GenLayer validator)"}
 
 # asset -> (CoinGecko coin id, Gate.io spot pair). Every entry is verified
 # against both public endpoints by scripts/check_sources.py.
@@ -819,7 +820,7 @@ class HiveCrypto(gl.contract.Contract):
 
 
 def _http_get(url: str) -> str:
-    resp = gl.nondet.web.get(url, headers={"Accept": "application/json"})
+    resp = gl.nondet.web.get(url, headers=HTTP_HEADERS)
     if resp.status != 200:
         raise SourceError(f"http {resp.status}")
     body = resp.body
