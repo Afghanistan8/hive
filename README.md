@@ -278,7 +278,11 @@ value-transfer message that must be budgeted in `messageAllocations`, which Tran
   Studio Next faucet) sit on the upcoming fixtures and markets so the books are not empty. They are ordinary
   permissionless positions sent through Transaction Kit by
   [`frontend/scripts/seed_liquidity.ts`](frontend/scripts/seed_liquidity.ts); every hash is in
-  [`deploy/seed-liquidity.json`](deploy/seed-liquidity.json).
+  [`deploy/seed-liquidity.json`](deploy/seed-liquidity.json) (85 of 85 finalized `FINISHED_WITH_RETURN`).
+- The browser write path was exercised through the real Stake dialog (Transaction Kit quote → sign → submit → track
+  to *Decided — Accepted*): `predict("pl-401879275", "DRAW")` with 2 GEN —
+  [`0x6bbc14a7…06bd2d7`](https://explorer-studio-dev.genlayer.com/tx/0x6bbc14a7bebe7142c7c47e03c2f1cbb4dc1249b0aa2d538861f05031d06bd2d7).
+  Claims use Studio's simulated fee preset; `claim`/`refund` do not read the clock, so the simulation is valid.
 
 ## License
 

@@ -11,6 +11,7 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { createTransactionKit, type SubmitInput } from "@genlayer/transaction-kit";
+import { createClient } from "genlayer-js";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { GENLAYER_CHAIN } from "../lib/genlayer/network";
 import { HiveReader } from "../lib/hive/contracts";
@@ -120,11 +121,32 @@ async function submit(job: Job) {
   return { hash: genlayerTxId, feeValue: quote.feeValue.toString(), source: quote.source };
 }
 
+const statusClient = createClient({ chain: GENLAYER_CHAIN });
 async function outcome(hash: string) {
-  const tx = await rpc<any>("gen_getTransactionByHash", [hash]);
-  const status = String(tx?.statusName ?? tx?.status_name ?? tx?.status ?? "");
-  const result = String(tx?.txExecutionResultName ?? tx?.tx_execution_result_name ?? tx?.execution_result ?? "");
-  return { status, result };
+  const tx: any = await statusClient.getTransaction({ hash: hash as any });
+  return { status: String(tx?.statusName ?? ""), result: String(tx?.txExecutionResultName ?? "") };
+}
+
+// --verify: fill in outcomes for transactions already recorded in deploy/seed-liquidity.json.
+if (process.argv.includes("--verify")) {
+  const file = JSON.parse(readFileSync(RESULTS_FILE, "utf8"));
+  for (const row of file.results.filter((r: any) => r.hash && r.ok === undefined)) {
+    try {
+      const { status, result } = await outcome(row.hash);
+      if (!["ACCEPTED", "FINALIZED", "UNDETERMINED", "CANCELED", "LEADER_TIMEOUT", "VALIDATORS_TIMEOUT"].includes(status)) {
+        console.log(`… ${row.what}: ${status || "unknown"}`);
+        continue;
+      }
+      Object.assign(row, { status, result, ok: status !== "CANCELED" && result === "FINISHED_WITH_RETURN" });
+      console.log(`${row.ok ? "✓" : "✗"} ${row.wallet} ${row.what} → ${status} ${result}`);
+    } catch (e: any) {
+      console.log(`… ${row.what}: ${String(e?.shortMessage || e?.message || e).split("\n")[0]}`);
+    }
+    writeFileSync(RESULTS_FILE, JSON.stringify(file, null, 2));
+  }
+  const rows = file.results.filter((r: any) => r.hash);
+  console.log(`verified: ${rows.filter((r: any) => r.ok).length} ok, ${rows.filter((r: any) => r.ok === false).length} failed, ${rows.filter((r: any) => r.ok === undefined).length} pending, of ${rows.length}`);
+  process.exit(0);
 }
 
 // Deterministic spread so pools look like a market, not one wallet: favourite side gets more.
