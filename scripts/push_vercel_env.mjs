@@ -71,8 +71,10 @@ if (address.toLowerCase() !== DEPLOYER) {
 console.log(`• key verified: deployer ${address}`);
 
 // Arguments are fixed strings (no user input), so one command line through the shell is safe.
+// Run inside frontend/ (the linked project's directory) and non-interactively: otherwise the CLI
+// asks "Please select a Project" and stdin answers the prompt instead of supplying the value.
 const vercel = (args, input) =>
-  spawnSync(`npx vercel ${args.join(" ")}`, { cwd: ROOT, input, encoding: "utf8", shell: true });
+  spawnSync(`npx vercel ${args.join(" ")} --non-interactive`, { cwd: join(ROOT, "frontend"), input, encoding: "utf8", shell: true });
 
 const listed = () => {
   const r = vercel(["env", "ls", "production"]);
