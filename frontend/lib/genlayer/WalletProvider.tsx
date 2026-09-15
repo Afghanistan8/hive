@@ -1,19 +1,21 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useState, useSyncExternalStore, type ReactNode } from "react";
+import { connectWalletProvider, getAccounts, getCurrentChainId, switchAccount } from "./client";
+import { GENLAYER_CHAIN_ID } from "./network";
 import {
-  isMetaMaskInstalled,
-  connectMetaMask,
-  switchAccount,
-  getAccounts,
-  getCurrentChainId,
-  isOnGenLayerNetwork,
-  getEthereumProvider,
-  GENLAYER_CHAIN_ID,
-} from "./client";
-import { error, userRejected, warning } from "../utils/toast";
+  getSelectedWalletId,
+  getServerWalletOptions,
+  getWalletOption,
+  getWalletOptions,
+  selectWallet,
+  startWalletDiscovery,
+  subscribeWallets,
+  walletsReady,
+  type WalletOption,
+} from "./wallets";
 
-// localStorage key for tracking user's disconnect intent
+// Remembers an explicit disconnect so we don't silently reconnect on reload.
 const DISCONNECT_FLAG = "wallet_disconnected";
 
 export interface WalletState {
@@ -21,302 +23,175 @@ export interface WalletState {
   chainId: string | null;
   isConnected: boolean;
   isLoading: boolean;
+  /** True when at least one wallet (MetaMask, OKX, Rabby, …) is available. */
   isMetaMaskInstalled: boolean;
   isOnCorrectNetwork: boolean;
+  walletId: string | null;
+  walletName: string | null;
+  walletIcon: string | null;
 }
 
 interface WalletContextValue extends WalletState {
-  connectWallet: () => Promise<string>;
+  wallets: WalletOption[];
+  /** Connect a specific wallet by id; with no id, reuse the last-picked or the only one. */
+  connectWallet: (walletId?: string) => Promise<string>;
   disconnectWallet: () => void;
   switchWalletAccount: () => Promise<string>;
+  /** Shared wallet picker dialog (rendered once by <WalletChooser />). */
+  chooserOpen: boolean;
+  setChooserOpen: (open: boolean) => void;
+  /** Open the picker — every "Connect wallet" button calls this. */
+  requestConnect: () => void;
 }
 
-// Create context with undefined default (will error if used outside Provider)
 const WalletContext = createContext<WalletContextValue | undefined>(undefined);
 
-/**
- * WalletProvider component that manages wallet state and provides it to all children
- * This ensures all components share the same wallet state and react to changes
- */
+const EMPTY: WalletState = {
+  address: null,
+  chainId: null,
+  isConnected: false,
+  isLoading: true,
+  isMetaMaskInstalled: false,
+  isOnCorrectNetwork: false,
+  walletId: null,
+  walletName: null,
+  walletIcon: null,
+};
+
 export function WalletProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState<WalletState>({
-    address: null,
-    chainId: null,
-    isConnected: false,
-    isLoading: true,
-    isMetaMaskInstalled: false,
-    isOnCorrectNetwork: false,
-  });
+  const wallets = useSyncExternalStore(subscribeWallets, getWalletOptions, getServerWalletOptions);
+  const [state, setState] = useState<WalletState>(EMPTY);
+  const [chooserOpen, setChooserOpen] = useState(false);
+  const requestConnect = useCallback(() => setChooserOpen(true), []);
 
-  // Check MetaMask installation and load account on mount
+  const describe = (id: string | null) => {
+    const w = getWalletOption(id);
+    return { walletId: w?.id ?? null, walletName: w?.name ?? null, walletIcon: w?.icon || null };
+  };
+
+  // Discover wallets, then silently restore the last session if still authorised.
   useEffect(() => {
-    const initWallet = async () => {
-      const installed = isMetaMaskInstalled();
-
-      if (!installed) {
-        setState({
-          address: null,
-          chainId: null,
-          isConnected: false,
-          isLoading: false,
-          isMetaMaskInstalled: false,
-          isOnCorrectNetwork: false,
-        });
+    startWalletDiscovery();
+    let cancelled = false;
+    (async () => {
+      await walletsReady();
+      if (cancelled) return;
+      const available = getWalletOptions().length > 0;
+      const disconnected = typeof window !== "undefined" && localStorage.getItem(DISCONNECT_FLAG) === "true";
+      const savedId = getSelectedWalletId();
+      const saved = getWalletOption(savedId);
+      if (!available || disconnected || !saved) {
+        setState({ ...EMPTY, isLoading: false, isMetaMaskInstalled: available });
         return;
       }
-
-      // Check if user intentionally disconnected
-      // If they did, don't auto-reconnect even if MetaMask has permissions
-      if (typeof window !== "undefined") {
-        const wasDisconnected =
-          localStorage.getItem(DISCONNECT_FLAG) === "true";
-
-        if (wasDisconnected) {
-          // User explicitly disconnected, don't auto-reconnect
-          setState({
-            address: null,
-            chainId: null,
-            isConnected: false,
-            isLoading: false,
-            isMetaMaskInstalled: true,
-            isOnCorrectNetwork: false,
-          });
-          return;
-        }
-      }
-
-      try {
-        // Get current accounts (without requesting)
-        // This will auto-reconnect if MetaMask has existing permissions
-        // and user didn't explicitly disconnect
-        const accounts = await getAccounts();
-        const chainId = await getCurrentChainId();
-        const correctNetwork = await isOnGenLayerNetwork();
-
-        setState({
-          address: accounts[0] || null,
-          chainId,
-          isConnected: accounts.length > 0,
-          isLoading: false,
-          isMetaMaskInstalled: true,
-          isOnCorrectNetwork: correctNetwork,
-        });
-      } catch (error) {
-        console.error("Error initializing wallet:", error);
-        setState({
-          address: null,
-          chainId: null,
-          isConnected: false,
-          isLoading: false,
-          isMetaMaskInstalled: true,
-          isOnCorrectNetwork: false,
-        });
-      }
-    };
-
-    initWallet();
-  }, []);
-
-  // Set up MetaMask event listeners (ONCE for entire app)
-  useEffect(() => {
-    const provider = getEthereumProvider();
-
-    if (!provider) {
-      return;
-    }
-
-    const handleAccountsChanged = async (accounts: string[]) => {
-      const chainId = await getCurrentChainId();
-      const correctNetwork = await isOnGenLayerNetwork();
-
-      // If user connected via MetaMask UI, clear the disconnect flag
-      // This allows future auto-reconnects
-      if (accounts.length > 0 && typeof window !== "undefined") {
-        localStorage.removeItem(DISCONNECT_FLAG);
-      }
-
-      setState((prev) => ({
-        ...prev,
+      const accounts = await getAccounts(saved.provider);
+      const chainId = await getCurrentChainId(saved.provider);
+      setState({
         address: accounts[0] || null,
         chainId,
         isConnected: accounts.length > 0,
-        isOnCorrectNetwork: correctNetwork,
-      }));
-    };
-
-    const handleChainChanged = async (chainId: string) => {
-      // MetaMask recommends reloading the page on chain change
-      // but we'll update state instead for better UX
-      const correctNetwork = parseInt(chainId, 16) === GENLAYER_CHAIN_ID;
-      const accounts = await getAccounts();
-
-      setState((prev) => ({
-        ...prev,
-        chainId,
-        address: accounts[0] || null,
-        isConnected: accounts.length > 0,
-        isOnCorrectNetwork: correctNetwork,
-      }));
-    };
-
-    const handleDisconnect = () => {
-      setState((prev) => ({
-        ...prev,
-        address: null,
-        isConnected: false,
-      }));
-    };
-
-    // Add event listeners
-    provider.on("accountsChanged", handleAccountsChanged);
-    provider.on("chainChanged", handleChainChanged);
-    provider.on("disconnect", handleDisconnect);
-
-    // Cleanup
+        isLoading: false,
+        isMetaMaskInstalled: true,
+        isOnCorrectNetwork: !!chainId && parseInt(chainId, 16) === GENLAYER_CHAIN_ID,
+        ...describe(saved.id),
+      });
+    })();
     return () => {
-      provider.removeListener("accountsChanged", handleAccountsChanged);
-      provider.removeListener("chainChanged", handleChainChanged);
-      provider.removeListener("disconnect", handleDisconnect);
+      cancelled = true;
     };
   }, []);
 
-  /**
-   * Connect to MetaMask
-   */
-  const connectWallet = useCallback(async () => {
+  useEffect(() => {
+    setState((prev) => ({ ...prev, isMetaMaskInstalled: wallets.length > 0 }));
+  }, [wallets.length]);
+
+  // Listen to the connected wallet only.
+  useEffect(() => {
+    const provider = getWalletOption(state.walletId)?.provider;
+    if (!provider?.on) return;
+
+    const onAccounts = (accounts: string[]) => {
+      if (accounts.length > 0) localStorage.removeItem(DISCONNECT_FLAG);
+      setState((prev) => ({ ...prev, address: accounts[0] || null, isConnected: accounts.length > 0 }));
+    };
+    const onChain = (chainId: string) => {
+      setState((prev) => ({ ...prev, chainId, isOnCorrectNetwork: parseInt(chainId, 16) === GENLAYER_CHAIN_ID }));
+    };
+    const onDisconnect = () => setState((prev) => ({ ...prev, address: null, isConnected: false }));
+
+    provider.on("accountsChanged", onAccounts);
+    provider.on("chainChanged", onChain);
+    provider.on("disconnect", onDisconnect);
+    return () => {
+      provider.removeListener?.("accountsChanged", onAccounts);
+      provider.removeListener?.("chainChanged", onChain);
+      provider.removeListener?.("disconnect", onDisconnect);
+    };
+  }, [state.walletId]);
+
+  const connectWallet = useCallback(async (walletId?: string) => {
+    await walletsReady(walletId ? 0 : 400);
+    const options = getWalletOptions();
+    const target = getWalletOption(walletId) ?? getWalletOption(getSelectedWalletId()) ?? (options.length === 1 ? options[0] : null);
+    if (!target) throw new Error(options.length ? "Choose a wallet" : "No wallet found");
+
+    setState((prev) => ({ ...prev, isLoading: true }));
     try {
-      setState((prev) => ({ ...prev, isLoading: true }));
-
-      const address = await connectMetaMask();
-      const chainId = await getCurrentChainId();
-      const correctNetwork = await isOnGenLayerNetwork();
-
-      // User is connecting, clear the disconnect flag
-      // This allows auto-reconnect on future page loads
-      if (typeof window !== "undefined") {
-        localStorage.removeItem(DISCONNECT_FLAG);
-      }
-
+      selectWallet(target.id);
+      const address = await connectWalletProvider(target.provider);
+      const chainId = await getCurrentChainId(target.provider);
+      localStorage.removeItem(DISCONNECT_FLAG);
       setState({
         address,
         chainId,
         isConnected: true,
         isLoading: false,
         isMetaMaskInstalled: true,
-        isOnCorrectNetwork: correctNetwork,
+        isOnCorrectNetwork: !!chainId && parseInt(chainId, 16) === GENLAYER_CHAIN_ID,
+        ...describe(target.id),
       });
-
       return address;
-    } catch (err: any) {
-      console.error("Error connecting wallet:", err);
+    } catch (err) {
       setState((prev) => ({ ...prev, isLoading: false }));
-
-      // Handle specific error types with appropriate toasts
-      if (err.message?.includes("rejected")) {
-        userRejected("Connection cancelled");
-      } else if (err.message?.includes("MetaMask is not installed")) {
-        error("MetaMask not found", {
-          description: "Please install MetaMask to connect your wallet.",
-          action: {
-            label: "Install MetaMask",
-            onClick: () => window.open("https://metamask.io/download/", "_blank")
-          }
-        });
-      } else {
-        error("Failed to connect wallet", {
-          description: err.message || "Please check your MetaMask and try again."
-        });
-      }
-
       throw err;
     }
   }, []);
 
-  /**
-   * Disconnect wallet (clear local state and persist disconnect intent)
-   * Sets a flag in localStorage to prevent auto-reconnect on page refresh
-   */
   const disconnectWallet = useCallback(() => {
-    // Persist user's intent to disconnect
-    // This prevents auto-reconnect on page refresh
-    if (typeof window !== "undefined") {
-      localStorage.setItem(DISCONNECT_FLAG, "true");
-    }
-
-    setState((prev) => ({
-      ...prev,
-      address: null,
-      isConnected: false,
-    }));
+    localStorage.setItem(DISCONNECT_FLAG, "true");
+    setState((prev) => ({ ...prev, address: null, isConnected: false }));
   }, []);
 
-  /**
-   * Request user to switch to different MetaMask account
-   * Shows MetaMask account picker even if already connected
-   */
   const switchWalletAccount = useCallback(async () => {
+    const provider = getWalletOption(state.walletId)?.provider;
+    if (!provider) throw new Error("No wallet connected");
+    setState((prev) => ({ ...prev, isLoading: true }));
     try {
-      setState((prev) => ({ ...prev, isLoading: true }));
-
-      // Request account switch via MetaMask picker
-      const newAddress = await switchAccount();
-
-      // Get updated state
-      const chainId = await getCurrentChainId();
-      const correctNetwork = await isOnGenLayerNetwork();
-
-      // Clear disconnect flag - user is actively connecting
-      if (typeof window !== "undefined") {
-        localStorage.removeItem(DISCONNECT_FLAG);
-      }
-
-      // Update state immediately for better UX
-      // accountsChanged event will also fire, but that's okay
-      setState({
-        address: newAddress,
+      const address = await switchAccount(provider);
+      const chainId = await getCurrentChainId(provider);
+      setState((prev) => ({
+        ...prev,
+        address,
         chainId,
         isConnected: true,
         isLoading: false,
-        isMetaMaskInstalled: true,
-        isOnCorrectNetwork: correctNetwork,
-      });
-
-      return newAddress;
-    } catch (err: any) {
-      console.error("Error switching account:", err);
+        isOnCorrectNetwork: !!chainId && parseInt(chainId, 16) === GENLAYER_CHAIN_ID,
+      }));
+      return address;
+    } catch (err) {
       setState((prev) => ({ ...prev, isLoading: false }));
-
-      // Handle specific error types
-      if (err.message?.includes("rejected")) {
-        userRejected("Account switch cancelled");
-      } else {
-        error("Failed to switch account", {
-          description: err.message || "Please try again."
-        });
-      }
-
       throw err;
     }
-  }, []);
+  }, [state.walletId]);
 
   const value: WalletContextValue = {
-    ...state,
-    connectWallet,
-    disconnectWallet,
-    switchWalletAccount,
+    ...state, wallets, connectWallet, disconnectWallet, switchWalletAccount, chooserOpen, setChooserOpen, requestConnect,
   };
-
   return <WalletContext.Provider value={value}>{children}</WalletContext.Provider>;
 }
 
-/**
- * Custom hook to use wallet context
- * Must be used within a WalletProvider
- */
 export function useWallet() {
   const context = useContext(WalletContext);
-  if (context === undefined) {
-    throw new Error("useWallet must be used within a WalletProvider");
-  }
+  if (context === undefined) throw new Error("useWallet must be used within a WalletProvider");
   return context;
 }

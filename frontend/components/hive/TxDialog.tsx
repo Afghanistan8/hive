@@ -37,8 +37,8 @@ interface TxDialogProps {
 export function TxDialog({
   address, method, args, value, title, description, label, disabled, variant = "gradient", size, className, onSuccess,
 }: TxDialogProps) {
-  const { address: account, isConnected, isOnCorrectNetwork, connectWallet } = useWallet();
-  const kit = useTransactionKit(account);
+  const { address: account, isConnected, isOnCorrectNetwork, requestConnect, walletId } = useWallet();
+  const kit = useTransactionKit(account, walletId);
   const invalidate = useInvalidateHive();
   const [open, setOpen] = useState(false);
   const [lastHash, setLastHash] = useState<string | null>(null);
@@ -69,7 +69,7 @@ export function TxDialog({
 
   if (!isConnected) {
     return (
-      <Button variant={variant} size={size} className={className} disabled={disabled} onClick={() => connectWallet().catch(() => undefined)}>
+      <Button variant={variant} size={size} className={className} disabled={disabled} onClick={requestConnect}>
         Connect wallet
       </Button>
     );

@@ -12,7 +12,7 @@ import { useNow, usePortfolio } from "@/lib/hive/hooks";
 import { readTxLog, type TxLogEntry } from "@/lib/hive/txlog";
 
 export default function PortfolioPage() {
-  const { address, isConnected, connectWallet } = useWallet();
+  const { address, isConnected, requestConnect } = useWallet();
   const { crypto, sports } = usePortfolio(address);
   const now = useNow(5000);
   const [txs, setTxs] = useState<TxLogEntry[]>([]);
@@ -22,7 +22,7 @@ export default function PortfolioPage() {
     return (
       <div>
         <PageHeader title="Portfolio" subtitle="Connect a wallet to see your positions and claimable amounts." />
-        <Button variant="gradient" onClick={() => connectWallet().catch(() => undefined)}>Connect wallet</Button>
+        <Button variant="gradient" onClick={requestConnect}>Connect wallet</Button>
       </div>
     );
   }

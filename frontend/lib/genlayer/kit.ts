@@ -4,7 +4,8 @@ import { useMemo } from "react";
 import { createTransactionKit, type TransactionKit } from "@genlayer/transaction-kit";
 import { GENLAYER_CHAIN, getEthereumProvider } from "./client";
 
-export function useTransactionKit(address: string | null): TransactionKit | null {
+/** Transaction Kit bound to the connected account and the wallet the user picked. */
+export function useTransactionKit(address: string | null, walletId?: string | null): TransactionKit | null {
   return useMemo(() => {
     const provider = getEthereumProvider();
 
@@ -17,5 +18,7 @@ export function useTransactionKit(address: string | null): TransactionKit | null
       provider,
       account: address as `0x${string}`,
     });
-  }, [address]);
+    // walletId re-creates the kit when the user switches wallets
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [address, walletId]);
 }

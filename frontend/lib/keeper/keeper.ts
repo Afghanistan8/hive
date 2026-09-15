@@ -27,9 +27,21 @@ export interface KeeperReport {
 
 const MAX_WRITES = 8;
 
-function signerClient() {
-  const pk = process.env.KEEPER_PRIVATE_KEY?.trim();
-  if (!pk || !/^0x[0-9a-fA-F]{64}$/.test(pk)) return null;
+/**
+ * Keeper signer, from server-side secrets only:
+ *   KEEPER_PRIVATE_KEY                         raw 0x-prefixed key, or
+ *   KEEPER_KEYSTORE_JSON + KEEPER_KEYSTORE_PASSWORD  keystore exported by `genlayer account export`
+ */
+async function signerClient() {
+  let pk = process.env.KEEPER_PRIVATE_KEY?.trim() ?? "";
+  if (pk && !pk.startsWith("0x")) pk = `0x${pk}`;
+  if (!/^0x[0-9a-fA-F]{64}$/.test(pk)) {
+    const json = process.env.KEEPER_KEYSTORE_JSON?.trim();
+    const password = process.env.KEEPER_KEYSTORE_PASSWORD;
+    if (!json || password === undefined) return null;
+    const { Wallet } = await import("ethers");
+    pk = (await Wallet.fromEncryptedJson(json, password)).privateKey;
+  }
   return createClient({ chain: GENLAYER_CHAIN, account: createAccount(pk as `0x${string}`) }) as any;
 }
 
@@ -59,7 +71,7 @@ async function scoreboards(dates: { league: string; date: string }[]): Promise<R
 
 export async function runKeeper(opts: { dryRun?: boolean; limits?: KeeperLimits } = {}): Promise<KeeperReport> {
   const limits = opts.limits ?? DEFAULT_LIMITS;
-  const client = opts.dryRun ? null : signerClient();
+  const client = opts.dryRun ? null : await signerClient();
   const dryRun = !client;
   const now = Math.floor(Date.now() / 1000);
   const reader = new HiveReader();

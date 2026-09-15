@@ -19,15 +19,24 @@ Project `hive`, Root Directory `frontend`, connected to `Afghanistan8/hive` (pro
 vars are configured: network, RPC, chain ID and both contract addresses (same values as `frontend/.env.example`).
 No secrets are needed on Vercel.
 
-## 2. Keeper wallet (you do this — the key never leaves you)
+## 2. Keeper wallet (your deployer) — you add the secret, it is never public
+
+GitHub Secrets are encrypted, masked in logs, never shown on the public repo and not given to pull requests from
+forks. The keeper never prints the signing address or anything derived from the key.
+
+**Option A — raw key** (if you have the deployer's private key, e.g. the `PRIVATE_KEY` you used before):
+secret `KEEPER_PRIVATE_KEY`.
+
+**Option B — keystore exported by the GenLayer CLI** (the CLI can't print a raw key):
 
 ```bash
-node scripts/keeper_wallet.mjs                 # prints a new keeper address + private key
-npx genlayer account send <keeper-address> 5   # fund it from the deployer on studio-dev
+npx genlayer account export --account deployer --output "%USERPROFILE%/Desktop/deployer.keystore.json" --password "<pick-a-strong-password>"
 ```
 
-GitHub → `Afghanistan8/hive` → Settings → Secrets and variables → Actions → **New repository secret**:
-`KEEPER_PRIVATE_KEY` = the printed key. Never commit it.
+Add two repository secrets: `KEEPER_KEYSTORE_JSON` = the file's full contents, `KEEPER_KEYSTORE_PASSWORD` = that
+password. Then delete the file.
+
+GitHub → `Afghanistan8/hive` → Settings → Secrets and variables → Actions → **New repository secret**.
 
 ## 3. Turn it on
 

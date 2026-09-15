@@ -30,7 +30,7 @@ const OUTCOME_STYLE: Record<PickOutcome, string> = {
 };
 
 export default function MyPicksPage() {
-  const { address, isConnected, connectWallet } = useWallet();
+  const { address, isConnected, requestConnect } = useWallet();
   const { sports } = usePortfolio(address);
   const now = useNow(10_000);
   const [filter, setFilter] = useState<"ALL" | PickOutcome>("ALL");
@@ -64,7 +64,7 @@ export default function MyPicksPage() {
         <SportsTabs />
         <Card className="space-y-4">
           <p className="text-muted-foreground">Connect your wallet to see your picks, results and anything you can claim.</p>
-          <Button variant="gradient" onClick={() => connectWallet().catch(() => undefined)}>Connect wallet</Button>
+          <Button variant="gradient" onClick={requestConnect}>Connect wallet</Button>
         </Card>
       </div>
     );

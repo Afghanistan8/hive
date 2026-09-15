@@ -10,12 +10,14 @@ import { runKeeper } from "../lib/keeper/keeper";
 
 const dryRun = process.argv.includes("--dry") || process.env.KEEPER_DRY === "1";
 const report = await runKeeper({ dryRun });
-console.log(JSON.stringify(report, null, 2));
+// Logs on a public repo are public: never print the signer address or any secret-derived value.
+const { signer, ...publicReport } = report;
+console.log(JSON.stringify({ ...publicReport, signer: signer ? "configured" : null }, null, 2));
 
 if (process.env.GITHUB_STEP_SUMMARY) {
   const lines = [
     `### HIVE keeper — ${report.ranAt}`,
-    `- mode: **${report.dryRun ? "dry run" : "live"}**${report.signer ? ` · signer \`${report.signer}\`` : ""}`,
+    `- mode: **${report.dryRun ? "dry run" : "live"}**`,
     `- mirror: ${typeof report.mirror === "string" ? report.mirror : JSON.stringify(report.mirror)}`,
     "",
     "| action | target | result |",

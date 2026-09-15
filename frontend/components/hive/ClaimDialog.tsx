@@ -32,7 +32,7 @@ type Step = "idle" | "quoting" | "ready" | "signing" | "tracking" | "done" | "fa
  * returns the exact fee preset, including the message allocation.
  */
 export function ClaimDialog({ address, method, args, amount, label }: ClaimDialogProps) {
-  const { address: account, isConnected, connectWallet } = useWallet();
+  const { address: account, isConnected, requestConnect } = useWallet();
   const invalidate = useInvalidateHive();
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<Step>("idle");
@@ -90,7 +90,7 @@ export function ClaimDialog({ address, method, args, amount, label }: ClaimDialo
   };
 
   if (!isConnected) {
-    return <Button variant="gradient" onClick={() => connectWallet().catch(() => undefined)}>Connect wallet</Button>;
+    return <Button variant="gradient" onClick={requestConnect}>Connect wallet</Button>;
   }
 
   const messageBudget = (quote?.messageAllocations ?? []).reduce((s: bigint, a: any) => s + BigInt(a.budget ?? 0), 0n);

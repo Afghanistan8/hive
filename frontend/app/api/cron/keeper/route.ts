@@ -21,7 +21,7 @@ export async function GET(req: Request) {
   const dryRun = new URL(req.url).searchParams.get("dry") === "1";
   try {
     const report = await runKeeper({ dryRun });
-    return NextResponse.json(report);
+    return NextResponse.json({ ...report, signer: report.signer ? "configured" : null });
   } catch (e: any) {
     return NextResponse.json({ error: String(e?.message || e) }, { status: 500 });
   }

@@ -7,10 +7,13 @@ name: Keeper
 # special powers in the contracts.
 #
 # Repository → Settings → Secrets and variables → Actions → Secrets:
-#   KEEPER_PRIVATE_KEY          required for live runs (fund the wallet with GEN on Studio Next)
+#   KEEPER_PRIVATE_KEY          raw key, OR the two keystore secrets below
+#   KEEPER_KEYSTORE_JSON        contents of `genlayer account export --output ...`
+#   KEEPER_KEYSTORE_PASSWORD    password chosen at export
 #   SUPABASE_URL                optional read-mirror
 #   SUPABASE_SERVICE_ROLE_KEY   optional read-mirror
-# Without KEEPER_PRIVATE_KEY the job runs as a dry run (plans, signs nothing).
+# Without a key the job runs as a dry run (plans, signs nothing). Secrets are never
+# printed and are not exposed to pull requests from forks (no pull_request_target).
 on:
   schedule:
     - cron: "*/15 * * * *"
@@ -40,6 +43,8 @@ jobs:
         working-directory: frontend
         env:
           KEEPER_PRIVATE_KEY: ${{ secrets.KEEPER_PRIVATE_KEY }}
+          KEEPER_KEYSTORE_JSON: ${{ secrets.KEEPER_KEYSTORE_JSON }}
+          KEEPER_KEYSTORE_PASSWORD: ${{ secrets.KEEPER_KEYSTORE_PASSWORD }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           KEEPER_DRY: ${{ inputs.dry && '1' || '0' }}
