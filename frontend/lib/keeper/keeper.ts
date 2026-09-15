@@ -25,7 +25,7 @@ export interface KeeperReport {
   errors: string[];
 }
 
-const MAX_WRITES = 8;
+const MAX_WRITES = Number(process.env.KEEPER_MAX_WRITES ?? 6);
 
 /**
  * Keeper signer, from server-side secrets only:
@@ -69,7 +69,12 @@ async function scoreboards(dates: { league: string; date: string }[]): Promise<R
   return all;
 }
 
-export async function runKeeper(opts: { dryRun?: boolean; limits?: KeeperLimits } = {}): Promise<KeeperReport> {
+export async function runKeeper(opts: { dryRun?: boolean; limits?: KeeperLimits; budgetMs?: number } = {}): Promise<KeeperReport> {
+  const started = Date.now();
+  // Serverless functions have a hard timeout: stop sending new transactions once the budget is spent
+  // (anything skipped is simply picked up on the next tick).
+  const budgetMs = opts.budgetMs ?? Number(process.env.KEEPER_BUDGET_MS ?? 45_000);
+  const outOfTime = () => Date.now() - started > budgetMs;
   const limits = opts.limits ?? DEFAULT_LIMITS;
   const client = opts.dryRun ? null : await signerClient();
   const dryRun = !client;
@@ -85,7 +90,7 @@ export async function runKeeper(opts: { dryRun?: boolean; limits?: KeeperLimits 
   };
   let writes = 0;
   const act = async (kind: string, target: string, address: string, fn: string, args: unknown[]) => {
-    if (dryRun || writes >= MAX_WRITES) {
+    if (dryRun || writes >= MAX_WRITES || outOfTime()) {
       report.actions.push({ kind, target, planned: true });
       return;
     }
@@ -126,6 +131,7 @@ export async function runKeeper(opts: { dryRun?: boolean; limits?: KeeperLimits 
 
   // ---- sports: register upcoming fixtures verified against BBC
   await guard("register fixtures", async () => {
+    if (outOfTime()) return;
     const upcoming = fixtures.filter((f) => f.status === "OPEN" && f.kickoff_ts > now).length;
     if (upcoming >= 30) return;
     const candidates = await discoverFixtures({ days: 8, perLeague: 6, minLeadSec: 2 * 3600, exclude: new Set(fixtures.map((f) => f.match_id)) });
@@ -151,7 +157,7 @@ export async function runKeeper(opts: { dryRun?: boolean; limits?: KeeperLimits 
   });
 
   // ---- mirror to Supabase (read cache only)
-  if (mirrorEnabled()) {
+  if (mirrorEnabled() && !outOfTime()) {
     const stamp = new Date().toISOString();
     const counts: Record<string, number> = {};
     await guard("mirror fixtures", async () => {

@@ -1,6 +1,6 @@
 name: Keeper
 
-# Runs the HIVE keeper every 15 minutes inside GitHub Actions. Every transaction
+# Manual HIVE keeper run inside GitHub Actions. Every transaction
 # it sends is a permissionless call any wallet could make: open tomorrow's crypto
 # markets, register BBC-verified fixtures, request AI Calls before kickoff,
 # resolve what is ready, mark verified postponements. The keeper key has no
@@ -14,9 +14,9 @@ name: Keeper
 #   SUPABASE_SERVICE_ROLE_KEY   optional read-mirror
 # Without a key the job runs as a dry run (plans, signs nothing). Secrets are never
 # printed and are not exposed to pull requests from forks (no pull_request_target).
+# Scheduling now lives on Vercel Cron + an external scheduler (see DEPLOY.md);
+# this workflow is kept for manual runs only.
 on:
-  schedule:
-    - cron: "*/15 * * * *"
   workflow_dispatch:
     inputs:
       dry:

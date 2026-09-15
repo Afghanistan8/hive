@@ -6,8 +6,8 @@ export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
 /**
- * Keeper tick. Called by Vercel Cron and by the GitHub Actions schedule with
- * `Authorization: Bearer $CRON_SECRET`. Every transaction it sends is a
+ * Keeper tick. Called by Vercel Cron (sends `Authorization: Bearer $CRON_SECRET`
+ * automatically) and by an external scheduler such as cron-job.org with the same header. Every transaction it sends is a
  * permissionless call any wallet could make; the keeper key has no privileges.
  *
  *   GET /api/cron/keeper            -> plan + submit (needs KEEPER_PRIVATE_KEY)
