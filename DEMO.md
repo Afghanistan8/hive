@@ -37,8 +37,10 @@ Prep: wallet on Studio Next with ≥ 10 GEN from the Studio faucet, `npm run dev
    *View transaction on explorer*. Pool updates.
 4. **Settlement panel** — click the two source links (CoinGecko range + Gate.io 1h candles). "The contract builds these
    URLs itself; I can't pass it a price."
-5. **Sports `/sports`** — filter by league, open a fixture, stake 2 GEN on Home. Show the ESPN event id + BBC page links
-   and the disabled *Resolve* countdown (kickoff + 90 min).
+5. **Sports `/sports`** — the board opens on *Open for staking* (soonest kickoff first), then *Awaiting result*, then
+   *Results*; every listed fixture already has pools from the labelled `hive_seed_*` wallets. Filter by league, open a
+   fixture, stake 2 GEN on Home. Show the ESPN event id + BBC page links and the disabled *Resolve* countdown
+   (enabled only once the contract's own phase says `READY_TO_SETTLE`, kickoff + 90 min).
 6. **Evidence** — open a settled market/fixture (or show the smoke-test explorer txs from the README): ESPN
    `FINISHED 0–1`, BBC `FINISHED 0–1`, outcome AWAY; ATOM with CoinGecko UP vs Gate DOWN → INCONCLUSIVE.
 7. **Tables / My Picks / Leaderboard** — `/sports/tables` for all five leagues, `/sports/picks` for your record,
@@ -49,7 +51,12 @@ Prep: wallet on Studio Next with ≥ 10 GEN from the Studio faucet, `npm run dev
 10. **Create `/create`** — open a market for another asset/day in one click, permissionlessly.
 
 After a real match ends (e.g. the La Liga fixtures on 15–16 Sep 2026): press **Resolve** on the fixture, then **Claim**,
-or run `npm run resolve:ready` to settle everything with stakes that is ready.
+or run `npm run resolve:ready` to settle everything with stakes that is ready. The keeper resolves staked fixtures from
+kickoff + 2 h on its own. To collect for the demo wallets afterwards (same simulated-fee path the Claim dialog uses):
+`npm run seed:liquidity --workspace frontend -- --claim`.
+
+If a settled fixture had no winning backers the UI says *refund*, not *win*: the contract sets `refund_all` and pays
+every stake back 1:1 (Alavés v Valencia on 15 Sep is the live example).
 
 ## 60–90 s video shot list
 
