@@ -19,16 +19,17 @@ export default function CryptoMarketPage() {
   const id = Number(params.marketId);
   const { address } = useWallet();
   const now = useNow(1000);
-  const { data: m, isLoading, error } = useCryptoMarket(id);
+  const { data: m, isLoading, error, refetch } = useCryptoMarket(id);
   const { data: position } = useCryptoPosition(id, address);
   const { data: sources } = useCryptoSourceUrls(id);
   const { data: evidence } = useCryptoEvidence(id, !!m && m.state !== "PENDING");
   const [side, setSide] = useState<"UP" | "DOWN">("UP");
   const [amount, setAmount] = useState(String(CRYPTO_MIN_STAKE));
 
-  if (isLoading) return <Loading what="market" />;
-  if (error) return <ErrorBox error={error} />;
-  if (!m) return null;
+  if (!HIVE_CRYPTO_ADDRESS) return <ErrorBox error="NEXT_PUBLIC_HIVE_CRYPTO_ADDRESS is not set" />;
+  if (!Number.isFinite(id) || id <= 0) return <ErrorBox error={`"${params.marketId}" is not a market id`} />;
+  if (error) return <ErrorBox error={error} onRetry={() => refetch()} />;
+  if (isLoading || !m) return <Loading what="market" />;
 
   const phase = cryptoPhase(m, now);
   const lockedSide = position?.exists ? position.side : "";

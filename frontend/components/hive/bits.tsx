@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { ExternalLink } from "lucide-react";
 import { GENLAYER_CHAIN_ID, GENLAYER_NETWORK } from "@/lib/genlayer/network";
 import { explorerAddress } from "@/lib/hive/config";
@@ -54,14 +54,38 @@ export function PageHeader({ title, subtitle, actions }: { title: string; subtit
 }
 
 export function Loading({ what }: { what: string }) {
-  return <div className="py-12 text-center text-muted-foreground">Reading {what} from the contract…</div>;
+  const [slow, setSlow] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setSlow(true), 8000);
+    return () => clearTimeout(t);
+  }, []);
+  return (
+    <div className="py-12 text-center text-muted-foreground">
+      {slow ? <>Studio RPC is slow — still reading {what}, retrying…</> : <>Reading {what} from the contract…</>}
+    </div>
+  );
 }
 
-export function ErrorBox({ error }: { error: unknown }) {
+export function ErrorBox({ error, onRetry }: { error: unknown; onRetry?: () => void }) {
   return (
-    <div className="rounded-md border border-destructive/40 bg-destructive/10 p-4 text-sm text-destructive">
-      {error instanceof Error ? error.message : String(error)}
+    <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-destructive/40 bg-destructive/10 p-4 text-sm text-destructive">
+      <span className="min-w-0 break-words">{error instanceof Error ? error.message : String(error)}</span>
+      {onRetry && (
+        <button onClick={onRetry} className="rounded-full border border-destructive/40 px-3 py-1 text-xs font-semibold hover:bg-destructive/10">
+          Retry
+        </button>
+      )}
     </div>
+  );
+}
+
+/** One muted line saying where the list came from — handy when judging a live deploy. */
+export function ReadSource({ label, address, count, noun }: { label: string; address: string; count?: number; noun: string }) {
+  if (!address) return null;
+  return (
+    <p className="mt-6 text-xs text-muted-foreground">
+      {label} {address.slice(0, 6)}…{address.slice(-4)} · {count ?? "—"} {noun} · RPC via /api/gl/read
+    </p>
   );
 }
 

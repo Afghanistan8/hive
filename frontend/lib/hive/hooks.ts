@@ -9,6 +9,9 @@ import { mirrorConfigured, mirrorFixtures, mirrorMarkets, mirrorPositions } from
 
 const REFRESH = 15_000;
 
+/** Every contract read: fail fast (one retry), never spin forever; the proxy itself times out at 12 s. */
+const CONTRACT = { staleTime: 10_000, retry: 1, retryDelay: 1000 } as const;
+
 /** Supabase mirror snapshot, used only as instant placeholder while the contract read runs. */
 function useMirror<T>(key: string, fn: () => Promise<T>) {
   return useQuery({ queryKey: ["mirror", key], queryFn: fn, enabled: mirrorConfigured, staleTime: 60_000, retry: false });
@@ -18,6 +21,7 @@ export function useCryptoMarkets() {
   const mirror = useMirror("markets", mirrorMarkets);
   return useQuery({
     queryKey: ["crypto", "markets"],
+    ...CONTRACT,
     queryFn: () => hiveReader().cryptoMarkets(),
     enabled: !!HIVE_CRYPTO_ADDRESS,
     refetchInterval: REFRESH,
@@ -28,6 +32,7 @@ export function useCryptoMarkets() {
 export function useCryptoMarket(id: number) {
   return useQuery({
     queryKey: ["crypto", "market", id],
+    ...CONTRACT,
     queryFn: () => hiveReader().cryptoMarket(id),
     enabled: !!HIVE_CRYPTO_ADDRESS && Number.isFinite(id) && id > 0,
     refetchInterval: REFRESH,
@@ -37,6 +42,7 @@ export function useCryptoMarket(id: number) {
 export function useCryptoPosition(id: number, wallet: string | null) {
   return useQuery({
     queryKey: ["crypto", "position", id, wallet],
+    ...CONTRACT,
     queryFn: () => hiveReader().cryptoPosition(id, wallet!),
     enabled: !!HIVE_CRYPTO_ADDRESS && !!wallet && id > 0,
     refetchInterval: REFRESH,
@@ -46,6 +52,7 @@ export function useCryptoPosition(id: number, wallet: string | null) {
 export function useCryptoEvidence(id: number, enabled: boolean) {
   return useQuery({
     queryKey: ["crypto", "evidence", id],
+    ...CONTRACT,
     queryFn: () => hiveReader().cryptoEvidence(id),
     enabled: !!HIVE_CRYPTO_ADDRESS && enabled,
   });
@@ -54,6 +61,7 @@ export function useCryptoEvidence(id: number, enabled: boolean) {
 export function useCryptoSourceUrls(id: number) {
   return useQuery({
     queryKey: ["crypto", "sources", id],
+    ...CONTRACT,
     queryFn: () => hiveReader().cryptoSourceUrls(id),
     enabled: !!HIVE_CRYPTO_ADDRESS && id > 0,
     staleTime: Infinity,
@@ -63,6 +71,7 @@ export function useCryptoSourceUrls(id: number) {
 export function useCryptoAssets() {
   return useQuery({
     queryKey: ["crypto", "assets"],
+    ...CONTRACT,
     queryFn: () => hiveReader().cryptoAssets(),
     enabled: !!HIVE_CRYPTO_ADDRESS,
     staleTime: Infinity,
@@ -73,6 +82,7 @@ export function useFixtures() {
   const mirror = useMirror("fixtures", mirrorFixtures);
   return useQuery({
     queryKey: ["sports", "fixtures"],
+    ...CONTRACT,
     queryFn: () => hiveReader().fixtures(),
     enabled: !!HIVE_SPORTS_ADDRESS,
     refetchInterval: REFRESH,
@@ -83,6 +93,7 @@ export function useFixtures() {
 export function useFixture(matchId: string) {
   return useQuery({
     queryKey: ["sports", "fixture", matchId],
+    ...CONTRACT,
     queryFn: () => hiveReader().fixture(matchId),
     enabled: !!HIVE_SPORTS_ADDRESS && !!matchId,
     refetchInterval: REFRESH,
@@ -92,6 +103,7 @@ export function useFixture(matchId: string) {
 export function useSportsPosition(matchId: string, wallet: string | null) {
   return useQuery({
     queryKey: ["sports", "position", matchId, wallet],
+    ...CONTRACT,
     queryFn: () => hiveReader().sportsPosition(matchId, wallet!),
     enabled: !!HIVE_SPORTS_ADDRESS && !!wallet && !!matchId,
     refetchInterval: REFRESH,
@@ -101,6 +113,7 @@ export function useSportsPosition(matchId: string, wallet: string | null) {
 export function useSportsEvidence(matchId: string, enabled: boolean) {
   return useQuery({
     queryKey: ["sports", "evidence", matchId],
+    ...CONTRACT,
     queryFn: () => hiveReader().sportsEvidence(matchId),
     enabled: !!HIVE_SPORTS_ADDRESS && enabled,
   });
@@ -109,6 +122,7 @@ export function useSportsEvidence(matchId: string, enabled: boolean) {
 export function useSportsEvidenceRaw(matchId: string, enabled: boolean) {
   return useQuery({
     queryKey: ["sports", "evidence-raw", matchId],
+    ...CONTRACT,
     queryFn: () => hiveReader().sportsEvidenceRaw(matchId),
     enabled: !!HIVE_SPORTS_ADDRESS && enabled,
   });
@@ -117,6 +131,7 @@ export function useSportsEvidenceRaw(matchId: string, enabled: boolean) {
 export function useSportsSourceUrls(matchId: string) {
   return useQuery({
     queryKey: ["sports", "sources", matchId],
+    ...CONTRACT,
     queryFn: () => hiveReader().sportsSourceUrls(matchId),
     enabled: !!HIVE_SPORTS_ADDRESS && !!matchId,
     staleTime: Infinity,
@@ -127,6 +142,7 @@ export function useAllPositions() {
   const mirror = useMirror("positions", mirrorPositions);
   return useQuery({
     queryKey: ["sports", "positions"],
+    ...CONTRACT,
     queryFn: () => hiveReader().allPositions(),
     enabled: !!HIVE_SPORTS_ADDRESS,
     refetchInterval: 30_000,
@@ -137,6 +153,7 @@ export function useAllPositions() {
 export function useAiCall(matchId: string) {
   return useQuery({
     queryKey: ["sports", "ai", matchId],
+    ...CONTRACT,
     queryFn: () => hiveReader().aiCall(matchId),
     enabled: !!HIVE_SPORTS_ADDRESS && !!matchId,
     refetchInterval: REFRESH,
@@ -146,6 +163,7 @@ export function useAiCall(matchId: string) {
 export function useAiCalls() {
   return useQuery({
     queryKey: ["sports", "ai-calls"],
+    ...CONTRACT,
     queryFn: () => hiveReader().aiCalls(),
     enabled: !!HIVE_SPORTS_ADDRESS,
     refetchInterval: 60_000,
@@ -155,6 +173,7 @@ export function useAiCalls() {
 export function useUsername(wallet: string | null) {
   return useQuery({
     queryKey: ["sports", "username", wallet],
+    ...CONTRACT,
     queryFn: () => hiveReader().username(wallet!),
     enabled: !!HIVE_SPORTS_ADDRESS && !!wallet,
   });
@@ -202,12 +221,14 @@ export function useCandles(pair: string, from?: number, to?: number) {
 export function usePortfolio(wallet: string | null) {
   const crypto = useQuery({
     queryKey: ["crypto", "user", wallet],
+    ...CONTRACT,
     queryFn: () => hiveReader().cryptoUserPositions(wallet!),
     enabled: !!HIVE_CRYPTO_ADDRESS && !!wallet,
     refetchInterval: REFRESH,
   });
   const sports = useQuery({
     queryKey: ["sports", "user", wallet],
+    ...CONTRACT,
     queryFn: () => hiveReader().sportsUserPositions(wallet!),
     enabled: !!HIVE_SPORTS_ADDRESS && !!wallet,
     refetchInterval: REFRESH,

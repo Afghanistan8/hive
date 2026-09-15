@@ -9,7 +9,8 @@
     "start": "next start",
     "lint": "tsc --noEmit",
     "test": "vitest run",
-    "keeper": "node --env-file=.env.example --import tsx scripts/keeper.ts"
+    "keeper": "node --env-file=.env.example --import tsx scripts/keeper.ts",
+    "probe": "node --import tsx scripts/probe_reads.ts"
   },
   "keywords": [],
   "author": "",

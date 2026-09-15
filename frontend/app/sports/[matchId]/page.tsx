@@ -31,7 +31,7 @@ export default function FixturePage() {
   const { matchId } = useParams<{ matchId: string }>();
   const { address } = useWallet();
   const now = useNow(1000);
-  const { data: f, isLoading, error } = useFixture(matchId);
+  const { data: f, isLoading, error, refetch } = useFixture(matchId);
   const { data: position } = useSportsPosition(matchId, address);
   const { data: sources } = useSportsSourceUrls(matchId);
   const { data: evidence } = useSportsEvidence(matchId, !!f && f.status !== "OPEN");
@@ -41,9 +41,9 @@ export default function FixturePage() {
   const [pick, setPick] = useState<(typeof PICKS)[number]>("HOME");
   const [amount, setAmount] = useState(String(SPORTS_MIN_STAKE));
 
-  if (isLoading) return <Loading what="fixture" />;
-  if (error) return <ErrorBox error={error} />;
-  if (!f) return null;
+  if (!HIVE_SPORTS_ADDRESS) return <ErrorBox error="NEXT_PUBLIC_HIVE_SPORTS_ADDRESS is not set" />;
+  if (error) return <ErrorBox error={error} onRetry={() => refetch()} />;
+  if (isLoading || !f) return <Loading what="fixture" />;
 
   const phase = sportsPhase(f, now);
   const pools = { HOME: f.pool_home, DRAW: f.pool_draw, AWAY: f.pool_away };

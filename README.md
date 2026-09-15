@@ -14,7 +14,9 @@ HIVE is one app with two markets, both running as GenLayer Intelligent Contracts
 | Otherwise | Stays open and retryable; both confirm postponement → 1:1 refunds; no agreement within 7 days → refunds | Mismatch → INCONCLUSIVE refunds; sources down → retry; still down after 5 days → refunds |
 
 No owner, no admin key, no pause, no sweep, no trusted resolver, no backend. Anyone can create a market, stake,
-resolve and claim. The frontend reads the contracts directly.
+resolve and claim. Every value the frontend shows is read from the contracts' view methods — through a small
+read-only proxy (`/api/gl/read`) that adds a timeout, falls back between the two Studio hostnames, and lets the CDN
+share public list views for a few seconds. It holds no keys and allowlists only the HIVE contracts' view methods.
 
 ---
 
@@ -88,7 +90,13 @@ Studio returns from simulating the exact call.
 5. **Sports**: open `/sports`, pick an upcoming fixture, stake on Home / Draw / Away.
 6. **Explorer**: every write links to `explorer-studio-dev.genlayer.com/tx/…`; `/portfolio` lists positions, claimable
    amounts and your transaction links. Contract pages: see the table above.
-7. **Settlement**: after the candle closes / 90 minutes after kickoff, press **Resolve** on the market page. The
+7. **Reads from the command line** (no wallet): `npm run probe --workspace frontend` checks both Studio hostnames
+   (`eth_chainId` 61997) and prints fixture/market counts straight from the contracts; the live proxy returns the same:
+   ```bash
+   curl -sS -X POST https://hive-psi-eight.vercel.app/api/gl/read -H 'content-type: application/json' \
+     -d '{"address":"0xeE172062d021f4dE2B4fEbad0B945e769a62C954","functionName":"get_config","args":[]}'
+   ```
+8. **Settlement**: after the candle closes / 90 minutes after kickoff, press **Resolve** on the market page. The
    transaction takes only an id. Inside it, every validator fetches both public sources and must agree on a canonical
    payload; the page's *Agreed evidence* panel shows exactly what was stored. If the sources disagree or are not ready,
    the transaction reverts and anyone can retry later. Claim appears once settled.

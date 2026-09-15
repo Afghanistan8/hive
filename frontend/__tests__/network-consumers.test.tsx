@@ -45,9 +45,21 @@ describe("network consumers", () => {
     });
   });
 
-  it("uses the shared chain for contract read clients", () => {
-    new HiveReader(account, account);
-    expect(mocks.createClient).toHaveBeenLastCalledWith({ chain: GENLAYER_CHAIN });
+  it("keeps browser contract reads off Studio RPC (they use the /api/gl/read proxy)", async () => {
+    const fetchMock = vi.fn(async () => new Response(JSON.stringify({ result: { fixture_count: 0 } })));
+    vi.stubGlobal("fetch", fetchMock);
+    await new HiveReader(account, account).fixtureCount();
+    expect(mocks.createClient).not.toHaveBeenCalled();
+    expect(String((fetchMock.mock.calls[0] as unknown[])[0])).toMatch(/^\/api\/gl\/read\?/);
+    vi.unstubAllGlobals();
+  });
+
+  it("builds the read proxy's clients from the shared chain", async () => {
+    await import("../app/api/gl/read/route");
+    const chains = mocks.createClient.mock.calls.map((c: any) => c[0].chain);
+    expect(chains.length).toBeGreaterThan(0);
+    for (const chain of chains) expect(chain.id).toBe(GENLAYER_CHAIN.id);
+    expect(chains.map((c: any) => c.rpcUrls.default.http[0])).toContain(GENLAYER_CHAIN.rpcUrls.default.http[0]);
   });
 
   it("uses the same chain for Transaction Kit submissions", () => {

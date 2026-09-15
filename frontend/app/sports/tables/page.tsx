@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 
 export default function TablesPage() {
   const [league, setLeague] = useState("PL");
-  const { data, isLoading, error } = useStandings(league);
+  const { data, isPending, error, refetch } = useStandings(league);
   const { data: fixtures } = useFixtures();
   const meta = LEAGUE_META.find((l) => l.code === league)!;
   const zones = [...new Map((data?.rows ?? []).filter((r) => r.note).map((r) => [r.note, r.noteColor])).entries()];
@@ -40,8 +40,8 @@ export default function TablesPage() {
             ))}
           </div>
         </div>
-        {isLoading && <Loading what="the table" />}
-        {error && <div className="p-5"><ErrorBox error={error} /></div>}
+        {isPending && !error && <div className="py-12 text-center text-muted-foreground">Loading the ESPN table…</div>}
+        {error && <div className="p-5"><ErrorBox error={error} onRetry={() => refetch()} /></div>}
         {data && (
           <div className="overflow-x-auto">
             <table className="w-full min-w-[640px] text-sm">

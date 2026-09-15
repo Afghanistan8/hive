@@ -1,8 +1,8 @@
 {
   "network": {
     "chainId": 61997,
-    "name": "GenLayer Studio Devnet",
-    "rpc": "https://studio-dev.genlayer.com/api"
+    "name": "GenLayer Studio Next",
+    "rpc": "https://studio-next.genlayer.com/api"
   },
   "contracts": {
     "HiveCrypto": {

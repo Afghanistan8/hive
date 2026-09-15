@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { Card, ErrorBox, Loading, PageHeader } from "@/components/hive/bits";
+import { Card, ErrorBox, Loading, PageHeader, ReadSource } from "@/components/hive/bits";
 import { PhaseBadge } from "@/components/hive/PhaseBadge";
 import { CryptoTabs } from "@/components/hive/crypto";
 import { HIVE_CRYPTO_ADDRESS } from "@/lib/hive/config";
@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 const FILTERS = ["ALL", "OPEN", "CLOSED", "READY_TO_SETTLE", "SETTLED", "INCONCLUSIVE"] as const;
 
 export default function CryptoPage() {
-  const { data, isLoading, error } = useCryptoMarkets();
+  const { data, isPending, error, refetch } = useCryptoMarkets();
   const now = useNow(1000);
   const [filter, setFilter] = useState<(typeof FILTERS)[number]>("ALL");
 
@@ -45,8 +45,8 @@ export default function CryptoPage() {
           </button>
         ))}
       </div>
-      {isLoading && <Loading what="markets" />}
-      {error && <ErrorBox error={error} />}
+      {HIVE_CRYPTO_ADDRESS && isPending && !error && <Loading what="markets" />}
+      {error && <ErrorBox error={error} onRetry={() => refetch()} />}
       <div className="space-y-8">
         {days.map(([day, markets]) => (
           <section key={day}>
@@ -84,7 +84,12 @@ export default function CryptoPage() {
           </section>
         ))}
       </div>
-      {data && days.length === 0 && <p className="py-10 text-center text-muted-foreground">No markets match this filter.</p>}
+      {data && days.length === 0 && (
+        <p className="py-10 text-center text-muted-foreground">
+          {data.length === 0 ? "No markets have been opened on the contract yet." : "No markets match this filter."}
+        </p>
+      )}
+      <ReadSource label="Crypto" address={HIVE_CRYPTO_ADDRESS} count={data?.length} noun="markets" />
     </div>
   );
 }

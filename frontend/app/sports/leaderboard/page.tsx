@@ -72,8 +72,8 @@ export default function LeaderboardPage() {
       )}
 
       <Card className="overflow-hidden p-0">
-        {positions.isLoading && <Loading what="every position" />}
-        {positions.error && <div className="p-5"><ErrorBox error={positions.error} /></div>}
+        {positions.isPending && !positions.error && <Loading what="every position" />}
+        {positions.error && <div className="p-5"><ErrorBox error={positions.error} onRetry={() => positions.refetch()} /></div>}
         {positions.data && board.length === 0 && (
           <p className="p-6 text-sm text-muted-foreground">No predictions {league ? "in this league " : ""}yet — the first pick takes the top spot.</p>
         )}

@@ -17,7 +17,7 @@ const STYLE: Record<Kind, string> = {
 };
 
 export default function ActivityPage() {
-  const { data, isLoading, error } = useCryptoMarkets();
+  const { data, isPending, error, refetch } = useCryptoMarkets();
 
   const events = useMemo(() => {
     const rows: { kind: Kind; ts: number; id: number; asset: string; day: string; note: string }[] = [];
@@ -42,8 +42,8 @@ export default function ActivityPage() {
     <div>
       <PageHeader title="Activity" subtitle="Markets opened and settled on-chain, newest first." />
       <CryptoTabs />
-      {isLoading && <Loading what="activity" />}
-      {error && <ErrorBox error={error} />}
+      {isPending && !error && <Loading what="activity" />}
+      {error && <ErrorBox error={error} onRetry={() => refetch()} />}
       <Card className="divide-y divide-black/[0.06] p-0">
         {events.map((e, i) => (
           <Link key={`${e.kind}-${e.id}-${i}`} href={`/crypto/${e.id}`} className="flex flex-wrap items-center justify-between gap-3 px-5 py-3 hover:bg-black/[0.03]">

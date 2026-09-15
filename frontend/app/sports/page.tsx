@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { Card, ErrorBox, Loading, PageHeader } from "@/components/hive/bits";
+import { Card, ErrorBox, Loading, PageHeader, ReadSource } from "@/components/hive/bits";
 import { PhaseBadge } from "@/components/hive/PhaseBadge";
 import { AiPickChip, Crest, LeaguePills, LiveScore, SportsTabs } from "@/components/hive/sports";
 import { HIVE_SPORTS_ADDRESS } from "@/lib/hive/config";
@@ -11,7 +11,7 @@ import { useFixtures, useNow, useScoreboard } from "@/lib/hive/hooks";
 import type { Fixture } from "@/lib/hive/types";
 
 export default function SportsPage() {
-  const { data, isLoading, error } = useFixtures();
+  const { data, isPending, error, refetch } = useFixtures();
   const [league, setLeague] = useState("");
   const now = useNow(1000);
 
@@ -31,14 +31,19 @@ export default function SportsPage() {
       <div className="mb-5">
         <LeaguePills value={league} onChange={setLeague} />
       </div>
-      {isLoading && <Loading what="fixtures" />}
-      {error && <ErrorBox error={error} />}
+      {HIVE_SPORTS_ADDRESS && isPending && !error && <Loading what="fixtures" />}
+      {error && <ErrorBox error={error} onRetry={() => refetch()} />}
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {rows.map((f) => (
           <FixtureCard key={f.match_id} f={f} now={now} />
         ))}
       </div>
-      {data && rows.length === 0 && <p className="py-10 text-center text-muted-foreground">No fixtures for this league yet.</p>}
+      {data && rows.length === 0 && (
+        <p className="py-10 text-center text-muted-foreground">
+          {data.length === 0 ? "No fixtures are registered on the contract yet." : "No fixtures for this league yet."}
+        </p>
+      )}
+      <ReadSource label="Sports" address={HIVE_SPORTS_ADDRESS} count={data?.length} noun="fixtures" />
     </div>
   );
 }
