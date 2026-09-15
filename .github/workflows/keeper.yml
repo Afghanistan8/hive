@@ -1,0 +1,38 @@
+name: Keeper
+
+# Vercel Hobby crons run at most once a day, so this schedule pings the
+# deployed keeper every 15 minutes. The keeper only makes permissionless calls.
+#
+# Repository settings:
+#   Variables -> KEEPER_URL   e.g. https://hive-xyz.vercel.app
+#   Secrets   -> CRON_SECRET  same value as the Vercel env var
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+    inputs:
+      dry:
+        description: "Plan only (no transactions)"
+        type: boolean
+        default: false
+
+jobs:
+  tick:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Call keeper
+        env:
+          KEEPER_URL: ${{ vars.KEEPER_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          DRY: ${{ inputs.dry && '1' || '0' }}
+        run: |
+          if [ -z "$KEEPER_URL" ] || [ -z "$CRON_SECRET" ]; then
+            echo "KEEPER_URL / CRON_SECRET not configured; skipping."
+            exit 0
+          fi
+          url="$KEEPER_URL/api/cron/keeper"
+          if [ "$DRY" = "1" ]; then url="$url?dry=1"; fi
+          curl -fsS --max-time 120 -H "Authorization: Bearer $CRON_SECRET" "$url" | tee report.json
+          echo
+          if command -v jq >/dev/null; then jq '{dryRun, signer, mirror, actions: (.actions|length), errors}' report.json; fi

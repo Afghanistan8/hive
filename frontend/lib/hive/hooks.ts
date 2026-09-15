@@ -5,15 +5,23 @@ import { useCallback, useEffect, useState } from "react";
 import { hiveReader } from "./contracts";
 import { HIVE_CRYPTO_ADDRESS, HIVE_SPORTS_ADDRESS } from "./config";
 import type { LiveEvent, StandingRow } from "./espn";
+import { mirrorConfigured, mirrorFixtures, mirrorMarkets, mirrorPositions } from "./mirror";
 
 const REFRESH = 15_000;
 
+/** Supabase mirror snapshot, used only as instant placeholder while the contract read runs. */
+function useMirror<T>(key: string, fn: () => Promise<T>) {
+  return useQuery({ queryKey: ["mirror", key], queryFn: fn, enabled: mirrorConfigured, staleTime: 60_000, retry: false });
+}
+
 export function useCryptoMarkets() {
+  const mirror = useMirror("markets", mirrorMarkets);
   return useQuery({
     queryKey: ["crypto", "markets"],
     queryFn: () => hiveReader().cryptoMarkets(),
     enabled: !!HIVE_CRYPTO_ADDRESS,
     refetchInterval: REFRESH,
+    placeholderData: mirror.data,
   });
 }
 
@@ -62,11 +70,13 @@ export function useCryptoAssets() {
 }
 
 export function useFixtures() {
+  const mirror = useMirror("fixtures", mirrorFixtures);
   return useQuery({
     queryKey: ["sports", "fixtures"],
     queryFn: () => hiveReader().fixtures(),
     enabled: !!HIVE_SPORTS_ADDRESS,
     refetchInterval: REFRESH,
+    placeholderData: mirror.data,
   });
 }
 
@@ -114,11 +124,13 @@ export function useSportsSourceUrls(matchId: string) {
 }
 
 export function useAllPositions() {
+  const mirror = useMirror("positions", mirrorPositions);
   return useQuery({
     queryKey: ["sports", "positions"],
     queryFn: () => hiveReader().allPositions(),
     enabled: !!HIVE_SPORTS_ADDRESS,
     refetchInterval: 30_000,
+    placeholderData: mirror.data,
   });
 }
 

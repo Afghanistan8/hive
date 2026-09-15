@@ -213,6 +213,7 @@ scripts/
 frontend/                   Next.js app (genlayer-js 2.0.0-rc.1, Transaction Kit 0.1.0-rc.2)
 fixtures.demo.json
 DEMO.md                     demo script + video shot list
+DEPLOY.md                   Vercel + keeper cron + Supabase mirror runbook
 ```
 
 ## Development
