@@ -1,5 +1,5 @@
 {
-  "name": "genlayer-project",
+  "name": "hive",
   "type": "module",
   "private": true,
   "workspaces": [
@@ -10,11 +10,17 @@
     "build": "cd frontend && npm run build",
     "start": "cd frontend && npm run start",
     "lint": "cd frontend && npm run lint",
-    "test:fees": "python3 -m pytest tests/integration/test_football_bets.py::test_fee_profile_create_bet --fee-profile frontend/fee-profile.json -v -s",
-    "deploy": "genlayer deploy"
+    "test": "cd frontend && npm test",
+    "deploy": "genlayer deploy",
+    "seed": "python scripts/demo_seed.py",
+    "resolve:ready": "cd scripts/ops && genlayer deploy",
+    "smoke": "cd scripts/smoke && genlayer deploy",
+    "lint:contracts": "genvm-lint check contracts/hive_crypto.py && genvm-lint check contracts/hive_sports.py",
+    "test:contracts": "python -m pytest tests/direct -q",
+    "check:sources": "python scripts/check_sources.py"
   },
   "devDependencies": {
-    "genlayer": "^0.40.0-rc.3",
+    "genlayer": "0.40.0-rc.3",
     "genlayer-js": "2.0.0-rc.1"
   }
 }

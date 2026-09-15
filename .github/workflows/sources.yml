@@ -1,0 +1,19 @@
+name: Settlement sources
+
+# Hits CoinGecko and Gate.io for every listed asset; fails if any pair can no
+# longer reconstruct a GMT+1 candle. Scheduled rather than per-push so public
+# API rate limits never block merges.
+on:
+  schedule:
+    - cron: "30 6 * * *"
+  workflow_dispatch:
+
+jobs:
+  check-sources:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python scripts/check_sources.py --pace 8

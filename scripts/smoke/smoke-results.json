@@ -1,0 +1,245 @@
+{
+  "network": "GenLayer Studio Devnet",
+  "chainId": 61997,
+  "ranAt": "2026-09-15T12:04:58.762Z",
+  "sports": {
+    "contract": {
+      "address": "0x8C90C84a7cC459D672fF802042a242d5dF75f581",
+      "hash": "0xbd8b0b8f7ad068a8081b0c8d23c9717926cbe1d0e6b04906382a7e165e1c1105"
+    },
+    "add": {
+      "functionName": "add_fixture",
+      "args": [
+        "PL",
+        "401879278",
+        "Manchester United",
+        "Manchester City",
+        1789313400
+      ],
+      "hash": "0x8a7c7fb35a0aead8e80b85d25b687af16adfbe60e3a6b9962bb4ad371396b03d",
+      "execution": "FINISHED_WITH_RETURN",
+      "status": 5,
+      "leaderResult": {
+        "status": "return",
+        "payload": {
+          "readable": "\"pl-401879278\""
+        }
+      }
+    },
+    "resolve": {
+      "functionName": "resolve",
+      "args": [
+        "pl-401879278"
+      ],
+      "hash": "0xd5601c11734dcd45110b9b483ee78399b87e4515910d6ab1e53a0c0fc89ec6db",
+      "execution": "FINISHED_WITH_RETURN",
+      "status": 5,
+      "leaderResult": {
+        "status": "return",
+        "payload": {
+          "readable": "\"AWAY\""
+        }
+      }
+    },
+    "fixture": {
+      "away": "Manchester City",
+      "away_goals": 1,
+      "created_at": 1789473910,
+      "creator": "0x4184bc5e5444f250767e8d33a49817a9b4fb0df3",
+      "espn_event_id": "401879278",
+      "home": "Manchester United",
+      "home_goals": 0,
+      "kickoff_ts": 1789313400,
+      "league": "PL",
+      "league_name": "English Premier League",
+      "match_id": "pl-401879278",
+      "paid_out": 0,
+      "phase": "SETTLED",
+      "pool_away": 0,
+      "pool_draw": 0,
+      "pool_home": 0,
+      "positions_count": 0,
+      "refund_all": true,
+      "resolved_at": 1789473918,
+      "result": "AWAY",
+      "status": "SETTLED",
+      "total_pool": 0
+    },
+    "evidence": {
+      "bbc": {
+        "away_goals": 1,
+        "home_goals": 0,
+        "status": "FINISHED"
+      },
+      "espn": {
+        "away_goals": 1,
+        "home_goals": 0,
+        "status": "FINISHED"
+      },
+      "exists": true,
+      "match_id": "pl-401879278",
+      "outcome": "AWAY",
+      "source_a": "espn",
+      "source_b": "bbc"
+    }
+  },
+  "crypto": {
+    "contract": {
+      "address": "0x45D1020DFE600db4c164d69AF3A370492E8beBfc",
+      "hash": "0x4cb45c31fc1d6a15ebafad5712f34e9ce60f189007cf5ff11e42d1718d2a4556"
+    },
+    "markets": [
+      {
+        "asset": "BTC",
+        "day": "2026-09-14",
+        "create": {
+          "functionName": "create_market",
+          "args": [
+            "BTC",
+            "2026-09-14"
+          ],
+          "hash": "0x71a2110cb3f8782e8dc61100d60ad9bae75a3d5483a4b30c2ff9a84e4f777f3a",
+          "execution": "FINISHED_WITH_RETURN",
+          "status": 5,
+          "leaderResult": {
+            "status": "return",
+            "payload": {
+              "readable": "1"
+            }
+          }
+        },
+        "resolve": {
+          "functionName": "resolve_market",
+          "args": [
+            1
+          ],
+          "hash": "0xa43323e1f62bb730075cdb06a1899f67090e54dc5242d4ffa8fb57f2746c22d1",
+          "execution": "FINISHED_WITH_RETURN",
+          "status": 5,
+          "leaderResult": {
+            "status": "return",
+            "payload": {
+              "readable": "\"UP\""
+            }
+          }
+        },
+        "evidence": {
+          "coingecko_close": 7875262563068,
+          "coingecko_direction": "UP",
+          "coingecko_open": 7668256817293,
+          "exists": true,
+          "final_result": "UP",
+          "gate_close": 7855310000000,
+          "gate_direction": "UP",
+          "gate_open": 7671090000000,
+          "market_id": 1,
+          "price_scale": 100000000,
+          "resolved_at": 1789473954,
+          "terminal_refund": false
+        },
+        "market": {
+          "asset": "BTC",
+          "coingecko_id": "bitcoin",
+          "created_at": 1789473945,
+          "creator": "0x4184bc5e5444f250767e8d33a49817a9b4fb0df3",
+          "cutoff_at": 1789340400,
+          "down_pool": 0,
+          "exists": true,
+          "gate_pair": "BTC_USDT",
+          "id": 1,
+          "paid_out": 0,
+          "phase": "SETTLED",
+          "positions_count": 0,
+          "refund_all": true,
+          "resolved_at": 1789473954,
+          "result": "UP",
+          "settles_at": 1789426800,
+          "state": "UP",
+          "target_day": "2026-09-14",
+          "terminal_refund_at": 1789858800,
+          "total_pool": 0,
+          "up_pool": 0
+        }
+      },
+      {
+        "asset": "ATOM",
+        "day": "2026-09-14",
+        "create": {
+          "functionName": "create_market",
+          "args": [
+            "ATOM",
+            "2026-09-14"
+          ],
+          "hash": "0xfee7cfa0ed9acd8a3e6630049be0eb386f17b9f30cc44473022cff2e5c7f1fc7",
+          "execution": "FINISHED_WITH_RETURN",
+          "status": 5,
+          "leaderResult": {
+            "status": "return",
+            "payload": {
+              "readable": "2"
+            }
+          }
+        },
+        "resolve": {
+          "functionName": "resolve_market",
+          "args": [
+            2
+          ],
+          "hash": "0x00621019cbda9a2cbebb9b63595076cf4fc1d5f8e4b7e78de378671131465632",
+          "execution": "FINISHED_WITH_ERROR",
+          "status": 5,
+          "leaderResult": {
+            "status": "rollback",
+            "payload": "TRANSIENT: sources unavailable (UNAVAILABLE|2|coingecko); retry later"
+          }
+        },
+        "evidence": {
+          "coingecko_close": 158071059,
+          "coingecko_direction": "UP",
+          "coingecko_open": 157585286,
+          "exists": true,
+          "final_result": "INCONCLUSIVE",
+          "gate_close": 158000000,
+          "gate_direction": "DOWN",
+          "gate_open": 158300000,
+          "market_id": 2,
+          "price_scale": 100000000,
+          "resolved_at": 1789474061,
+          "terminal_refund": false
+        },
+        "market": {
+          "asset": "ATOM",
+          "coingecko_id": "cosmos",
+          "created_at": 1789473970,
+          "creator": "0x4184bc5e5444f250767e8d33a49817a9b4fb0df3",
+          "cutoff_at": 1789340400,
+          "down_pool": 0,
+          "exists": true,
+          "gate_pair": "ATOM_USDT",
+          "id": 2,
+          "paid_out": 0,
+          "phase": "READY_TO_SETTLE",
+          "positions_count": 0,
+          "refund_all": false,
+          "resolved_at": 0,
+          "result": "",
+          "settles_at": 1789426800,
+          "state": "PENDING",
+          "target_day": "2026-09-14",
+          "terminal_refund_at": 1789858800,
+          "total_pool": 0,
+          "up_pool": 0
+        },
+        "first_attempt_note": "Validators agreed 'UNAVAILABLE|2|coingecko' (CoinGecko rate limit right after the BTC fetch) -> TRANSIENT revert, market stayed retryable.",
+        "retry": {
+          "functionName": "resolve_market",
+          "args": [
+            2
+          ],
+          "hash": "0x4fff91efe56661c22320fcad37efd4b2eaf702b74c813041c608d1a0f85dc879",
+          "execution": "FINISHED_WITH_RETURN"
+        }
+      }
+    ]
+  }
+}

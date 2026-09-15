@@ -8,7 +8,7 @@ on:
 
 jobs:
   lint-contracts:
-    name: Lint Contracts
+    name: Lint contracts
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -16,15 +16,16 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -r requirements.txt
-      - run: genvm-lint check contracts/football_bets.py
+      - run: genvm-lint check contracts/hive_crypto.py
+      - run: genvm-lint check contracts/hive_sports.py
 
   test-direct:
-    name: Direct Mode Tests
+    name: Direct mode tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install -r requirements.txt
+      - run: pip install -r requirements.txt pytest
       - run: pytest tests/direct/ -v
