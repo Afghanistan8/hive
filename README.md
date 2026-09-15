@@ -1,169 +1,230 @@
-# Sample GenLayer project
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/license/mit/)
-[![Discord](https://img.shields.io/badge/Discord-Join%20us-5865F2?logo=discord&logoColor=white)](https://discord.gg/8Jm4v89VAu)
-[![Telegram](https://img.shields.io/badge/Telegram--T.svg?style=social&logo=telegram)](https://t.me/genlayer)
-[![Twitter](https://img.shields.io/twitter/url/https/twitter.com/yeagerai.svg?style=social&label=Follow%20%40GenLayer)](https://x.com/GenLayer)
-[![GitHub star chart](https://img.shields.io/github/stars/yeagerai/genlayer-project-boilerplate?style=social)](https://star-history.com/#yeagerai/genlayer-js)
+# HIVE
 
-## About
-This project includes the boilerplate code for a GenLayer use case implementation, specifically a football bets game.
+**Prediction markets that settle themselves — only when two independent public sources agree.**
 
-## Branching
+HIVE is one app with two markets, both running as GenLayer Intelligent Contracts on **Studio Next**:
 
-See [docs/BRANCHING.md](docs/BRANCHING.md) for the release-train model used by
-this repo.
+| | **Hive Match** — football | **Hive Daily** — crypto |
+|---|---|---|
+| Question | Home / Draw / Away for fixtures in the Premier League, La Liga, Bundesliga, Serie A and Ligue 1 | Will the completed GMT+1 daily candle close UP or DOWN? 22 major tokens |
+| Stakes | Pari-mutuel, min 2 GEN, winners split the whole pot, no rake | 2–8 GEN per wallet, pro-rata on the winning pool |
+| Source A | ESPN scoreboard JSON (deterministic parser, matched by event id) | CoinGecko `market_chart/range` (exact GMT+1 window) |
+| Source B | BBC Sport scores page, read by **each validator's own LLM** into a structured score | Gate.io **hourly** candles rebuilt into the same 24h window |
+| Final when | Both report the same full-time score | Both report the same direction |
+| Otherwise | Stays open and retryable; both confirm postponement → 1:1 refunds; no agreement within 7 days → refunds | Mismatch → INCONCLUSIVE refunds; sources down → retry; still down after 5 days → refunds |
 
-## What's included
-- An example intelligent contract (Football Bets) with web access and LLM integration
-- **Direct mode tests** — fast, in-memory unit tests with web/LLM mocking (~ms per test)
-- **Integration tests** — full end-to-end tests against GenLayer Studio
-- **Contract linting** — static analysis to catch common contract issues before deployment
-- **CI pipeline** — GitHub Actions workflow for linting and direct tests
-- A production-ready Next.js 15 frontend with TypeScript, TanStack Query, and Radix UI
-- Configuration file template and deployment scripts
+No owner, no admin key, no pause, no sweep, no trusted resolver, no backend. Anyone can create a market, stake,
+resolve and claim. The frontend reads the contracts directly.
 
-## Requirements
-- Python >= 3.12
-- [GenLayer CLI](https://github.com/genlayerlabs/genlayer-cli) globally installed: `npm install -g genlayer`
-- GenLayer Studio (for integration tests and deployment): Install from [Docs](https://docs.genlayer.com/developers/intelligent-contracts/tooling-setup#using-the-genlayer-studio) or use the hosted [GenLayer Studio](https://studio.genlayer.com/)
+---
 
-## Project Structure
+## Deployed on Studio Next
+
+| | |
+|---|---|
+| Network | GenLayer Studio Next (Consensus v0.6 preview) |
+| Chain ID | `61997` |
+| RPC used | `https://studio-next.genlayer.com/api` (same chain as `https://studio-dev.genlayer.com/api`) |
+| Explorer | https://explorer-studio-dev.genlayer.com |
+| Studio / faucet | https://studio-next.genlayer.com |
+
+| Contract | Address | Deploy tx |
+|---|---|---|
+| `HiveSports` ([contracts/hive_sports.py](contracts/hive_sports.py)) | [`0x750B55C47b292631E291c011A700Af6939736f0A`](https://explorer-studio-dev.genlayer.com/address/0x750B55C47b292631E291c011A700Af6939736f0A) | [`0x3c3a38db…a7614c`](https://explorer-studio-dev.genlayer.com/tx/0x3c3a38db7d77ed41729844aa314e9c5e943f6bebee17fd355d6c030b52a7614c) |
+| `HiveCrypto` ([contracts/hive_crypto.py](contracts/hive_crypto.py)) | [`0xdaB2B7AE913580689F7394cd5071d9E6cd18FcFC`](https://explorer-studio-dev.genlayer.com/address/0xdaB2B7AE913580689F7394cd5071d9E6cd18FcFC) | [`0x79def76e…ce511b0`](https://explorer-studio-dev.genlayer.com/tx/0x79def76e9d264a70f2ea87e51f949af4c9710acf15403f6a01d16d345ce511b0) |
+
+Demo seed (ordinary permissionless writes, recorded in [deploy/deployments.json](deploy/deployments.json)):
+
+- `create_daily_markets("2026-09-16")` — [`0xd3b0d28e…582db4f`](https://explorer-studio-dev.genlayer.com/tx/0xd3b0d28e95e54ea0e17b792b32fcfd66d7134f4331597dc3faad0a07d582db4f)
+- `create_daily_markets("2026-09-17")` — [`0x35b8136e…fb06bd71`](https://explorer-studio-dev.genlayer.com/tx/0x35b8136eec3b2777a76a18e48b2cdb28fc60f6679fb0546052639404fb06bd71)
+- `add_fixtures(20 fixtures)` — [`0x115f9550…39371dad`](https://explorer-studio-dev.genlayer.com/tx/0x115f955026115b7570e531c51bf2b5a1d0139019b1e2e10e14a6dce539371dad)
+
+> Why `studio-next.genlayer.com`? It is the RPC in the hackathon announcement and the v2-dev template default, it answers
+> `eth_chainId = 0xf22d (61997)`, and Transaction Kit quotes fees against it. `studio-dev.genlayer.com` serves the same
+> chain (the GenLayer CLI's `studio-dev` network points there). `studio.next.genlayer.com` does not resolve.
+
+### Settlement proven live on Studio Next
+
+Waiting for tonight's matches or tomorrow's candles is slow, so [scripts/smoke](scripts/smoke) deploys throwaway copies
+of both contracts where **only the "must be in the future" registration guards are relaxed**, then resolves real,
+already-finished events with the unmodified settlement code. Results: [smoke-results.json](scripts/smoke/smoke-results.json).
+
+| What | Transaction | Agreed evidence |
+|---|---|---|
+| Man Utd v Man City (PL, 13 Sep) `resolve` | [`0xd5601c11…89ec6db`](https://explorer-studio-dev.genlayer.com/tx/0xd5601c11734dcd45110b9b483ee78399b87e4515910d6ab1e53a0c0fc89ec6db) | ESPN `FINISHED 0–1` · BBC (LLM) `FINISHED 0–1` → **AWAY** |
+| BTC 2026-09-14 `resolve_market` | [`0xa43323e1…2746c22d1`](https://explorer-studio-dev.genlayer.com/tx/0xa43323e1f62bb730075cdb06a1899f67090e54dc5242d4ffa8fb57f2746c22d1) | CoinGecko 76682.57 → 78752.63 UP · Gate 76710.90 → 78553.10 UP → **UP** |
+| ATOM 2026-09-14 first attempt | [`0x00621019…131465632`](https://explorer-studio-dev.genlayer.com/tx/0x00621019cbda9a2cbebb9b63595076cf4fc1d5f8e4b7e78de378671131465632) | validators agreed `UNAVAILABLE\|coingecko` (rate limit) → **TRANSIENT revert, still retryable** |
+| ATOM 2026-09-14 retry | [`0x4fff91ef…f85dc879`](https://explorer-studio-dev.genlayer.com/tx/0x4fff91efe56661c22320fcad37efd4b2eaf702b74c813041c608d1a0f85dc879) | CoinGecko 1.5758 → 1.5807 UP · Gate 1.5830 → 1.5800 DOWN → **INCONCLUSIVE (refunds)** |
+
+---
+
+## Verify this build
+
+1. **Add Studio Next to your wallet** (the app's *Connect wallet* does this automatically):
+   network name `GenLayer Studio Next`, RPC `https://studio-next.genlayer.com/api`, chain ID `61997`, symbol `GEN`,
+   explorer `https://explorer-studio-dev.genlayer.com`.
+2. **Get GEN**: open https://studio-next.genlayer.com, import/create your account and press the faucet (droplet) icon.
+3. **Run the app** (or use the hosted build if provided):
+   ```bash
+   npm ci
+   cp frontend/.env.example frontend/.env   # already contains the deployed addresses
+   npm run dev                              # http://localhost:3000
+   ```
+4. **Crypto**: open `/crypto`, pick an `OPEN` market (e.g. BTC for the next GMT+1 day), stake **2 GEN** UP or DOWN.
+   The Transaction Kit panel shows the fee quote from the network's fee policy, you hold to sign, and it tracks the
+   transaction until decided — with an explorer link.
+5. **Sports**: open `/sports`, pick an upcoming fixture, stake on Home / Draw / Away.
+6. **Explorer**: every write links to `explorer-studio-dev.genlayer.com/tx/…`; `/portfolio` lists positions, claimable
+   amounts and your transaction links. Contract pages: see the table above.
+7. **Settlement**: after the candle closes / 90 minutes after kickoff, press **Resolve** on the market page. The
+   transaction takes only an id. Inside it, every validator fetches both public sources and must agree on a canonical
+   payload; the page's *Agreed evidence* panel shows exactly what was stored. If the sources disagree or are not ready,
+   the transaction reverts and anyone can retry later. Claim appears once settled.
+
+---
+
+## Why decentralized judgment matters here
+
+A prediction market is only as honest as whoever decides the outcome. The usual answer is a privileged oracle key or a
+single API — one party that can be bribed, hacked, rate-limited or simply wrong. HIVE removes that role:
+
+- **No one supplies the answer.** `resolve(match_id)` / `resolve_market(market_id)` take no data. URL templates,
+  parsers, alias tables and outcome rules are contract code.
+- **Two independent sources, all validators.** Each validator fetches both sources itself. `gl.eq_principle.strict_eq`
+  requires them to produce the identical canonical payload, and that payload carries every field later written to
+  storage. There are **zero** web fetches after consensus.
+- **Human-readable pages are fair game.** BBC Sport is a page for people, full of traps (Women's Super League results,
+  Man City vs Man United, Paris FC vs PSG, Inter vs Milan). Each validator's LLM reads a deterministic excerpt of it
+  with the competition named and a club alias guide, and must output `{status, home_goals, away_goals}` — structured
+  values, never prose, so consensus compares facts.
+- **Disagreement is a first-class outcome.** Mismatched sources never produce a winner: sports stay open and
+  retryable, crypto becomes INCONCLUSIVE and refunds. Nothing is fabricated when data is missing.
+
+## Contract design
+
+### HiveCrypto — [contracts/hive_crypto.py](contracts/hive_crypto.py)
+
+- **Lifecycle (GMT+1, fixed offset, no DST)** for target day D: entries close at `D 00:00 GMT+1`; candle window is
+  `[D 00:00, D+1 00:00) GMT+1`; `resolve_market` opens at `D+1 00:00 GMT+1`; terminal refund 5 days later. All
+  boundaries use `gl.message.raw["datetime"]` (consensus time), never a node clock.
+- **Evidence**: CoinGecko `market_chart/range` samples must hug both window edges (≤ 90 min); Gate.io must return exactly
+  24 aligned, closed 1h candles (never the UTC-aligned `1d` bars). Prices become integers scaled by `10^8` from their
+  decimal text — no float formatting. Direction per source: `close > open` → UP, else DOWN.
+- **Canonical payload** `id|asset|coingecko_id|gate_pair|day|cg_open|cg_close|cg_dir|gt_open|gt_close|gt_dir|final`,
+  or `UNAVAILABLE|id|source`. After consensus it is re-validated (bound to this market, each direction follows from its
+  own prices, final = both directions or INCONCLUSIVE) before any write.
+- **Money**: 2–8 GEN per wallet, same-side top-ups, side switch rejected. Winners get `stake × total / winning_pool`;
+  the last winner sweeps integer dust so each market pays out exactly its pool. Empty winning side → everyone refunded.
+  `claim` emits the transfer **before** marking claimed; any failure reverts the whole transaction.
+- Permissionless: `create_market`, `create_daily_markets` (all assets for a day), `take_position`, `resolve_market`,
+  `claim`.
+
+### HiveSports — [contracts/hive_sports.py](contracts/hive_sports.py)
+
+- **One contract, many fixtures.** Registry keyed by `match_id = <league>-<espn_event_id>` with teams, kickoff, pools,
+  status. `add_fixture` / `add_fixtures` (batch of ≤ 40) are permissionless; kickoff must be 10 min–60 days ahead.
+- **Betting** closes at kickoff (consensus time). HOME / DRAW / AWAY, min 2 GEN, one side per wallet, same-side top-ups.
+- **`resolve`** (kickoff + 90 min): ESPN scoreboard for the league+date → the event by id → `FINISHED` with score /
+  `POSTPONED` / `NOT_FINISHED` / `NOT_FOUND`. BBC scores page for the date → deterministic excerpt around the pairing →
+  validator LLM → normalized `{status, home_goals, away_goals}`. Canonical JSON
+  `{match_id, source_a, source_b, espn, bbc, outcome}` under `strict_eq`, re-validated before storage. Settles only if
+  both are FINISHED with the same score.
+- **`mark_postponed`** (kickoff + 3 h): only if both sources report a postponement → 1:1 refunds.
+- **Terminal refund**: a `resolve` 7 days after kickoff that still has no agreement refunds everyone.
+- **`claim` / `refund`**: pull payments, transfer first, pari-mutuel with dust sweep, empty winning pool → refunds.
+
+## Verified crypto universe (22)
+
+Checked with `python scripts/check_sources.py` (GMT+1 day 2026-09-14: **22/22 verified on both sources**).
+
+| Asset | CoinGecko id | Gate.io pair | Asset | CoinGecko id | Gate.io pair |
+|---|---|---|---|---|---|
+| BTC | bitcoin | BTC_USDT | ATOM | cosmos | ATOM_USDT |
+| ETH | ethereum | ETH_USDT | LTC | litecoin | LTC_USDT |
+| SOL | solana | SOL_USDT | UNI | uniswap | UNI_USDT |
+| BNB | binancecoin | BNB_USDT | AAVE | aave | AAVE_USDT |
+| XRP | ripple | XRP_USDT | SUI | sui | SUI_USDT |
+| ADA | cardano | ADA_USDT | NEAR | near | NEAR_USDT |
+| DOGE | dogecoin | DOGE_USDT | APT | aptos | APT_USDT |
+| AVAX | avalanche-2 | AVAX_USDT | ARB | arbitrum | ARB_USDT |
+| LINK | chainlink | LINK_USDT | OP | optimism | OP_USDT |
+| DOT | polkadot | DOT_USDT | JUP | jupiter-exchange-solana | JUP_USDT |
+| ZRO | layerzero | ZRO_USDT | ZAMA | zama | ZAMA_USDT |
+
+## Demo fixtures
+
+[fixtures.demo.json](fixtures.demo.json) holds 20 real fixtures (4 per league, 15–19 Sep 2026) generated by
+`scripts/generate_fixtures.py` from ESPN and checked against the BBC page for each date. They are registered on-chain.
+Regenerate with `python scripts/generate_fixtures.py` (uses `FOOTBALL_DATA_API_KEY` for an extra kickoff cross-check when
+set; works without it).
+
+---
+
+## Repository
 
 ```
-contracts/              # Python intelligent contracts
-tests/
-  direct/               # Fast in-memory tests (no Studio required)
-    test_create_bet.py   # Bet creation logic
-    test_resolve_bet.py  # Bet resolution with web/LLM mocks
-    test_views.py        # Read-only view methods
-  integration/           # Full tests against GenLayer Studio
-    test_football_bets.py
-    fixtures.py          # Expected state fixtures
-frontend/               # Next.js 15 app (TypeScript, TanStack Query, Radix UI)
-deploy/                 # TypeScript deployment scripts
-gltest.config.yaml      # Test runner network configuration
-pyproject.toml          # Python/pytest configuration
-.github/workflows/      # CI pipeline
+contracts/
+  hive_crypto.py            Hive Daily markets
+  hive_sports.py            Hive Match multi-fixture markets
+tests/direct/               33 in-memory tests with web/LLM mocks
+deploy/
+  001_deploy_crypto.ts      fee-aware, idempotent deploys (writes frontend/.env + deployments.json)
+  002_deploy_sports.ts
+  003_seed_demo.ts          opens next GMT+1 days + registers demo fixtures
+  deployments.json          public addresses + tx hashes
+scripts/
+  check_sources.py          both sources for every asset, exits 1 on a dead pair
+  generate_fixtures.py      ESPN fixtures verified against BBC (+ football-data.org if keyed)
+  demo_seed.py              refresh + seed wrapper
+  ops/deploy/001_resolve_ready.ts   resolve everything that is ready (permissionless)
+  smoke/deploy/             live consensus + payout smoke tests on throwaway copies
+frontend/                   Next.js app (genlayer-js 2.0.0-rc.1, Transaction Kit 0.1.0-rc.2)
+fixtures.demo.json
+DEMO.md                     demo script + video shot list
 ```
 
-## Quick Start
+## Development
 
-### 1. Set up Python environment
+Requirements: Python ≥ 3.12, Node ≥ 22.
 
-```shell
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
+```bash
+python -m venv .venv && . .venv/bin/activate      # Windows: .venv\Scripts\activate
+pip install -r requirements.txt pytest
+npm ci
+
+npm run lint:contracts        # genvm-lint check on both contracts
+npm run test:contracts        # pytest tests/direct
+npm test                      # frontend vitest
+npm run build                 # frontend production build
+npm run check:sources         # live source check (CoinGecko rate limits: be patient)
 ```
 
-### 2. Lint your contracts
+Deploy (uses the GenLayer CLI account that is active on your machine; nothing is hardcoded):
 
-Run the GenVM linter to catch issues before deployment:
-
-```shell
-genvm-lint check contracts/football_bets.py
+```bash
+npx genlayer network set studio-dev     # chain 61997
+npx genlayer account show
+npm run deploy                          # deploy + seed; re-runs skip unchanged contracts
+npm run resolve:ready                   # settle anything that is ready
+npm run smoke                           # optional: live consensus/payout smoke tests (throwaway contracts)
 ```
 
-The linter catches:
-- Forbidden imports and non-deterministic calls
-- Invalid storage types (must use `TreeMap`, `DynArray`, `u256`, etc.)
-- Missing decorators and return type annotations
-- Non-deterministic operations outside equivalence principle blocks
-- And [20+ other rules](https://github.com/genlayerlabs/genvm-linter)
+Fees follow the v2 flow: deploy/seed scripts ask the network for a fee preset (`estimateTransactionFees`, Studio's fee
+policy) instead of hand-written numbers; the frontend uses Transaction Kit's live quote before every signature.
 
-### 3. Run direct mode tests
+## Known limitations
 
-Direct mode tests run contracts in-memory without needing GenLayer Studio. They use mocks for web requests and LLM calls, giving you fast feedback (~milliseconds per test):
-
-```shell
-pytest tests/direct/ -v
-```
-
-Direct mode features used in these tests:
-- `direct_deploy("contracts/file.py")` — deploy contract in memory
-- `direct_vm.sender = address` — set transaction sender
-- `direct_vm.mock_web(pattern, response)` — mock HTTP/render calls
-- `direct_vm.mock_llm(pattern, response)` — mock LLM responses
-- `direct_vm.expect_revert("message")` — assert expected failures
-- `direct_vm.clear_mocks()` — reset mocks between calls
-
-### 4. Deploy the contract
-
-1. Choose your network: `genlayer network`
-2. Deploy: `genlayer deploy` (runs the script in `/deploy/deployScript.ts`)
-
-### 5. Run integration tests
-
-Integration tests deploy the contract to GenLayer Studio and test with real consensus:
-
-```shell
-gltest tests/integration/ -v -s
-```
-
-These require GenLayer Studio running (local or hosted).
-
-### 6. Set up the frontend
-
-1. Copy `frontend/.env.example` to `frontend/.env`
-2. Add your deployed contract address as `NEXT_PUBLIC_CONTRACT_ADDRESS`
-3. Run:
-
-```shell
-cd frontend
-npm install
-npm run dev
-```
-
-The app will be available at http://localhost:3000/.
-
-### Fee profile (developer suggestions)
-
-The frontend uses published `@genlayer/transaction-kit` and
-`@genlayer/transaction-kit-react` version `0.1.0-rc.2`, with `genlayer-js`
-`2.0.0-rc.1`. Run `npm ci` from the repository root to install the locked releases.
-
-The default network is Studio Next (Consensus v0.6) at
-`https://studio-next.genlayer.com/api` (chain ID `61997`). Copy
-`frontend/.env.example`; change the RPC URL and chain ID together when targeting
-another deployment. Wallet, SDK, and Transaction Kit share this configuration.
-
-Transaction Kit uses active network fee defaults. The checked-in
-`frontend/fee-profile.json` is not wired into the application because measured
-fees are specific to a contract build, GenVM version, and network. To use a
-developer profile, regenerate it for your deployment and explicitly pass it as
-`suggestions` to `createTransactionKit` in `frontend/lib/genlayer/kit.ts`.
-
-Regenerate it with `npm run test:fees` while GenLayer Studio is running. The fee profile command estimates a trusted Studio fee preset from the active fee policy, runs the measured Football Bets deploy/create-bet scenario, and writes max-observed x 1.25 headroom as decimal strings.
-
-Missing keys, such as time-unit allocations, fall back to network defaults.
-
-## How the Football Bets Contract Works
-
-1. **Creating Bets**: Users bet on a football match by providing the game date, teams, and predicted winner.
-2. **Resolving Bets**: After the match, the contract fetches results from BBC Sport, uses an LLM to extract the score, and validates via the equivalence principle.
-3. **Points**: Correct predictions earn points. Users can query their points or the leaderboard.
-
-## Testing Strategy
-
-| Test Type | Command | Speed | Requires Studio |
-|-----------|---------|-------|-----------------|
-| **Lint** | `genvm-lint check contracts/*.py` | ~250ms | No |
-| **Direct** | `pytest tests/direct/ -v` | ~ms/test | No |
-| **Integration** | `gltest tests/integration/ -v -s` | ~min/test | Yes |
-
-**Recommended workflow:**
-1. Lint after every contract change
-2. Run direct tests frequently during development
-3. Run integration tests before deployment to verify consensus behavior
-
-For AI coding agents (Claude Code, Cursor, etc.), the linter and direct tests provide the fast feedback loop needed for iterative development without requiring a running Studio instance.
-
-## Community
-- **[Discord](https://discord.gg/8Jm4v89VAu)**: Discussions, support, and announcements
-- **[Telegram](https://t.me/genlayer)**: Informal chats and quick updates
-
-## Documentation
-For detailed information, see our [documentation](https://docs.genlayer.com/).
+- Studio Next is a preview network; validators, fees and GenVM runner hashes can change. The contracts pin
+  `py-genlayer:5jycge4q…` (GenVM v0.6.0-rc5), which Studio Next accepted at deploy time.
+- Public APIs rate-limit. A CoinGecko 429 produces an agreed `UNAVAILABLE` and a retryable revert (seen live above).
+- ESPN filters some user agents; the contracts send `curl/8.5.0 (HIVE GenLayer validator)`, which it accepts.
+- BBC resolution depends on the page listing the pairing under the stored names; `generate_fixtures.py` only emits
+  fixtures it can find, and a missed pairing simply keeps the fixture open (then refunds after 7 days).
+- Fixture registration is permissionless; a badly registered fixture cannot settle wrongly (both sources must agree),
+  it just refunds. The UI shows every fixture's registrant.
+- View `phase` uses the chain's latest consensus time; the UI derives display phases from the clock. The contracts
+  enforce every boundary with consensus time.
 
 ## License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+MIT

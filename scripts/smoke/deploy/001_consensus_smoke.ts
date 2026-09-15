@@ -8,7 +8,7 @@
 // them. Settlement code, sources, parsers and consensus are byte-identical to
 // contracts/. These copies are never used by the app.
 //
-//   cd scripts/smoke && npx genlayer deploy
+//   cd scripts/smoke && SMOKE_ONLY=consensus npx genlayer deploy
 //
 // Node built-ins only (the CLI transpiles this file into a temp dir).
 import { readFileSync, writeFileSync } from "fs";
@@ -58,6 +58,7 @@ const read = (client: any, address: string, functionName: string, args: any[]) =
   client.readContract({ address, functionName, args, jsonSafeReturn: true });
 
 export default async function main(client: any) {
+  if (process.env.SMOKE_ONLY && process.env.SMOKE_ONLY !== "consensus") return;
   const results: any = { network: client.chain?.name, chainId: client.chain?.id, ranAt: new Date().toISOString(), sports: {}, crypto: {} };
 
   // ---- sports: real finished fixture, ESPN + BBC + LLM consensus
