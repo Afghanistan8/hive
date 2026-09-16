@@ -6,7 +6,6 @@ import { Providers } from "./providers";
 import { Navbar } from "@/components/Navbar";
 import { LiquidBackground } from "@/components/hive/LiquidBackground";
 import { SoundToggle } from "@/components/hive/SoundToggle";
-import { PageShell } from "@/components/hive/PageShell";
 
 const hiveFont = Geist({
   subsets: ["latin"],
@@ -56,7 +55,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <LiquidBackground />
         <Providers>
           <Navbar />
-          <PageShell>{children}</PageShell>
+          {children}
           <SoundToggle />
         </Providers>
       </body>

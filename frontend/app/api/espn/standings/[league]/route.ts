@@ -8,7 +8,7 @@ export async function GET(_req: Request, ctx: { params: Promise<{ league: string
   try {
     const res = await fetch(`https://site.api.espn.com/apis/v2/sports/soccer/${slug}/standings`, {
       headers: ESPN_HEADERS,
-      next: { revalidate: 900 },
+      next: { revalidate: 900 }, signal: AbortSignal.timeout(8000),
     });
     if (!res.ok) return NextResponse.json({ error: `ESPN ${res.status}` }, { status: 502 });
     return NextResponse.json(normalizeStandings(await res.json()), {

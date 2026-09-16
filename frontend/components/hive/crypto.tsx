@@ -35,7 +35,9 @@ export function CryptoTabs() {
  * and marks its open. Settlement never reads this — the contract fetches its own.
  */
 export function PriceChart({ market }: { market: CryptoMarket }) {
-  const now = Math.floor(Date.now() / 1000);
+  // Hourly candles: pin "now" to the current hour so the query key (and the request) only
+  // changes once an hour, not on every re-render of the ticking market page.
+  const now = Math.floor(Date.now() / 3_600_000) * 3600 + 3600;
   const from = Math.min(market.cutoff_at - 24 * 3600, now - 36 * 3600);
   const to = Math.min(Math.max(market.settles_at + 2 * 3600, now), now);
   const { data, isLoading, error } = useCandles(market.gate_pair, from, to);

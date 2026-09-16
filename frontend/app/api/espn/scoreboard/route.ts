@@ -9,7 +9,7 @@ export async function GET(req: Request) {
   try {
     const res = await fetch(`https://site.api.espn.com/apis/site/v2/sports/soccer/${slug}/scoreboard?dates=${date}`, {
       headers: ESPN_HEADERS,
-      next: { revalidate: 45 },
+      next: { revalidate: 45 }, signal: AbortSignal.timeout(8000),
     });
     if (!res.ok) return NextResponse.json({ error: `ESPN ${res.status}` }, { status: 502 });
     return NextResponse.json(normalizeScoreboard(await res.json()), {

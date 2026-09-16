@@ -63,7 +63,7 @@ async function scoreboards(dates: { league: string; date: string }[]): Promise<R
     const key = `${league}-${date}`;
     if (seen.has(key)) continue;
     seen.add(key);
-    const res = await fetch(`https://site.api.espn.com/apis/site/v2/sports/soccer/${ESPN_SLUGS[league]}/scoreboard?dates=${date}`, { headers: ESPN_HEADERS, cache: "no-store" });
+    const res = await fetch(`https://site.api.espn.com/apis/site/v2/sports/soccer/${ESPN_SLUGS[league]}/scoreboard?dates=${date}`, { headers: ESPN_HEADERS, cache: "no-store", signal: AbortSignal.timeout(8000) });
     if (res.ok) Object.assign(all, normalizeScoreboard(await res.json()));
   }
   return all;
@@ -211,7 +211,7 @@ export async function runKeeper(opts: { dryRun?: boolean; limits?: KeeperLimits;
     await guard("mirror standings", async () => {
       let n = 0;
       for (const [league, slug] of Object.entries(ESPN_SLUGS)) {
-        const res = await fetch(`https://site.api.espn.com/apis/v2/sports/soccer/${slug}/standings`, { headers: ESPN_HEADERS, cache: "no-store" });
+        const res = await fetch(`https://site.api.espn.com/apis/v2/sports/soccer/${slug}/standings`, { headers: ESPN_HEADERS, cache: "no-store", signal: AbortSignal.timeout(8000) });
         if (!res.ok) continue;
         const { season, rows } = normalizeStandings(await res.json());
         n += await upsert(

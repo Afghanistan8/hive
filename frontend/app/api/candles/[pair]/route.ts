@@ -14,7 +14,7 @@ export async function GET(req: Request, ctx: { params: Promise<{ pair: string }>
   try {
     const res = await fetch(
       `https://api.gateio.ws/api/v4/spot/candlesticks?currency_pair=${pair}&interval=1h&from=${start}&to=${end}`,
-      { headers: { Accept: "application/json" }, next: { revalidate: 60 } },
+      { headers: { Accept: "application/json" }, next: { revalidate: 60 }, signal: AbortSignal.timeout(8000) },
     );
     if (!res.ok) return NextResponse.json({ error: `Gate ${res.status}` }, { status: 502 });
     const rows = (await res.json()) as string[][];

@@ -66,7 +66,7 @@ export async function discoverFixtures(opts: { days: number; perLeague: number; 
   const out: Candidate[] = [];
 
   for (const [league, slug] of Object.entries(ESPN_SLUGS)) {
-    const res = await fetch(`https://site.api.espn.com/apis/site/v2/sports/soccer/${slug}/scoreboard?dates=${ymd(start)}-${ymd(end)}&limit=200`, { headers: ESPN_HEADERS, cache: "no-store" });
+    const res = await fetch(`https://site.api.espn.com/apis/site/v2/sports/soccer/${slug}/scoreboard?dates=${ymd(start)}-${ymd(end)}&limit=200`, { headers: ESPN_HEADERS, cache: "no-store", signal: AbortSignal.timeout(8000) });
     if (!res.ok) continue;
     const data = await res.json();
     let taken = 0;
@@ -82,7 +82,7 @@ export async function discoverFixtures(opts: { days: number; perLeague: number; 
       for (const c of comp.competitors ?? []) teams[c.homeAway] = c.team;
       const date = new Date(kickoff * 1000).toISOString().slice(0, 10);
       if (!bbcCache.has(date)) {
-        const page = await fetch(`https://www.bbc.com/sport/football/scores-fixtures/${date}`, { headers: { "User-Agent": ESPN_HEADERS["User-Agent"] }, cache: "no-store" });
+        const page = await fetch(`https://www.bbc.com/sport/football/scores-fixtures/${date}`, { headers: { "User-Agent": ESPN_HEADERS["User-Agent"] }, cache: "no-store", signal: AbortSignal.timeout(8000) });
         bbcCache.set(date, page.ok ? pageText(await page.text()) : "");
       }
       const text = bbcCache.get(date)!;
