@@ -42,9 +42,16 @@ const WALLET_METHODS = new Set(["get_position", "get_user_positions", "get_usern
  * Studio allows ~30 contract reads per minute per IP, and all visitors reach it from Vercel's IPs.
  * After a user's own transaction the browser adds a cache-busting `v` parameter (see markFresh).
  */
+export type CacheTier = "list" | "wallet" | "detail";
+export const cacheTier = (functionName: string): CacheTier =>
+  LIST_METHODS.has(functionName) ? "list" : WALLET_METHODS.has(functionName) ? "wallet" : "detail";
+/** Seconds a read stays fresh in the server's shared data cache (stale copies are served while refreshing). */
+export const TIER_REVALIDATE: Record<CacheTier, number> = { list: 10, detail: 5, wallet: 3 };
+
 export function cacheControlFor(functionName: string) {
-  if (LIST_METHODS.has(functionName)) return "public, s-maxage=10, stale-while-revalidate=3600";
-  if (WALLET_METHODS.has(functionName)) return "public, s-maxage=3, stale-while-revalidate=30";
+  const tier = cacheTier(functionName);
+  if (tier === "list") return "public, s-maxage=10, stale-while-revalidate=3600";
+  if (tier === "wallet") return "public, s-maxage=3, stale-while-revalidate=30";
   return "public, s-maxage=5, stale-while-revalidate=120";
 }
 
@@ -64,8 +71,9 @@ export function checkReadRequest(body: unknown): { ok: true; req: ReadRequest } 
   if (!body || typeof body !== "object") return { ok: false, error: "body must be a JSON object" };
   const { address, functionName, args = [] } = body as Record<string, unknown>;
   // `v` (cache-busting after a user's own write) is accepted and ignored.
-  const allowed = [HIVE_SPORTS_ADDRESS, HIVE_CRYPTO_ADDRESS].filter(Boolean).map((a) => a.toLowerCase());
-  if (typeof address !== "string" || !allowed.includes(address.toLowerCase())) return { ok: false, error: "address is not a HIVE contract" };
+  const allowed = [HIVE_SPORTS_ADDRESS, HIVE_CRYPTO_ADDRESS].filter(Boolean);
+  const match = typeof address === "string" ? allowed.find((a) => a.toLowerCase() === address.toLowerCase()) : undefined;
+  if (!match) return { ok: false, error: "address is not a HIVE contract" };
   if (typeof functionName !== "string" || !READ_METHODS.has(functionName)) return { ok: false, error: "functionName is not an allowed view" };
   if (!Array.isArray(args) || args.length > 3) return { ok: false, error: "args must be an array of at most 3 values" };
   for (const a of args) {
@@ -73,5 +81,6 @@ export function checkReadRequest(body: unknown): { ok: true; req: ReadRequest } 
     const okNumber = typeof a === "number" && Number.isSafeInteger(a) && a >= 0;
     if (!okString && !okNumber) return { ok: false, error: "args must be short strings or non-negative integers" };
   }
-  return { ok: true, req: { address, functionName, args: args as ReadArg[] } };
+  // Always use the configured spelling: Studio does not match a re-cased contract address.
+  return { ok: true, req: { address: match, functionName, args: args as ReadArg[] } };
 }

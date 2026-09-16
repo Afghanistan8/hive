@@ -12,7 +12,12 @@ import { mirrorConfigured, mirrorFixtures, mirrorMarkets, mirrorPositions } from
 const REFRESH = 15_000;
 
 /** Every contract read: fail fast (one retry), never spin forever; the proxy itself times out at 12 s. */
-const CONTRACT = { staleTime: 10_000, retry: 1, retryDelay: 1000 } as const;
+const CONTRACT = {
+  staleTime: 10_000,
+  // A 4xx is the contract's definite answer (e.g. unknown id): don't retry it.
+  retry: (failures: number, e: Error & { status?: number }) => failures < 1 && !(e?.status !== undefined && e.status >= 400 && e.status < 500),
+  retryDelay: 1000,
+} as const;
 
 /** Supabase mirror snapshot, used only as instant placeholder while the contract read runs. */
 function useMirror<T>(key: string, fn: () => Promise<T>) {

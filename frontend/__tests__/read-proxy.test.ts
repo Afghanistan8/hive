@@ -7,6 +7,15 @@ const CRYPTO = "0x6172565eA61CEa77c8E6d1fBed36936009C10FF1";
 // readContract behaviour per RPC host, set by each test.
 const behaviour: Record<string, (args: any) => Promise<unknown>> = {};
 
+// The shared data cache needs the Next runtime; record calls and pass through.
+const cacheCalls: string[] = [];
+vi.mock("next/cache", () => ({
+  unstable_cache: (fn: (...a: any[]) => Promise<unknown>, keys: string[]) => (...a: any[]) => {
+    cacheCalls.push(keys.join("/"));
+    return fn(...a);
+  },
+}));
+
 vi.mock("genlayer-js", () => ({
   createClient: ({ chain }: any) => {
     const host = new URL(chain.rpcUrls.default.http[0]).host;
@@ -28,10 +37,12 @@ const get = (route: any, address: string, functionName: string, args: unknown[] 
 
 beforeEach(() => {
   for (const k of Object.keys(behaviour)) delete behaviour[k];
+  cacheCalls.length = 0;
 });
 afterEach(() => vi.useRealTimers());
 
-describe("/api/gl/read", () => {
+// The first test pays the one-time route import; keep slow CI machines from flaking.
+describe("/api/gl/read", { timeout: 30_000 }, () => {
   it("shares every public view from the CDN, with shorter windows for detail and wallet reads", async () => {
     behaviour["studio-next.genlayer.com"] = async ({ functionName }) => (functionName === "get_fixtures" ? [{ match_id: "pd-1" }] : { match_id: "pd-1" });
     const route = await loadRoute();
@@ -46,6 +57,31 @@ describe("/api/gl/read", () => {
 
     const wallet = await get(route, SPORTS, "get_position", ["pd-1", "0xabc"]);
     expect(wallet.headers.get("cache-control")).toBe("public, s-maxage=3, stale-while-revalidate=30");
+  });
+
+  it("reads through the shared data cache by tier, and bypasses it right after the user's own write", async () => {
+    behaviour["studio-next.genlayer.com"] = async () => ({ ok: true });
+    const route = await loadRoute();
+    await get(route, SPORTS, "get_fixtures", [0, 16]);
+    await get(route, SPORTS, "get_fixture", ["pd-1"]);
+    await get(route, SPORTS, "get_position", ["pd-1", "0xabc"]);
+    expect(cacheCalls).toEqual(["hive-gl-read-v1/list", "hive-gl-read-v1/detail", "hive-gl-read-v1/wallet"]);
+
+    cacheCalls.length = 0;
+    const fresh = await route.GET(new Request(`http://x/api/gl/read?address=${SPORTS}&functionName=get_fixture&args=${encodeURIComponent('["pd-1"]')}&v=123`));
+    expect(fresh.status).toBe(200);
+    expect(cacheCalls).toEqual([]);
+  });
+
+  it("always calls Studio with the configured address spelling (it rejects a re-cased address)", async () => {
+    const seen: string[] = [];
+    behaviour["studio-next.genlayer.com"] = async ({ address }) => {
+      seen.push(address);
+      return { ok: true };
+    };
+    const route = await loadRoute();
+    expect((await get(route, SPORTS.toLowerCase(), "get_config")).status).toBe(200);
+    expect(seen).toEqual([SPORTS]);
   });
 
   it("treats Studio's rate limit as a transport failure and uses the other hostname", async () => {
@@ -138,6 +174,18 @@ describe("/api/gl/read", () => {
     expect(res.status).toBe(503);
     expect(res.headers.get("retry-after")).toBe("2");
     expect((await res.json()).error).toMatch(/Studio is busy/);
+  });
+
+  it("turns the contract's 'unknown market' refusal into a cacheable 404 with its message", async () => {
+    const result = Buffer.concat([Buffer.from([1]), Buffer.from("EXPECTED: unknown market")]).toString("base64");
+    behaviour["studio-next.genlayer.com"] = async () => {
+      throw Object.assign(new Error("Missing or invalid parameters."), { cause: { message: "execution failed", data: { receipt: { execution_result: "ERROR", result } } } });
+    };
+    const route = await loadRoute();
+    const res = await get(route, CRYPTO, "get_market", [99999]);
+    expect(res.status).toBe(404);
+    expect(res.headers.get("cache-control")).toMatch(/s-maxage=30/);
+    expect(await res.json()).toEqual({ error: "get_market: unknown market", contract: true });
   });
 
   it("does not retry contract errors on the other hostname", async () => {

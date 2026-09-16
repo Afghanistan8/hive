@@ -90,7 +90,7 @@ export class HiveReader {
         throw new Error(e?.name === "TimeoutError" ? `${functionName}: no answer within ${timeoutMs / 1000} s` : `${functionName}: ${e?.message ?? e}`);
       }
       const body = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(body?.error || `${functionName}: read proxy returned HTTP ${res.status}`);
+      if (!res.ok) throw Object.assign(new Error(body?.error || `${functionName}: read proxy returned HTTP ${res.status}`), { status: res.status });
       return body.result as T;
     }
     this.client ??= createClient({ chain: GENLAYER_CHAIN });

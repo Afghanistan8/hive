@@ -11,6 +11,9 @@ export const SITE_ORIGIN =
 /** How often pre-rendered pages refresh their contract snapshot (seconds). */
 export const SNAPSHOT_REVALIDATE = 30;
 
+/** The contract says this id does not exist (proxy answered 404). */
+export const MISSING = "missing" as const;
+
 export interface Snapshot<T> {
   data: T;
   /** Epoch ms the snapshot was read — lets React Query refetch as soon as it is stale. */
@@ -25,11 +28,12 @@ const reader = () =>
     timeoutMs: 14_000,
   });
 
-async function snapshot<T>(fn: (r: HiveReader) => Promise<T>): Promise<Snapshot<T> | null> {
+async function snapshot<T>(fn: (r: HiveReader) => Promise<T>): Promise<Snapshot<T> | null | typeof MISSING> {
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
       return { data: await fn(reader()), at: Date.now() };
     } catch (e) {
+      if ((e as { status?: number })?.status === 404) return MISSING;
       console.warn(`[hive] server snapshot attempt ${attempt + 1} failed:`, (e as Error)?.message ?? e);
       await new Promise((r) => setTimeout(r, 1500));
     }
@@ -37,7 +41,8 @@ async function snapshot<T>(fn: (r: HiveReader) => Promise<T>): Promise<Snapshot<
   return null;
 }
 
-export const fixturesSnapshot = () => snapshot<Fixture[]>((r) => r.fixtures());
-export const marketsSnapshot = () => snapshot<CryptoMarket[]>((r) => r.cryptoMarkets());
+const orNull = <T,>(s: Snapshot<T> | null | typeof MISSING) => (s === MISSING ? null : s);
+export const fixturesSnapshot = async () => orNull(await snapshot<Fixture[]>((r) => r.fixtures()));
+export const marketsSnapshot = async () => orNull(await snapshot<CryptoMarket[]>((r) => r.cryptoMarkets()));
 export const fixtureSnapshot = (matchId: string) => snapshot<Fixture>((r) => r.fixture(matchId));
 export const marketSnapshot = (id: number) => snapshot<CryptoMarket>((r) => r.cryptoMarket(id));

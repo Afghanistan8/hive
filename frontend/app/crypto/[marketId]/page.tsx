@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { formatGen } from "@/lib/hive/format";
-import { marketSnapshot } from "@/lib/hive/serverData";
+import { notFound } from "next/navigation";
+import { marketSnapshot, MISSING } from "@/lib/hive/serverData";
 import { MarketView } from "./MarketView";
 
 // Rendered on first visit, then cached per market and refreshed in the background every 30 s.
@@ -12,12 +13,14 @@ type Props = { params: Promise<{ marketId: string }> };
 
 const snapshotFor = (marketId: string) => {
   const id = Number(marketId);
-  return Number.isSafeInteger(id) && id > 0 ? marketSnapshot(id) : Promise.resolve(null);
+  return /^\d+$/.test(marketId) && Number.isSafeInteger(id) && id > 0 ? marketSnapshot(id) : Promise.resolve(MISSING);
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { marketId } = await params;
-  const m = (await snapshotFor(marketId))?.data;
+  const snap = await snapshotFor(marketId);
+  if (snap === MISSING) return { title: "Market not found" };
+  const m = snap?.data;
   if (!m) return { title: "Market" };
   const title = `${m.asset} · ${m.target_day}`;
   const state = m.result ? `Result ${m.result}${m.refund_all ? " · refunded" : ""}` : `▲ ${formatGen(m.up_pool)} GEN · ▼ ${formatGen(m.down_pool)} GEN`;
@@ -27,5 +30,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function MarketPage({ params }: Props) {
   const { marketId } = await params;
-  return <MarketView marketId={marketId} initial={await snapshotFor(marketId)} />;
+  const snap = await snapshotFor(marketId);
+  if (snap === MISSING) notFound();
+  return <MarketView marketId={marketId} initial={snap} />;
 }
